@@ -42,11 +42,10 @@
 !   vicinity of Houston using a fully-coupled meteorology-chemistry-
 !   aerosol model, J. Geophys. Res., 111, D21305,
 !   doi:10.1029/2005JD006721.
-! * Barnard, J.C., J.D. Fast, G. Paredes-Miranda, W.P. Arnott, and
-!   A. Laskin (2010), Technical note: evaluation of the WRF-Chem
-!   "aerosol chemical to aerosol optical properties" module using data
-!   from the MILAGRO campaign, Atmos. Chem. Phys., 10, 7325-7340,
-!   doi:10.5194/acp-10-7325-2010.
+! * Barnard, J.C., J.D. Fast, G. Paredes-Miranda, W.P. Arnott, et al.
+!   (2009), Closure on the single scattering albedo in the WRF-Chem
+!   framework using data from the MILAGRO campaign, Atmos. Chem. Phys.,
+!   submitted.
 !
 ! Contact Jerome Fast for updates on the status of manuscripts under
 ! review.
@@ -63,10 +62,10 @@
 
 !WRF:MODEL_LAYER:CHEMISTRY
 !
-	module module_phot_fastj
-	integer, parameter :: lunerr = -1
+       module module_phot_fastj
+       integer, parameter :: lunerr = -1
 
-	contains
+       contains
 !***********************************************************************
        subroutine fastj_driver(id,curr_secs,dtstep,config_flags,       &
                gmt,julday,t_phy,moist,p8w,p_phy,                       &
@@ -75,8 +74,10 @@
                ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,    &
                ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,         &
                ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,&
-               ph_n2o5,                                                &
-               tauaer1,tauaer2,tauaer3,tauaer4,                        &
+               ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
+               ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
+               ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, &
+               tauaer1,tauaer2,tauaer3,tauaer4,              &
                gaer1,gaer2,gaer3,gaer4,                                &
                waer1,waer2,waer3,waer4,                                &
                bscoef1,bscoef2,bscoef3,bscoef4,                        &
@@ -89,11 +90,11 @@
    USE module_configure
    USE module_state_description
    USE module_data_mosaic_therm, only: nbin_a, nbin_a_maxd
-!  USE module_data_mosaic_asect
-   USE module_data_mosaic_other, only: kmaxd, nsubareas
+   USE module_data_mosaic_asect
+   USE module_data_mosaic_other
    USE module_fastj_mie
 !  USE module_mosaic_therm, only: aerosol_optical_properties
-!  USE module_mosaic_driver, only: mapaer_tofrom_host
+   USE module_mosaic_driver, only: mapaer_tofrom_host
    USE module_fastj_data, only:  nb, nc
 
    implicit none
@@ -102,7 +103,7 @@
    integer, parameter :: single = 4        !compiler dependent value real*4
    integer, parameter :: double = 8        !compiler dependent value real*8
    integer,parameter :: ipar_fastj=1,jpar=1
-   integer,parameter :: jppj=14        !Number of photolytic reactions supplied
+   integer,parameter :: jppj=37        !Number of photolytic reactions supplied
    logical,parameter :: ldeg45=.false. !Logical flag for degraded CTM resolution
    integer,save :: lpar           !Number of levels in CTM
    integer,save :: jpnl           !Number of levels requiring chemistry
@@ -122,12 +123,18 @@
    data wavmid     &
        / 0.30e-4, 0.40e-4, 0.60e-4 ,0.999e-04 /
    integer nphoto_fastj
-   parameter (nphoto_fastj = 14)
+   parameter (nphoto_fastj = 38)
    integer   &
    lfastj_no2,   lfastj_o3a,   lfastj_o3b,    lfastj_h2o2,   &
    lfastj_hchoa, lfastj_hchob, lfastj_ch3ooh, lfastj_no3x,   &
    lfastj_no3l,  lfastj_hono,  lfastj_n2o5,   lfastj_hno3,   &
-   lfastj_hno4     
+   lfastj_hno4,  lfastj_ald,   lfastj_ch3cho, lfastj_acet,   &  
+   lfastj_uald,  lfastj_mek,   lfastj_macr,   lfastj_mvk,   &
+   lfastj_glya,  lfastj_glyb,  lfastj_glyc,   lfastj_mgly,   &   
+   lfastj_paa,   lfastj_iprno3, lfastj_pana,   lfastj_panb,   &
+   lfastj_bald,  lfastj_glycald,   lfastj_onit1,  lfastj_onitoh3, &
+   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2
+
    parameter( lfastj_no2   = 1 )
    parameter( lfastj_o3a   = 2 )
    parameter( lfastj_o3b   = 3 )
@@ -141,6 +148,31 @@
    parameter( lfastj_n2o5  = 11 )
    parameter( lfastj_hno3  = 12 )
    parameter( lfastj_hno4  = 13 )
+   parameter( lfastj_ald   = 14 )
+   parameter( lfastj_ch3cho= 15 )
+   parameter( lfastj_acet  = 16 )
+   parameter( lfastj_uald  = 17 )
+   parameter( lfastj_mek   = 18 )
+   parameter( lfastj_macr  = 19 )
+   parameter( lfastj_mvk   = 20 )
+   parameter( lfastj_glya  = 21 )
+   parameter( lfastj_glyb  = 22 )
+   parameter( lfastj_glyc  = 23 )
+   parameter( lfastj_mgly  = 24 )
+   parameter( lfastj_paa   = 25 )
+   parameter( lfastj_iprno3= 26 )
+   parameter( lfastj_pana  = 27 )
+   parameter( lfastj_panb  = 28 )
+   parameter( lfastj_bald  = 29 )
+   parameter( lfastj_glycald  = 30 )
+   parameter( lfastj_onit1 = 31 )
+   parameter( lfastj_onitoh3 = 32 )
+   parameter( lfastj_hpald = 33 )
+   parameter( lfastj_noa = 34 )
+   parameter( lfastj_ibutald = 35 )
+   parameter( lfastj_onitoh1 = 36 )
+   parameter( lfastj_clno2 = 37 )
+
 !jdf
    INTEGER,      INTENT(IN   ) :: id,julday,                    &
                                   ids,ide, jds,jde, kds,kde,    &
@@ -155,7 +187,9 @@
            ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,     &
            ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,          &
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob, &
-           ph_n2o5
+           ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,        &
+           ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,      &
+           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2
    REAL, DIMENSION( ims:ime, kms:kme, jms:jme ),                    &
          INTENT(IN ) ::                                             &
            tauaer1,tauaer2,tauaer3,tauaer4,                         &
@@ -195,7 +229,7 @@
 
       integer(kind=8) :: ixhour
       integer i,j, k, nsub
-	  real(kind=8) :: xtime, xhour
+         real(kind=8) :: xtime, xhour
       real xmin, gmtp, tmidh
       real sla, slo
       real psfc
@@ -205,40 +239,35 @@
       real, dimension(0:kte) :: pbnd
       real, dimension(kts:kte) :: cloudmr, airdensity, relhum
       real, dimension(kts:kte+1) :: zatw
- 	     
+             
       real valuej(kte,nphoto_fastj)
 
       logical processingAerosols
 
 !   set "pegasus" grid size variables
-!	itot = ite
-!	jtot = jte
+!       itot = ite
+!       jtot = jte
     lpar = kte
     jpnl = kte
     nb   = lpar + 1 !for module module_fastj_data
     nc   = 2*nb     !ditto, and don't confuse this with nc in module_fastj_mie
-	nsubareas = 1
-	if ((kte > kmaxd) .or. (lpar <= 0)) then
-	    write( wrf_err_message, '(a,4i5)' )   &
-		'*** subr fastj_driver -- ' //   &
-		'lpar, kmaxd, kts, kte', lpar, kmaxd, kts, kte
+       nsubareas = 1
+       if ((kte > kmaxd) .or. (lpar <= 0)) then
+           write( wrf_err_message, '(a,4i5)' )   &
+              '*** subr fastj_driver -- ' //   &
+              'lpar, kmaxd, kts, kte', lpar, kmaxd, kts, kte
         call wrf_message( trim(wrf_err_message) )
-	    wrf_err_message = '*** subr fastj_driver -- ' //   &
+           wrf_err_message = '*** subr fastj_driver -- ' //   &
              'kte>kmaxd OR lpar<=0'
-	    call wrf_error_fatal( wrf_err_message )
-	end if
+           call wrf_error_fatal( wrf_err_message )
+       end if
 
 ! Determine if aerosol data is provided in the chem array. Currently,
 ! only MOSAIC will work. The Mie routine does not know how to handle
 ! SORGAM aerosols.
     select case (config_flags%chem_opt)
-    case ( CBMZ_MOSAIC_4BIN,    CBMZ_MOSAIC_8BIN, CBMZ_MOSAIC_KPP,  &
-           CBMZ_MOSAIC_4BIN_VBS2_KPP, &
-           CBMZ_MOSAIC_4BIN_AQ, CBMZ_MOSAIC_8BIN_AQ, &
-           CBMZ_MOSAIC_DMS_4BIN, CBMZ_MOSAIC_DMS_8BIN, &
-           CBMZ_MOSAIC_DMS_4BIN_AQ, CBMZ_MOSAIC_DMS_8BIN_AQ, &
-           MOZART_MOSAIC_4BIN_VBS0_KPP, CRI_MOSAIC_8BIN_AQ_KPP, &
-           CRI_MOSAIC_4BIN_AQ_KPP )
+    case ( CBMZ_MOSAIC_4BIN,    CBMZ_MOSAIC_8BIN,   &
+           CBMZ_MOSAIC_4BIN_AQ, CBMZ_MOSAIC_8BIN_AQ )
        processingAerosols = .true.
     case default
        processingAerosols = .false.
@@ -264,18 +293,18 @@
 ! from beginning of run to middle of current time step
     xtime    = curr_secs/60._8 + real(dtstep,8)/120._8
     ixhour   = int(gmt + 0.01,8) + int(xtime/60._8,8)
-    xhour    = real(ixhour,8)	!current hour
+    xhour    = real(ixhour,8)       !current hour
     xmin     = 60.*gmt + real(xtime-xhour*60_8,8)
     gmtp     = mod(xhour,24._8)
     tmidh    = gmtp + xmin/60.
 
 ! execute for each i,j column and each nsub subarea
     do nsub = 1, nsubareas
-	do jclm = jts, jte
-	do iclm = its, ite
+       do jclm = jts, jte
+       do iclm = its, ite
 
        do k = kts, lpar
-          dz(k) = dz8w(iclm, k, jclm)	! cell depth (m)
+          dz(k) = dz8w(iclm, k, jclm)       ! cell depth (m)
        end do
 
        if( processingAerosols ) then
@@ -305,7 +334,7 @@
            l7(3,k)=l7aer(iclm,k,jclm,3)
            l7(4,k)=l7aer(iclm,k,jclm,4)
          enddo
-! take chem data and extract 1 column to create rsub(l,k,m) array	  
+! take chem data and extract 1 column to create rsub(l,k,m) array         
 !         call mapaer_tofrom_host( 0,                     &
 !              ims,ime, jms,jme, kms,kme,                    &
 !              its,ite, jts,jte, kts,kte,                    &
@@ -326,14 +355,14 @@
        end if
 
 ! set lat, long
-	  sla = xlat(iclm,jclm)
-	  slo = xlong(iclm,jclm)
+         sla = xlat(iclm,jclm)
+         slo = xlong(iclm,jclm)
 ! set column pressures, temperature, and ozone
-	  psfc = p8w(iclm,1,jclm) * 10. ! convert pascals to dynes/cm2
-	  do k = kts, lpar
-	    pbnd(k) = p8w(iclm,k+1,jclm) *10.  ! convert pascals to dynes/cm2
-	    temp(k) = t_phy(iclm,k,jclm)
-	    ozone(k) = chem(iclm,k,jclm,p_o3) / 1.0e6	! ppm->mol/mol air
+         psfc = p8w(iclm,1,jclm) * 10. ! convert pascals to dynes/cm2
+         do k = kts, lpar
+           pbnd(k) = p8w(iclm,k+1,jclm) *10.  ! convert pascals to dynes/cm2
+           temp(k) = t_phy(iclm,k,jclm)
+           ozone(k) = chem(iclm,k,jclm,p_o3) / 1.0e6       ! ppm->mol/mol air
         cloudmr(k) = moist(iclm,k,jclm,p_qc)/0.622
         airdensity(k) = rho_phy(iclm,k,jclm)/28.966e3
         relhum(k) = MIN( .95, moist(iclm,k,jclm,p_qv) / &
@@ -341,11 +370,11 @@
                        (t_phy(iclm,k,jclm)-36.))/(.01*p_phy(iclm,k,jclm))))
         relhum(k) = MAX(.001,relhum(k))
         zatw(k)=z_at_w(iclm,k,jclm)
-	  end do
+         end do
       zatw(lpar+1)=z_at_w(iclm,lpar+1,jclm)
 ! call interface_fastj
-	  CALL wrf_debug(250,'fastj_driver: calling interface_fastj')
-	  call interface_fastj(tmidh,sla,slo,julday,           &
+         CALL wrf_debug(250,'fastj_driver: calling interface_fastj')
+         call interface_fastj(tmidh,sla,slo,julday,           &
            pbnd, psfc, temp, ozone,                        &
            dz, cloudmr, airdensity, relhum, zatw,          &
            iclm, jclm, lpar, jpnl,                         &
@@ -353,16 +382,18 @@
            sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 ! put column photolysis rates (valuej) into wrf photolysis (i,k,j) arrays
       CALL wrf_debug(250,'fastj_driver: calling mapJrates_tofrom_host')
-      call mapJrates_tofrom_host( 0,                         	    &
-           ims,ime, jms,jme, kms,kme,                    		    &
-           its,ite, jts,jte, kts,kte,                    		    &
-           iclm, jclm, kts,lpar,                 		            &
-           valuej,  						                        &
+      call mapJrates_tofrom_host( 0,                                    &
+           ims,ime, jms,jme, kms,kme,                                      &
+           its,ite, jts,jte, kts,kte,                                      &
+           iclm, jclm, kts,lpar,                                           &
+           valuej,                                                                    &
            ph_o2,ph_o31d,ph_o33p,ph_no2,ph_no3o2,ph_no3o,ph_hno2,   &
-           ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,   	&
-           ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,        	&
+           ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,          &
+           ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,               &
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob, &
-           ph_n2o5                                                  )
+           ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
+           ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
+           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2  )
 ! put the aerosol optical properties into the wrf arrays (this is hard-
 ! coded to 4 spectral bins, nspint)
 !     do k=kts,kte
@@ -389,31 +420,40 @@
     end do
     
     return
-    end subroutine  fastj_driver	     
+    end subroutine  fastj_driver            
 
 !-----------------------------------------------------------------------
-	subroutine mapJrates_tofrom_host( iflag,                        &
-		ims,ime, jms,jme, kms,kme,                    		        &
-		its,ite, jts,jte, kts,kte,                    		        &
-        iclm, jclm, ktmaps,ktmape,              		            &
-        valuej,  						                            &
+!  mapJrates_tofrom_host goes here
+       subroutine mapJrates_tofrom_host( iflag,                        &
+              ims,ime, jms,jme, kms,kme,                                          &
+              its,ite, jts,jte, kts,kte,                                          &
+        iclm, jclm, ktmaps,ktmape,                                        &
+        valuej,                                                                        &
         ph_o2,ph_o31d,ph_o33p,ph_no2,ph_no3o2,ph_no3o,ph_hno2,      &
-        ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,   	    &
-        ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,        	    &
+        ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,              &
+        ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,                   &
         ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,    &
-        ph_n2o5                                                     )
+        ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
+        ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1, &
+        ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2   )
 
-	USE module_data_cbmz
+       USE module_data_cbmz
 
    implicit none
 !jdf
    integer nphoto_fastj
-   parameter (nphoto_fastj = 14)
+   parameter (nphoto_fastj = 38)
    integer   &
    lfastj_no2,   lfastj_o3a,   lfastj_o3b,    lfastj_h2o2,   &
    lfastj_hchoa, lfastj_hchob, lfastj_ch3ooh, lfastj_no3x,   &
    lfastj_no3l,  lfastj_hono,  lfastj_n2o5,   lfastj_hno3,   &
-   lfastj_hno4     
+   lfastj_hno4,  lfastj_ald,   lfastj_ch3cho, lfastj_acet,   &  
+   lfastj_uald,  lfastj_mek,   lfastj_macr,   lfastj_mvk,   &
+   lfastj_glya,  lfastj_glyb,  lfastj_glyc,   lfastj_mgly,   &   
+   lfastj_paa,   lfastj_iprno3, lfastj_pana,   lfastj_panb,   &
+   lfastj_bald,  lfastj_glycald,   lfastj_onit1,  lfastj_onitoh3, &
+   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2
+    
    parameter( lfastj_no2   = 1 )
    parameter( lfastj_o3a   = 2 )
    parameter( lfastj_o3b   = 3 )
@@ -427,10 +467,35 @@
    parameter( lfastj_n2o5  = 11 )
    parameter( lfastj_hno3  = 12 )
    parameter( lfastj_hno4  = 13 )
+   parameter( lfastj_ald   = 14 )
+   parameter( lfastj_ch3cho= 15 )
+   parameter( lfastj_acet  = 16 )
+   parameter( lfastj_uald  = 17 )
+   parameter( lfastj_mek   = 18 )
+   parameter( lfastj_macr  = 19 )
+   parameter( lfastj_mvk   = 20 )
+   parameter( lfastj_glya  = 21 )
+   parameter( lfastj_glyb  = 22 )
+   parameter( lfastj_glyc  = 23 )
+   parameter( lfastj_mgly  = 24 )
+   parameter( lfastj_paa   = 25 )
+   parameter( lfastj_iprno3= 26 )
+   parameter( lfastj_pana  = 27 )
+   parameter( lfastj_panb  = 28 )
+   parameter( lfastj_bald  = 29 )
+   parameter( lfastj_glycald  = 30 )
+   parameter( lfastj_onit1 = 31 )
+   parameter( lfastj_onitoh3 = 32 )
+   parameter( lfastj_hpald = 33 )
+   parameter( lfastj_noa = 34 )
+   parameter( lfastj_ibutald = 35 )
+   parameter( lfastj_onitoh1 = 36 )
+   parameter( lfastj_clno2 = 37 )
+
 !jdf
    INTEGER,      INTENT(IN   ) :: iflag,                        &
                                   ims,ime, jms,jme, kms,kme,    &
-                                  its,ite, jts,jte, kts,kte, 	&
+                                  its,ite, jts,jte, kts,kte,        &
                                   iclm, jclm, ktmaps, ktmape
    REAL, DIMENSION( ims:ime, kms:kme, jms:jme ),                   &
          INTENT(INOUT ) ::                                         &
@@ -438,87 +503,137 @@
            ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,    &
            ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,         &
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,&
-           ph_n2o5
+           ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
+           ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
+           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2
 
    REAL, DIMENSION( kte,nphoto_fastj ), INTENT(INOUT) :: valuej
 
 ! local variables
-	real ft
-	integer kt
+       real ft
+       integer kt
 
-	ft = 60.
+       ft = 60.
 
     if (iflag .gt. 0) go to 2000
 ! flag is <=0, put pegasus column J rates (in 1/sec) into WRF arrays (in 1/min)
-	do kt = ktmaps, ktmape
-	  ph_no2(iclm,kt,jclm)       = valuej(kt,lfastj_no2) * ft
-	  ph_no3o(iclm,kt,jclm)      = valuej(kt,lfastj_no3x) * ft
-	  ph_no3o2(iclm,kt,jclm)     = valuej(kt,lfastj_no3l) * ft
-	  ph_o33p(iclm,kt,jclm)      = valuej(kt,lfastj_o3a) * ft
-	  ph_o31d(iclm,kt,jclm)      = valuej(kt,lfastj_o3b) * ft
-	  ph_hno2(iclm,kt,jclm)      = valuej(kt,lfastj_hono) * ft
-	  ph_hno3(iclm,kt,jclm)      = valuej(kt,lfastj_hno3) * ft
-	  ph_hno4(iclm,kt,jclm)      = valuej(kt,lfastj_hno4) * ft
-	  ph_h2o2(iclm,kt,jclm)      = valuej(kt,lfastj_h2o2) * ft
-	  ph_ch3o2h(iclm,kt,jclm)    = valuej(kt,lfastj_ch3ooh) * ft
-	  ph_ch2or(iclm,kt,jclm)     = valuej(kt,lfastj_hchoa) * ft
-	  ph_ch2om(iclm,kt,jclm)     = valuej(kt,lfastj_hchob) * ft
-	  ph_n2o5(iclm,kt,jclm)      = valuej(kt,lfastj_n2o5) * ft
+       do kt = ktmaps, ktmape
+         ph_no2(iclm,kt,jclm)       = valuej(kt,lfastj_no2) * ft
+         ph_no3o(iclm,kt,jclm)      = valuej(kt,lfastj_no3x) * ft
+         ph_no3o2(iclm,kt,jclm)     = valuej(kt,lfastj_no3l) * ft
+         ph_o33p(iclm,kt,jclm)      = valuej(kt,lfastj_o3a) * ft
+         ph_o31d(iclm,kt,jclm)      = valuej(kt,lfastj_o3b) * ft
+         ph_hno2(iclm,kt,jclm)      = valuej(kt,lfastj_hono) * ft
+         ph_hno3(iclm,kt,jclm)      = valuej(kt,lfastj_hno3) * ft
+         ph_hno4(iclm,kt,jclm)      = valuej(kt,lfastj_hno4) * ft
+         ph_h2o2(iclm,kt,jclm)      = valuej(kt,lfastj_h2o2) * ft
+         ph_ch3o2h(iclm,kt,jclm)    = valuej(kt,lfastj_ch3ooh) * ft
+         ph_ch2or(iclm,kt,jclm)     = valuej(kt,lfastj_hchoa) * ft
+         ph_ch2om(iclm,kt,jclm)     = valuej(kt,lfastj_hchob) * ft
+         ph_n2o5(iclm,kt,jclm)      = valuej(kt,lfastj_n2o5) * ft
 
-	  ph_o2(iclm,kt,jclm)        = 0.0
-	  ph_ch3cho(iclm,kt,jclm)    = 0.0
-	  ph_ch3coch3(iclm,kt,jclm)  = 0.0
-	  ph_ch3coc2h5(iclm,kt,jclm) = 0.0
-	  ph_hcocho(iclm,kt,jclm)    = 0.0
-	  ph_ch3cocho(iclm,kt,jclm)  = 0.0
-	  ph_hcochest(iclm,kt,jclm)  = 0.0
-	  ph_ch3coo2h(iclm,kt,jclm)  = 0.0
-	  ph_ch3ono2(iclm,kt,jclm)   = 0.0
-	  ph_hcochob(iclm,kt,jclm)   = 0.0
+         ph_o2(iclm,kt,jclm)        = 0.0
+         ph_ch3cho(iclm,kt,jclm)    = valuej(kt,lfastj_ch3cho) * ft
+         ph_ch3coch3(iclm,kt,jclm)  = valuej(kt,lfastj_acet) * ft
+         ph_ch3coc2h5(iclm,kt,jclm) = valuej(kt,lfastj_mek) * ft
+         ph_hcocho(iclm,kt,jclm)    = valuej(kt,lfastj_glya) * ft
+         ph_ch3cocho(iclm,kt,jclm)  = valuej(kt,lfastj_mgly) * ft
+         ph_hcochest(iclm,kt,jclm)  = 0.0
+         ph_ch3coo2h(iclm,kt,jclm)  = valuej(kt,lfastj_paa) * ft
+         ph_ch3ono2(iclm,kt,jclm)   = 0.0
+         ph_hcochob(iclm,kt,jclm)   = valuej(kt,lfastj_glyb) * ft
+          
+          ph_ald(iclm,kt,jclm)       = valuej(kt,lfastj_ald) * ft
+          ph_uald(iclm,kt,jclm)      = valuej(kt,lfastj_uald) * ft
+          ph_macr(iclm,kt,jclm)      = valuej(kt,lfastj_macr) * ft
+          ph_mvk(iclm,kt,jclm)       = valuej(kt,lfastj_mvk) * ft
+          ph_hcochoc(iclm,kt,jclm)   = valuej(kt,lfastj_glyc) * ft
+          ph_bald(iclm,kt,jclm)      = valuej(kt,lfastj_bald) * ft
+          ph_iprno3(iclm,kt,jclm)    = valuej(kt,lfastj_iprno3) * ft
+          ph_pana(iclm,kt,jclm)      = valuej(kt,lfastj_pana) * ft
+          ph_panb(iclm,kt,jclm)      = valuej(kt,lfastj_panb) * ft
+          
+          ph_glyc(iclm,kt,jclm)      = valuej(kt,lfastj_glycald) * ft
+          ph_onit1(iclm,kt,jclm)      = valuej(kt,lfastj_onit1) * ft
+          ph_onitoh3(iclm,kt,jclm)    = valuej(kt,lfastj_onitoh3)  * ft
+          ph_hpald(iclm,kt,jclm)      = valuej(kt,lfastj_hpald)  * ft
+          ph_noa(iclm,kt,jclm)        = valuej(kt,lfastj_noa)  * ft
+          ph_ibutald(iclm,kt,jclm)    = valuej(kt,lfastj_ibutald)  * ft
+          ph_onitoh1(iclm,kt,jclm)    = valuej(kt,lfastj_onitoh1)  * ft
+          ph_clno2(iclm,kt,jclm)      = valuej(kt,lfastj_clno2)  * ft
 
-	end do
-	return 	!finished peg-> wrf mapping
+       end do
+       return        !finished peg-> wrf mapping
 
-2000	continue
-! iflag > 0 ; put wrf ph_xxx Jrates (1/min) into pegasus column	valuej (1/sec)
- 	do kt = ktmaps, ktmape
-	  valuej(kt,lfastj_no2)    = ph_no2(iclm,kt,jclm) /  ft
-	  valuej(kt,lfastj_no3x)   = ph_no3o(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_no3l)   = ph_no3o2(iclm,kt,jclm)/ ft
-	  valuej(kt,lfastj_o3a)    = ph_o33p(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_o3b)    = ph_o31d(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_hono)   = ph_hno2(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_hno3)   = ph_hno3(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_hno4)   = ph_hno4(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_h2o2)   = ph_h2o2(iclm,kt,jclm) / ft
-	  valuej(kt,lfastj_ch3ooh) = ph_ch3o2h(iclm,kt,jclm)/ft
-	  valuej(kt,lfastj_hchoa)  = ph_ch2or(iclm,kt,jclm)/ ft
-	  valuej(kt,lfastj_hchob)  = ph_ch2om(iclm,kt,jclm)/ ft
-	  valuej(kt,lfastj_n2o5)   = ph_n2o5(iclm,kt,jclm) / ft
-	end do
+2000       continue
+! iflag > 0 ; put wrf ph_xxx Jrates (1/min) into pegasus column       valuej (1/sec)
+        do kt = ktmaps, ktmape
+         valuej(kt,lfastj_no2)    = ph_no2(iclm,kt,jclm) /  ft
+         valuej(kt,lfastj_no3x)   = ph_no3o(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_no3l)   = ph_no3o2(iclm,kt,jclm)/ ft
+         valuej(kt,lfastj_o3a)    = ph_o33p(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_o3b)    = ph_o31d(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_hono)   = ph_hno2(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_hno3)   = ph_hno3(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_hno4)   = ph_hno4(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_h2o2)   = ph_h2o2(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_ch3ooh) = ph_ch3o2h(iclm,kt,jclm)/ft
+         valuej(kt,lfastj_hchoa)  = ph_ch2or(iclm,kt,jclm)/ ft
+         valuej(kt,lfastj_hchob)  = ph_ch2om(iclm,kt,jclm)/ ft
+         valuej(kt,lfastj_n2o5)   = ph_n2o5(iclm,kt,jclm) / ft
 
-    return	!finished wrf->peg mapping
+          valuej(kt,lfastj_ch3cho) = ph_ch3cho(iclm,kt,jclm) / ft
+
+          valuej(kt,lfastj_acet) = ph_ch3coch3(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_mek) = ph_ch3coc2h5(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_glya) = ph_hcocho(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_mgly) = ph_ch3cocho(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_paa) = ph_ch3coo2h(iclm,kt,jclm) / ft
+         valuej(kt,lfastj_glyb) = ph_hcochob(iclm,kt,jclm) / ft
+          
+          valuej(kt,lfastj_ald) = ph_ald(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_uald) = ph_uald(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_macr) = ph_macr(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_mvk) = ph_mvk(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_glyc) = ph_hcochoc(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_bald) = ph_bald(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_iprno3) = ph_iprno3(iclm,kt,jclm) / ft
+          valuej(kt,lfastj_pana) = ph_pana(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_panb) = ph_panb(iclm,kt,jclm)  / ft
+
+          valuej(kt,lfastj_glycald) = ph_glyc(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_onit1) = ph_onit1(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_onitoh3) = ph_onitoh3(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_hpald) = ph_hpald(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_noa) = ph_noa(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_ibutald) = ph_ibutald(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_onitoh1) = ph_onitoh1(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_clno2) = ph_clno2(iclm,kt,jclm)  / ft
+       end do
+
+    return       !finished wrf->peg mapping
 
     end subroutine mapJrates_tofrom_host
 !-----------------------------------------------------------------------
 
 
-      	     	
+                         
 !***********************************************************************
-        subroutine interface_fastj(tmidh,sla,slo,julian_day,   &
+       ! interface_fastj goes here
+ subroutine interface_fastj(tmidh,sla,slo,julian_day,   &
              pbnd, psfc, temp, ozone,                          &
              dz, cloudmr, airdensity, relhum, zatw,            &
              isvode, jsvode, lpar, jpnl,                       &
-      	     curr_secs, valuej, cos_sza, processingAerosols,   &
+                  curr_secs, valuej, cos_sza, processingAerosols,   &
              sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 !-----------------------------------------------------------------
 ! sets parameters for fastj call. 
 ! inputs
-!	tmidh -- GMT time in decimal hours at which to calculate
+!       tmidh -- GMT time in decimal hours at which to calculate
 !                photolysis rates
-!	sla -- latitude, decimal degrees in real*8
-!	slo -- negative of the longitude, decimal degrees in real*8
-!	julian_day -- day of the year in julian days
+!       sla -- latitude, decimal degrees in real*8
+!       slo -- negative of the longitude, decimal degrees in real*8
+!       julian_day -- day of the year in julian days
 !    pbnd(0:lpar) = pressure at top boundary of cell k (dynes/cm^2).
 !    psfc = surface pressure (dynes/cm^2).
 !    temp(lpar)= mid-cell temperature values (deg K)
@@ -530,10 +645,10 @@
 !    lpar -- vertical extent of column (from module_fastj_cmnh)
 !
 ! outputs
-!	cos_sza -- cosine of solar zenith angle.
-!	valuej(lpar,nphoto_fastj-1) -- array of photolysis rates, s-1.
+!       cos_sza -- cosine of solar zenith angle.
+!       valuej(lpar,nphoto_fastj-1) -- array of photolysis rates, s-1.
 !
-!	
+!       
 ! local variables
 !    surface_pressure_mb -- surface pressure (mb). equal to col_press_mb(1).
 !    col_press_mb(lpar) -- for the column, grid cell boundary pressures
@@ -541,33 +656,33 @@
 !          top cell (mb).
 !    col_temp_K(lpar+1) -- for the column, grid cell center temperature (deg K)
 !    col_ozone(lpar+1) -- for the column, grid cell center ozone mixing
-!  	   ratios (dimensionless)
+!            ratios (dimensionless)
 !    col_optical_depth(lpar+1) -- for the column, grid cell center cloud
-!	   optical depths (dimensionless).SET TO ZERO IN THIS VERSION
+!          optical depths (dimensionless).SET TO ZERO IN THIS VERSION
 !    tauaer_550 -- aerosol optical thickness at 550 nm.
-! 	note:  photolysis rates are calculated at centers of model layers
-! 	the pressures are given at the boundaries defining
+!        note:  photolysis rates are calculated at centers of model layers
+!        the pressures are given at the boundaries defining
 !       the top and bottom of the layers
-! 	so the number of pressure values is equal
-!	to the (number of layers) + 1 ; the last pressure is set = 0 in fastj code.
-! 	pressures from the surface up to the bottom of the top (lpar<=kmaxd) cell
-! 	******** pressure 2
-!	layer 1 - temperature,optical depth, and O3 given here
-!	******** pressure 1
+!        so the number of pressure values is equal
+!       to the (number of layers) + 1 ; the last pressure is set = 0 in fastj code.
+!        pressures from the surface up to the bottom of the top (lpar<=kmaxd) cell
+!        ******** pressure 2
+!       layer 1 - temperature,optical depth, and O3 given here
+!       ******** pressure 1
 ! the optical depth is appropriate for the layer depth
 ! conversion factor:   1 dyne/cm2 = 0.001 mb
 !-----------------------------------------------------------------
         USE module_data_mosaic_other, only : kmaxd
-	USE module_peg_util, only:  peg_message, peg_error_fatal
-	
- 	IMPLICIT NONE
+       USE module_peg_util, only:  peg_message, peg_error_fatal
+       
+        IMPLICIT NONE
 
 !jdf
    integer, parameter :: iprint = 0
    integer, parameter :: single = 4        !compiler dependent value real*4
    integer, parameter :: double = 8        !compiler dependent value real*8
    integer,parameter :: ipar_fastj=1,jpar=1
-   integer,parameter :: jppj=14        !Number of photolytic reactions supplied
+   integer,parameter :: jppj=37        !Number of photolytic reactions supplied
    logical,parameter :: ldeg45=.false. !Logical flag for degraded CTM resolution
    integer lpar           !Number of levels in CTM
    integer jpnl           !Number of levels requiring chemistry
@@ -580,12 +695,18 @@
    integer month_fastj        !  Number of month (1-12)
    integer iday_fastj         !  Day of year
    integer nphoto_fastj
-   parameter (nphoto_fastj = 14)
+   parameter (nphoto_fastj = 38)
    integer   &
    lfastj_no2,   lfastj_o3a,   lfastj_o3b,    lfastj_h2o2,   &
    lfastj_hchoa, lfastj_hchob, lfastj_ch3ooh, lfastj_no3x,   &
    lfastj_no3l,  lfastj_hono,  lfastj_n2o5,   lfastj_hno3,   &
-   lfastj_hno4
+   lfastj_hno4,  lfastj_ald,   lfastj_ch3cho, lfastj_acet,   &  
+   lfastj_uald,  lfastj_mek,   lfastj_macr,   lfastj_mvk,   &
+   lfastj_glya,  lfastj_glyb,  lfastj_glyc,   lfastj_mgly,   &   
+   lfastj_paa,   lfastj_iprno3, lfastj_pana,   lfastj_panb,   &
+   lfastj_bald,  lfastj_glycald, lfastj_onit1,  lfastj_onitoh3, &
+   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2
+
    parameter( lfastj_no2   = 1 )
    parameter( lfastj_o3a   = 2 )
    parameter( lfastj_o3b   = 3 )
@@ -599,6 +720,32 @@
    parameter( lfastj_n2o5  = 11 )
    parameter( lfastj_hno3  = 12 )
    parameter( lfastj_hno4  = 13 )
+   parameter( lfastj_ald   = 14 )
+   parameter( lfastj_ch3cho= 15 )
+   parameter( lfastj_acet  = 16 )
+   parameter( lfastj_uald  = 17 )
+   parameter( lfastj_mek   = 18 )
+   parameter( lfastj_macr  = 19 )
+   parameter( lfastj_mvk   = 20 )
+   parameter( lfastj_glya  = 21 )
+   parameter( lfastj_glyb  = 22 )
+   parameter( lfastj_glyc  = 23 )
+   parameter( lfastj_mgly  = 24 )
+   parameter( lfastj_paa   = 25 )
+   parameter( lfastj_iprno3= 26 )
+   parameter( lfastj_pana  = 27 )
+   parameter( lfastj_panb  = 28 )
+   parameter( lfastj_bald  = 29 )
+   parameter( lfastj_glycald  = 30 )
+   parameter( lfastj_onit1 = 31 )
+   parameter( lfastj_onitoh3 = 32 )
+   parameter( lfastj_hpald = 33 )
+   parameter( lfastj_noa = 34 )
+   parameter( lfastj_ibutald = 35 )
+   parameter( lfastj_onitoh1 = 36 )
+   parameter( lfastj_clno2 = 37 )
+
+   
    integer nspint           ! Num of spectral intervals across solar 
    parameter ( nspint = 4 ) ! spectrum for FAST-J
    real, dimension (nspint),save :: wavmid !cm
@@ -607,37 +754,37 @@
    data wavmid     &
        / 0.30e-4, 0.40e-4, 0.60e-4 ,0.999e-04 /
 !jdf
-	real pbnd(0:lpar), psfc
-	real temp(lpar), ozone(lpar), surface_albedo
-	real dz(lpar), cloudmr(lpar), airdensity(lpar), relhum(lpar), zatw(lpar+1)
+       real pbnd(0:lpar), psfc
+       real temp(lpar), ozone(lpar), surface_albedo
+       real dz(lpar), cloudmr(lpar), airdensity(lpar), relhum(lpar), zatw(lpar+1)
     real(kind=8) :: curr_secs
-	integer isvode, jsvode
-	
-	real cos_sza
+       integer isvode, jsvode
+       
+       real cos_sza
     integer,parameter :: lunout=41
-		
-	real valuej(lpar,nphoto_fastj)
-	
+              
+       real valuej(lpar,nphoto_fastj)
+       
     real hl,rhl,factor1,part1,part2,cfrac,rhfrac
     real emziohl(lpar+1),clwp(lpar)
 !ec material to check output
- 	real valuej_no3rate(lpar)
+        real valuej_no3rate(lpar)
 
-	real*8 lat,lon
+       real*8 lat,lon
     real*8 jvalue(lpar,nphoto_fastj)
     real sza
-	real tau1
-	real tmidh, sla, slo	
+       real tau1
+       real tmidh, sla, slo       
 
-	integer julian_day,iozone1
+       integer julian_day,iozone1
     integer,parameter :: nfastj_rxns = 14
-	integer k, l
- 		
-	real surface_pressure_mb, tauaer_550,   &
+       integer k, l
+               
+       real surface_pressure_mb, tauaer_550,   &
          col_press_mb,col_temp_K,col_ozone,col_optical_depth
-	dimension col_press_mb(lpar+2),col_temp_K(lpar+1),   &
-        	col_ozone(lpar+1),col_optical_depth(lpar+1)
-    character*80 msg	
+       dimension col_press_mb(lpar+2),col_temp_K(lpar+1),   &
+               col_ozone(lpar+1),col_optical_depth(lpar+1)
+    character*80 msg       
 
 ! define logical processingAerosols
 ! if processingAerosols = true, uses values calculated in subroutine
@@ -651,8 +798,8 @@
 
 ! set lat and longitude as real*8 for consistency with fastj code.
 ! variables lat and lon previously declared as reals
-	lat  = sla
-	lon  = slo
+       lat  = sla
+       lon  = slo
 !    
 ! cloud optical depths currently treated by using fractional cloudiness 
 ! based on relative humidity. cloudmr set up to use cloud liquid water
@@ -665,18 +812,18 @@
 !
     hl=1080.+2000.0*cos(lat*0.017454329)
     rhl=1.0/hl
-	do k =1, lpar+1
+       do k =1, lpar+1
        emziohl(k)=exp(-zatw(k)*rhl)
     enddo
-	do k =1, lpar
+       do k =1, lpar
        clwp(k)=0.18*hl*(emziohl(k)-emziohl(k+1))
     enddo
 ! assume radius of cloud droplets is constant at 10 microns (0.001 cm) and
 ! that density of water is constant at 1 g2ho/cm3
 !       factor1=3./2./0.001/1.
     factor1=1500.0
-	do k =1, lpar
-	   col_optical_depth(k) = 0.0 		
+       do k =1, lpar
+          col_optical_depth(k) = 0.0               
        cfrac=0.0
        cloudmr(k)=0.0
        if(cloudmr(k).gt.0.0) cfrac=1.0
@@ -698,74 +845,98 @@
        endif
        if(cfrac.gt.0) part2=0.0
        col_optical_depth(k) = factor1*(part1+part2)
-!          col_optical_depth(k) = 0.0 		
+!          col_optical_depth(k) = 0.0               
 !       if(isvode.eq.33.and.jsvode.eq.34) &
 !          print*,'jdf opt',isvode,jsvode,k,col_optical_depth(k), &
 !          cfrac,rhfrac,relhum(k),clwp(k)
-	end do
-    col_optical_depth(lpar+1) = 0.0 		
-	if (.not.processingAerosols) then
+       end do
+    col_optical_depth(lpar+1) = 0.0               
+       if (.not.processingAerosols) then
 ! set common block mie variables to 0 if
-	   call set_common_mie(lpar, &
+          call set_common_mie(lpar, &
            sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
-	end if      			 ! processingAerosols=false
+       end if                            ! processingAerosols=false
 
 ! set pressure, temperature, ozone of each cell in the column
 ! set iozone1 = lpar to allow replacement of climatological ozone with model
 ! predicted ozone to top of chemistry column; standard fastj climatological o3
-! thereafter.	
-	surface_pressure_mb = psfc * 0.001
-	tau1 = tmidh
-	col_press_mb(1) = psfc * 0.001	
-	iozone1 = lpar
-	do k =1, lpar
+! thereafter.       
+       surface_pressure_mb = psfc * 0.001
+       tau1 = tmidh
+       col_press_mb(1) = psfc * 0.001       
+       iozone1 = lpar
+       do k =1, lpar
        col_press_mb(k+1) = pbnd(k) * 0.001
-	   col_temp_K(k) = temp(k)
-	   col_ozone(k) = ozone(k)
-	end do
+          col_temp_K(k) = temp(k)
+          col_ozone(k) = ozone(k)
+       end do
 
- 	surface_albedo=0.055
+        surface_albedo=0.055
 
-! set aerosol parameters needed by Fast-J	                         	         	
+! set aerosol parameters needed by Fast-J                                                       
         if (processingAerosols) then
-            tauaer_550 = 0.0 	! needed parameters already calculated by subroutine
-              			! mieaer and passed into proper parts of fastj code
-              			! via module_fastj_cmnmie
+            tauaer_550 = 0.0        ! needed parameters already calculated by subroutine
+                                   ! mieaer and passed into proper parts of fastj code
+                                   ! via module_fastj_cmnmie
          else
-            tauaer_550 = 0.05 	! no aerosols, assume typical constant aerosol optical thickness
+            tauaer_550 = 0.05        ! no aerosols, assume typical constant aerosol optical thickness
          end if
-	
-	  CALL wrf_debug(250,'interface_fastj: calling fastj')
+       
+         CALL wrf_debug(250,'interface_fastj: calling fastj')
       call fastj(isvode,jsvode,lat,lon,surface_pressure_mb,surface_albedo,   &
            julian_day,  tau1,   &
           col_press_mb, col_temp_K, col_optical_depth, col_ozone,   &
           iozone1,tauaer_550,jvalue,sza,lpar,jpnl, &
           sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
-     	
-	!cos_sza = cosd(sza)
-	cos_sza = cos(sza*3.141592653/180.)
-	
+            
+       !cos_sza = cosd(sza)
+       cos_sza = cos(sza*3.141592653/180.)
+       
 
 ! array jvalue (real*8) is returned from fastj.  array valuej(unspecified
 ! real, default of real*4) is sent on to
 ! other chemistry subroutines 
-	   do k = 1, lpar
-	     valuej(k, lfastj_no2) = jvalue(k,lfastj_no2)
-	     valuej(k, lfastj_o3a) = jvalue(k,lfastj_o3a)
-	     valuej(k, lfastj_o3b) = jvalue(k,lfastj_o3b)
-	     valuej(k, lfastj_h2o2) = jvalue(k,lfastj_h2o2)
-	     valuej(k, lfastj_hchoa) = jvalue(k,lfastj_hchoa)
-	     valuej(k, lfastj_hchob) = jvalue(k,lfastj_hchob)
-	     valuej(k, lfastj_ch3ooh) = jvalue(k,lfastj_ch3ooh)
-	     valuej(k, lfastj_no3x) = jvalue(k,lfastj_no3x)
-	     valuej(k, lfastj_no3l) = jvalue(k,lfastj_no3l)
-	     valuej(k, lfastj_hono) = jvalue(k,lfastj_hono)
-	     valuej(k, lfastj_n2o5) = jvalue(k,lfastj_n2o5)
-	     valuej(k, lfastj_hno3) = jvalue(k,lfastj_hno3)
-	     valuej(k, lfastj_hno4) = jvalue(k,lfastj_hno4)
-	  end do
+          do k = 1, lpar
+            valuej(k, lfastj_no2) = jvalue(k,lfastj_no2)
+            valuej(k, lfastj_o3a) = jvalue(k,lfastj_o3a)
+            valuej(k, lfastj_o3b) = jvalue(k,lfastj_o3b)
+            valuej(k, lfastj_h2o2) = jvalue(k,lfastj_h2o2)
+            valuej(k, lfastj_hchoa) = jvalue(k,lfastj_hchoa)
+            valuej(k, lfastj_hchob) = jvalue(k,lfastj_hchob)
+            valuej(k, lfastj_ch3ooh) = jvalue(k,lfastj_ch3ooh)
+            valuej(k, lfastj_no3x) = jvalue(k,lfastj_no3x)
+            valuej(k, lfastj_no3l) = jvalue(k,lfastj_no3l)
+            valuej(k, lfastj_hono) = jvalue(k,lfastj_hono)
+            valuej(k, lfastj_n2o5) = jvalue(k,lfastj_n2o5)
+            valuej(k, lfastj_hno3) = jvalue(k,lfastj_hno3)
+            valuej(k, lfastj_hno4) = jvalue(k,lfastj_hno4)
+             valuej(k, lfastj_ald) = jvalue(k,lfastj_ald)
+             valuej(k, lfastj_ch3cho) = jvalue(k,lfastj_ch3cho)
+             valuej(k, lfastj_acet) = jvalue(k,lfastj_acet)
+             valuej(k, lfastj_uald) = jvalue(k,lfastj_uald)
+             valuej(k, lfastj_mek) = jvalue(k,lfastj_mek)
+             valuej(k, lfastj_macr) = jvalue(k,lfastj_macr)
+             valuej(k, lfastj_mvk) = jvalue(k,lfastj_mvk)
+             valuej(k, lfastj_glya) = jvalue(k,lfastj_glya)
+             valuej(k, lfastj_glyb) = jvalue(k,lfastj_glyb)
+             valuej(k, lfastj_glyc) = jvalue(k,lfastj_glyc)
+             valuej(k, lfastj_mgly) = jvalue(k,lfastj_mgly)
+             valuej(k, lfastj_paa) = jvalue(k,lfastj_paa)
+             valuej(k, lfastj_iprno3) = jvalue(k,lfastj_iprno3)
+             valuej(k, lfastj_pana) = jvalue(k,lfastj_pana)
+             valuej(k, lfastj_panb) = jvalue(k,lfastj_panb)
+             valuej(k, lfastj_bald) = jvalue(k,lfastj_bald)
+             valuej(k, lfastj_glycald) = jvalue(k,lfastj_glycald)
+             valuej(k, lfastj_onit1) = jvalue(k,lfastj_onit1)
+             valuej(k, lfastj_onitoh3) = jvalue(k,lfastj_onitoh3)
+             valuej(k, lfastj_hpald) = jvalue(k,lfastj_hpald)
+             valuej(k, lfastj_noa) = jvalue(k,lfastj_noa)
+             valuej(k, lfastj_ibutald) = jvalue(k,lfastj_ibutald)
+             valuej(k, lfastj_onitoh1) = jvalue(k,lfastj_onitoh1)
+             valuej(k, lfastj_clno2) = jvalue(k,lfastj_clno2)
+         end do
 ! diagnostic output and zeroed value if negative photolysis rates returned
-	  do k = 1, lpar
+         do k = 1, lpar
          valuej(k,nphoto_fastj)=0.0
          do l = 1, nphoto_fastj-1
             if (valuej(k,l) .lt. 0) then
@@ -783,36 +954,37 @@
       end do
 ! compute overall no3 photolysis rate
 ! wig: commented out since it is not used anywhere
-!	do k = 1, lpar
-!	   valuej_no3rate(k) =   &
-!         	 valuej(k, lfastj_no3x) + valuej(k,lfastj_no3l)
-!	end do
+!       do k = 1, lpar
+!          valuej_no3rate(k) =   &
+!                 valuej(k, lfastj_no3x) + valuej(k,lfastj_no3l)
+!       end do
 
-	end subroutine interface_fastj                          
+       end subroutine interface_fastj                          
 
 !***********************************************************************
-	subroutine set_common_mie(lpar, &
+       ! set_common_mie goes here
+subroutine set_common_mie(lpar, &
           sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 ! for use when aerosols are not included in a model run.  sets variables
-! in common block mie to zero, except for wavelengths.	
+! in common block mie to zero, except for wavelengths.       
 ! OUTPUT: in module_fastj_cmnmie
-!	wavmid ! fast-J wavelengths (cm)
+!       wavmid ! fast-J wavelengths (cm)
 !       tauaer ! aerosol optical depth
 !       waer  ! aerosol single scattering albedo
 !       gaer  ! aerosol asymmetery factor
-!	extaer ! aerosol extinction
-!	l2,l3,l4,l5,l6,l7 ! Legendre coefficients, numbered 0,1,2,......
-!	sizeaer ! average wet radius
+!       extaer ! aerosol extinction
+!       l2,l3,l4,l5,l6,l7 ! Legendre coefficients, numbered 0,1,2,......
+!       sizeaer ! average wet radius
 ! INPUTS
-!	lpar = total number of vertical layers in chemistry model.  Passed
-!	  via module_fastf_cmnh
-!	NB = total vertical layers + 1 considered by FastJ (lpar+1=kmaxd+1).
-!	   passed via module_fast	j_data
+!       lpar = total number of vertical layers in chemistry model.  Passed
+!         via module_fastf_cmnh
+!       NB = total vertical layers + 1 considered by FastJ (lpar+1=kmaxd+1).
+!          passed via module_fast       j_data
 !------------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	
-	IMPLICIT NONE
+       
+       IMPLICIT NONE
 !jdf
         integer lpar             ! Number of levels in CTM
         integer nspint           ! Num of spectral intervals across solar 
@@ -835,64 +1007,65 @@
           tauaer(ns,klevel)=0.
           waer(ns,klevel)=0.
           gaer(ns,klevel)=0.
-	  sizeaer(ns,klevel)=0.0
-	  extaer(ns,klevel)=0.0
-	  l2(ns,klevel)=0.0
-	  l3(ns,klevel)=0.0
-  	  l4(ns,klevel)=0.0
-	  l5(ns,klevel)=0.0
-	  l6(ns,klevel)=0.0
-	  l7(ns,klevel)=0.0
+         sizeaer(ns,klevel)=0.0
+         extaer(ns,klevel)=0.0
+         l2(ns,klevel)=0.0
+         l3(ns,klevel)=0.0
+           l4(ns,klevel)=0.0
+         l5(ns,klevel)=0.0
+         l6(ns,klevel)=0.0
+         l7(ns,klevel)=0.0
 1000    continue
 
-	return
-	end subroutine set_common_mie      
+       return
+       end subroutine set_common_mie      
 !***********************************************************************
-    subroutine fastj(isvode,jsvode,lat,lon,surface_pressure,surface_albedo,   &
+    ! fastj goes here
+subroutine fastj(isvode,jsvode,lat,lon,surface_pressure,surface_albedo,   &
       julian_day,tau1, pressure, temperature, optical_depth, my_ozone1,   &
       iozone1,tauaer_550_1,jvalue,SZA_dum,lpar,jpnl, &
       sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 ! input:
-! 	lat = latitute; must be real*8
-! 	lon = longitude; must be real*8
-! 	surface_pressure (mb); real*4
-! 	surface_albedo (broadband albedo); real*4
-! 	julian_day; integer
-! 	tau1 = time of calculation (GMT); real*4
-! 	pressure (mb) = vector of pressure values, pressure(NB);
-! 	   real*4; NB is the number of model layers;
-! 	   pressure (NB+1) is defined as 0 mb in model
-! 	temperature (degree K)= vector of temperature values, temperature(NB);
-!	   real*4
-! 	optical_depth (dimensionless) = vector of cloud optical depths,
-!	   optical_depth(NB); real*4
-! 	my_ozone1 (volume mixing ratio) = ozone at layer center
-!	   ozone(iozone); real*4; if iozone1 <= NB-1, then climatology is
-!	   used in the upper layers
-! 	tauaer_550; real*4  aerosol optical thickness @ 550 nm
+!        lat = latitute; must be real*8
+!        lon = longitude; must be real*8
+!        surface_pressure (mb); real*4
+!        surface_albedo (broadband albedo); real*4
+!        julian_day; integer
+!        tau1 = time of calculation (GMT); real*4
+!        pressure (mb) = vector of pressure values, pressure(NB);
+!           real*4; NB is the number of model layers;
+!           pressure (NB+1) is defined as 0 mb in model
+!        temperature (degree K)= vector of temperature values, temperature(NB);
+!          real*4
+!        optical_depth (dimensionless) = vector of cloud optical depths,
+!          optical_depth(NB); real*4
+!        my_ozone1 (volume mixing ratio) = ozone at layer center
+!          ozone(iozone); real*4; if iozone1 <= NB-1, then climatology is
+!          used in the upper layers
+!        tauaer_550; real*4  aerosol optical thickness @ 550 nm
 ! input note: NB is the number of model layers -- photolysis rates are calculated
-! 	at layer centers while pressures  are given at the boundaries defining
+!        at layer centers while pressures  are given at the boundaries defining
 !       the top and bottom of the layers.  The number of pressure values =
-!	(number of layers) + 1 ; see below
-! 	******** pressure 2
-!	layer 1 - optical depth, O3, and temperature given here
-!	******** pressure 1
+!       (number of layers) + 1 ; see below
+!        ******** pressure 2
+!       layer 1 - optical depth, O3, and temperature given here
+!       ******** pressure 1
 !   temperature and o3 are defined at the layer center. optical depth is
 !   appropriate for the layer depth.
 ! output:
-! 	jvalue = photolysis rates, an array of dimension jvalue(jpnl,jppj) where
-! 	  jpnl = # of models level at which photolysis rates are calculated
-! 	  note: level 1 = first level of model (adjacent to ground)
-! 	  jppj = # of chemical species for which photolysis rates are calculated;
-! 	  this is fixed and is not easy to change on the fly
-!	  jpnl land jppl are defined in the common block "cmn_h.f"
+!        jvalue = photolysis rates, an array of dimension jvalue(jpnl,jppj) where
+!          jpnl = # of models level at which photolysis rates are calculated
+!          note: level 1 = first level of model (adjacent to ground)
+!          jppj = # of chemical species for which photolysis rates are calculated;
+!          this is fixed and is not easy to change on the fly
+!         jpnl land jppl are defined in the common block "cmn_h.f"
 !       SZA_dum = solar zenith angle
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	
-	IMPLICIT NONE
+       USE module_fastj_data
+       
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
        integer, parameter :: iprint = 0
@@ -932,26 +1105,26 @@
        data wavmid     &
            / 0.30e-4, 0.40e-4, 0.60e-4 ,0.999e-04 /
 !jdf
-	
+       
     integer julian_day
     real surface_pressure,surface_albedo,pressure(lpar+2),   &
          temperature(lpar+1)
-	real optical_depth(lpar+1)
-	real tau1
+       real optical_depth(lpar+1)
+       real tau1
     real*8 pi_fastj,lat,lon,timej,jvalue(lpar,jppj)
     integer isvode,jsvode
 
-	integer iozone1,i
-	real my_ozone1(lpar+1)
+       integer iozone1,i
+       real my_ozone1(lpar+1)
 
-	real tauaer_550_1
-	real sza_dum
-	
-	integer ientryno_fastj
-	save ientryno_fastj
+       real tauaer_550_1
+       real sza_dum
+       
+       integer ientryno_fastj
+       save ientryno_fastj
         data ientryno_fastj / 0 /
 
-	
+       
 
 !  Just focus on one column
       nslat = 1
@@ -972,17 +1145,17 @@
         pj(lpar+1) = pressure(i)
      
 ! surface albedo
-	SA(nslon,nslat)=surface_albedo
+       SA(nslon,nslat)=surface_albedo
 !
-	iozone=iozone1
-	do i=1,iozone1
+       iozone=iozone1
+       do i=1,iozone1
        my_ozone(i)=my_ozone1(i)
-	enddo
+       enddo
 !
-	tau_fastj=tau1 ! fix time
-	iday_fastj=julian_day	
+       tau_fastj=tau1 ! fix time
+       iday_fastj=julian_day       
 ! fix optical depth for situations where aerosols not considered
-	tauaer_550=tauaer_550_1
+       tauaer_550=tauaer_550_1
 !
       month_fastj=int(dble(iday_fastj)*12.d0/365.d0)+1    !  Approximately
       xgrd(nslon)=lon*pi_fastj/180.d0
@@ -990,22 +1163,23 @@
       ydgrd(nslat)=lat
 
 !  Initial call to Fast-J to set things up--done only once
-	if (ientryno_fastj .eq. 0) then
+       if (ientryno_fastj .eq. 0) then
             call inphot2
             ientryno_fastj = 1
         end if    
 !
 !  Now call fastj as appropriate
-	timej=0.0 ! manually set offset to zero (JCB: 14 November 2001)
+       timej=0.0 ! manually set offset to zero (JCB: 14 November 2001)
     call photoj(isvode,jsvode,jvalue,timej,nslat,nslon,iozone,tauaer_550, &
         my_ozone,p,t,od,sa,lpar,jpnl, &
         xgrd,ygrd,tau_fastj,month_fastj,iday_fastj,ydgrd, &
         sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
-	sza_dum=SZA
+       sza_dum=SZA
 
-	return
+       return
       end subroutine fastj
 !**********************************************************************
+! inphot2 goes here
 !---(pphot.f)-------generic CTM shell from UCIrvine (p-code 4.0, 7/99)
 !---------PPHOT calculates photolysis rates with the Fast-J scheme
 !---------subroutines:  inphot, photoj, Fast-J schemes...
@@ -1030,9 +1204,9 @@
 !
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
+       USE module_fastj_data
 
-	IMPLICIT NONE
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
         integer, parameter :: iprint = 0
@@ -1055,15 +1229,15 @@
 !
 ! Set labels of photolysis rates required
 !ec032504      CALL RD_JS(iph,path_fastj_ratjd)
-!	call rd_js2
+!       call rd_js2
 !
 ! Read in JPL spectral data set
 !ec032504      CALL RD_TJPL(iph,path_fastj_jvspec)
-	call rd_tjpl2
+       call rd_tjpl2
 !
 ! Read in T & O3 climatology
 !ec032504      CALL RD_PROF(iph,path_fastj_jvatms)
-!	call rd_prof2
+!       call rd_prof2
 !
 ! Select Aerosol/Cloud types to be used
 !         call set_aer2
@@ -1072,7 +1246,8 @@
       end subroutine inphot2
 !*************************************************************************
 
-      subroutine photoj(isvode,jsvode,zpj,timej,nslat,nslon,iozone,tauaer_550_1, &
+             ! photoj goes here
+subroutine photoj(isvode,jsvode,zpj,timej,nslat,nslon,iozone,tauaer_550_1, &
         my_ozone,p,t,od,sa,lpar,jpnl,xgrd,ygrd,tau_fastj,month_fastj,iday_fastj, &
         ydgrd,sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 !-----------------------------------------------------------------------
@@ -1091,9 +1266,9 @@
 !----------basic common blocks:-----------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	
-	IMPLICIT NONE
+       USE module_fastj_data
+       
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
        integer, parameter :: iprint = 0
@@ -1128,9 +1303,9 @@
            / 0.30e-4, 0.40e-4, 0.60e-4 ,0.999e-04 /
 !jdf
       real*8 zpj(lpar,jppj),timej,solf
-	real*8 pi_fastj
+       real*8 pi_fastj
 
-	integer i,j
+       integer i,j
     integer isvode,jsvode
 
 !-----------------------------------------------------------------------
@@ -1153,7 +1328,7 @@
 !
 !---Print out atmosphere
        if(iprint.ne.0)CALL PRTATM(3,nslat,nslon,tau_fastj,month_fastj,ydgrd)  ! code change jcb
-!	call prtatm(0)
+!       call prtatm(0)
 !
 !-----------------------------------------------------------------------
       CALL JVALUE(isvode,jsvode,lpar,jpnl, &
@@ -1167,13 +1342,13 @@
 !      ENDDO
 !
 !---Include variation in distance to sun
-	pi_fastj=3.1415926536d0
+       pi_fastj=3.1415926536d0
        solf=1.d0-(0.034d0*cos(dble(iday_fastj-186)*2.d0   &
              *pi_fastj/365.d0))
-	if(iprint.ne.0)then
-!	   write(6,'('' solf = '', f10.5)')solf
+       if(iprint.ne.0)then
+!          write(6,'('' solf = '', f10.5)')solf
           write(*,'('' solf = '', f10.5)')solf
-	endif
+       endif
 !      solf=1.d0 ! code change jcb
 !-----------------------------------------------------------------------
       CALL JRATET(solf,nslat,nslon,p,t,od,sa,lpar,jpnl)
@@ -1198,10 +1373,11 @@
       return
 ! 1000 format(' Photolysis on day ',i4,' at ',f4.1,' hrs: SZA = ',f7.3,   &
 !                     ' J',a7,'= ',1pE10.3)
-      end subroutine photoj           
+      end subroutine photoj    
 
 !*************************************************************************
-      subroutine set_prof(isvode,jsvode,nslat,nslon,iozone,tauaer_550, &
+      ! set_prof goes here
+subroutine set_prof(isvode,jsvode,nslat,nslon,iozone,tauaer_550, &
         my_ozone,p,t,od,sa,lpar,jpnl,month_fastj,ydgrd)
 !-----------------------------------------------------------------------
 !  Routine to set up atmospheric profiles required by Fast-J using a
@@ -1321,22 +1497,22 @@
 !  Insert model values here to replace or supplement climatology.
 !  Note that CTM temperature is always used in x-section calculations
 !  (see JRATET); TJ is used in actinic flux calculation only.
-!	
+!       
         do i=1,lpar ! JCB code change; just use climatlogy for upper levels
         if(i.le.iozone)DO3(i) = my_ozone(i) ! Volume Mixing Ratio
 !        TJ(i)  = T(nslon,nslat,I)   ! Kelvin
 ! JCB - overwrite climatology
-!	TJ(i)  = (T(nslon,nslat,i)+T(nslon,nslat,i+1))/2. ! JCB - take midpoint
+!       TJ(i)  = (T(nslon,nslat,i)+T(nslon,nslat,i+1))/2. ! JCB - take midpoint
 ! code change - now take temperature as appropriate for midpoint of layer
-	TJ(i)=T(nslon,nslat,i)
+       TJ(i)=T(nslon,nslat,i)
         enddo
-	if(lpar+1.le.iozone)then
+       if(lpar+1.le.iozone)then
         DO3(lpar+1) = my_ozone(lpar+1)  ! Above top of model (or use climatology)
-	endif
+       endif
 !       TJ(lpar+1)  = my_temp(lpar)   ! Above top of model (or use climatology)
 !wig 26-Aug-2000: Comment out following line so that climatology is used for 
 !                 above the model top.
-!	TJ(lpar+1) = T(nslon,nslat,NB)  ! JCB - just use climatology or given temperature
+!       TJ(lpar+1) = T(nslon,nslat,NB)  ! JCB - just use climatology or given temperature
 ! JCB read in O3
 !
 !
@@ -1354,13 +1530,13 @@
       do i=1,lpar
 !        AER(1,i) = DBC(i)*10.d0*(z(i+1)-z(i)) ! DBC must be g/m^3
 ! calculate AER(1,i) according to aerosol density - use trap rule
-	vis=23.0
-	call aeroden(z(i)/100000.,vis,aerd1) ! convert cm to km
-	call aeroden(z(i+1)/100000.,vis,aerd2)
+       vis=23.0
+       call aeroden(z(i)/100000.,vis,aerd1) ! convert cm to km
+       call aeroden(z(i+1)/100000.,vis,aerd2)
 ! trap rule used here; convert cm to km; divide by 100000.
-	AER(1,i)=(z(i+1)-z(i))/100000.*(aerd1+aerd2)/2./4287.55*tauaer_550
-!	write(6,*)i,z(i)/100000.,aerd1,aerd2,tauaer_550,AER(1,i)
-!	
+       AER(1,i)=(z(i+1)-z(i))/100000.*(aerd1+aerd2)/2./4287.55*tauaer_550
+!       write(6,*)i,z(i)/100000.,aerd1,aerd2,tauaer_550,AER(1,i)
+!       
         if(T(nslon,nslat,I).gt.233.d0) then
           AER(2,i) = odcol(i)
           AER(3,i) = 0.d0
@@ -1373,7 +1549,7 @@
         AER(k,lpar+1) = 0.d0 ! just set equal to zero
       enddo
 
-	AER(1,lpar+1)=2.0*AER(1,lpar) ! kludge
+       AER(1,lpar+1)=2.0*AER(1,lpar) ! kludge
 !
 !  Calculate column quantities for Fast-J
       do i=1,NB
@@ -1385,7 +1561,7 @@
 
 !******************************************************************
 !     SUBROUTINE CLDSRF(odcol)
-      SUBROUTINE CLDSRF(isvode,jsvode,odcol,nslat,nslon,p,t,od,sa, &
+        SUBROUTINE CLDSRF(isvode,jsvode,odcol,nslat,nslon,p,t,od,sa, &
          lpar,jpnl)
 !-----------------------------------------------------------------------
 !  Routine to set cloud and surface properties
@@ -1398,9 +1574,9 @@
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	
-	IMPLICIT NONE
+       USE module_fastj_data
+       
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
       integer, parameter :: iprint = 0
@@ -1485,10 +1661,11 @@
  20   continue
 !
       return
-      end SUBROUTINE CLDSRF       
+      end SUBROUTINE CLDSRF     
 
 !********************************************************************
-      subroutine solar2(timej,nslat,nslon, &
+      !solar2 goes here
+subroutine solar2(timej,nslat,nslon, &
       xgrd,ygrd,tau_fastj,month_fastj,iday_fastj)
 !-----------------------------------------------------------------------
 !  Routine to set up SZA for given lat, lon and time
@@ -1498,8 +1675,8 @@
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	IMPLICIT NONE
+       USE module_fastj_data
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
       integer, parameter :: iprint = 0
@@ -1540,11 +1717,12 @@
 !
       return
       end subroutine solar2       
-
 !**********************************************************************
 
 
-      SUBROUTINE JRATET(SOLF,nslat,nslon,p,t,od,sa,lpar,jpnl)
+      ! JRATET goes here
+
+SUBROUTINE JRATET(SOLF,nslat,nslon,p,t,od,sa,lpar,jpnl)
 !-----------------------------------------------------------------------
 !  Calculate and print J-values. Note that the loop in this routine
 !  only covers the jpnl levels actually needed by the CTM.
@@ -1560,9 +1738,9 @@
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	
-	IMPLICIT NONE
+       USE module_fastj_data
+       
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
       integer, parameter :: iprint = 0
@@ -1630,11 +1808,11 @@
       enddo
       return
       end SUBROUTINE JRATET
-
 !*********************************************************************
 
 
-      SUBROUTINE PRTATM(N,nslat,nslon,tau_fastj,month_fastj,ydgrd)
+      !PRTATM goes here
+SUBROUTINE PRTATM(N,nslat,nslon,tau_fastj,month_fastj,ydgrd)
 !-----------------------------------------------------------------------
 !  Print out the atmosphere and calculate appropriate columns
 !     N=1    Print out column totals only
@@ -1643,8 +1821,8 @@
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	
+       USE module_fastj_data
+       
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
       integer, parameter :: iprint = 0
@@ -1731,8 +1909,11 @@
  1100 format(1X,I2,0P,2F6.2,1P,2E10.3,0P,F7.3,F8.2,F10.4,1P,10E9.2)
  1200 format(A,F8.1,A,10(1pE10.3))
       end SUBROUTINE PRTATM   
+!*****************************************************************
 
-      SUBROUTINE JVALUE(isvode,jsvode,lpar,jpnl, &
+     ! JVALUE goes here
+
+ SUBROUTINE JVALUE(isvode,jsvode,lpar,jpnl, &
         ydgrd,sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 !-----------------------------------------------------------------------
 !  Calculate the actinic flux at each level for the current SZA value.
@@ -1750,8 +1931,8 @@
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	USE module_peg_util, only:  peg_message
+       USE module_fastj_data
+       USE module_peg_util, only:  peg_message
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
         integer, parameter :: iprint = 0
@@ -1788,7 +1969,7 @@
 !      integer lunout
 !      parameter (lunout = 41)
     integer isvode,jsvode
-	character*80 msg
+       character*80 msg
 !
       do J=1,jpnl
         do K=NW1,NW2
@@ -1820,7 +2001,7 @@
           FFF(K,J) = FFF(K,J) + FL(K)*AVGF(J)
 ! diagnostic 
           if ( FFF(K,J) .lt. 0) then         
-	     write( msg, '(a,2i4,e14.6)' )   &
+            write( msg, '(a,2i4,e14.6)' )   &
                   'FASTJ neg actinic flux ' //   &
                   'k j FFF(K,J) ', k, j, fff(k,j)
              call peg_message( lunerr, msg )         
@@ -1849,14 +2030,15 @@
 
       return
       end SUBROUTINE JVALUE
+!***************************************************************
 
       FUNCTION xseco3(K,TTT)
 !-----------------------------------------------------------------------
 !  Cross-sections for O3 for all processes interpolated across 3 temps
 !-----------------------------------------------------------------------
 
-	USE module_fastj_data
-	
+       USE module_fastj_data
+       
       integer k
 !      real*8 ttt, flint, xseco3
       real*8 ttt, xseco3
@@ -1870,8 +2052,8 @@
 !  Quantum yields for O3 --> O2 + O(1D) interpolated across 3 temps
 !-----------------------------------------------------------------------
 
-	USE module_fastj_data
-	
+       USE module_fastj_data
+       
       integer k
 !      real*8 ttt, flint, xsec1d
       real*8 ttt,  xsec1d
@@ -1885,8 +2067,8 @@
 !  Cross-sections for O2 interpolated across 3 temps; No S_R Bands yet!
 !-----------------------------------------------------------------------
 
-	USE module_fastj_data
-	
+       USE module_fastj_data
+       
       integer k
 !      real*8 ttt, flint, xseco2
       real*8 ttt,  xseco2
@@ -1933,7 +2115,7 @@
 !
 !-----------------------------------------------------------------------
 
-	USE module_fastj_data     
+       USE module_fastj_data     
       
 !jdf
       integer lpar
@@ -2007,8 +2189,9 @@
       RETURN
       END SUBROUTINE SPHERE
 
-
-      SUBROUTINE OPMIE(isvode,jsvode,KW,WAVEL,XQO2,XQO3,FMEAN,lpar,jpnl, &
+!******************************************************
+! OPMIE goes here
+  SUBROUTINE OPMIE(isvode,jsvode,KW,WAVEL,XQO2,XQO3,FMEAN,lpar,jpnl, &
         ydgrd,sizeaer,extaer,waer,gaer,tauaer,l2,l3,l4,l5,l6,l7)
 !-----------------------------------------------------------------------
 !  NEW Mie code for J's, only uses 8-term expansion, 4-Gauss pts
@@ -2053,8 +2236,8 @@
 !-----------------------------------------------------------------------
       
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	USE module_peg_util, only:  peg_message, peg_error_fatal    
+       USE module_fastj_data
+       USE module_peg_util, only:  peg_message, peg_error_fatal    
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
       integer, parameter :: iprint = 0
@@ -2103,9 +2286,9 @@
       real*8 ftaulog,dttau,dpomega(2*M__)
       real*8 ftaulog2,dttau2,dpomega2(2*M__)
 ! JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
-	real*8 PIAER_MX1(NB)
+       real*8 PIAER_MX1(NB)
 ! BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
-	 character*80 msg
+        character*80 msg
 !
 !---Pick nearest Mie wavelength, no interpolation--------------
                               KM=1
@@ -2116,7 +2299,7 @@
 !---For Mie code scale extinction at 1000 nm to wavelength WAVEL (QXMIE)
 ! define angstrom exponent
 ! JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
-	ang=log(QAA(1,MIEDX(1))/QAA(4,MIEDX(1)))/log(300./999.)
+       ang=log(QAA(1,MIEDX(1))/QAA(4,MIEDX(1)))/log(300./999.)
        do I=1,MX
 ! QAA is extinction efficiency
          QXMIE(I) = QAA(KM,MIEDX(I))/QAA(4,MIEDX(I))
@@ -2159,8 +2342,8 @@
 ! JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
 ! add in new aerosol information from Mie code
 ! layer aerosol optical thickness at wavelength index KM, layer j
-!	tauaer(km,j)=0.0
-	dtaux(j)=dtaux(j)+tauaer(km,j)
+!       tauaer(km,j)=0.0
+       dtaux(j)=dtaux(j)+tauaer(km,j)
 !       if(isvode.eq.8.and.jsvode.eq.1) print*,'jdf dtaux',&
 !       j,km,dtaux(j),tauaer(km,j)
 ! BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
@@ -2488,7 +2671,7 @@
  1300 format(1x,50(i3))
  1500 format(' Too many levels in photolysis code: need ',i3,' but ',a,   &
              ' dimensioned as ',i3)
-      END SUBROUTINE OPMIE                          
+      END SUBROUTINE OPMIE              
 
 !*********************************************************************
       subroutine EFOLD (F0, F1, N, F)
@@ -2591,7 +2774,7 @@
 !      write(6,1100) 'lev','ztau','fz  ','pomega( )'
       do i=1,ND
         if(ztau(i).ne.0.d0) then
-          write ( msg, '(a, i3, 2(1x,1pe9.3))' ) 	&
+          write ( msg, '(a, i3, 2(1x,1pe9.3))' )        &
               'FASTJ subr CH_PROF ztau ne 0. check pomega. ' //  &
               'k ztau(k) fz(k) ', i,ztau(i),fz(i)
           call peg_message( lunerr, msg )
@@ -2603,7 +2786,7 @@
  1200 format(1x,i3,11(1x,1pe9.3))
       end subroutine CH_PROF
 
-
+!********************************************************************
       SUBROUTINE MIESCT(ND,N,M,MFIT,POMEGA,PM,PM0,FZ,WT,EMU,ZTAU, &
         ZFLUX,ZREFL,FJ,A,C1,H,V1,B,AA,CC,S,W,U1,DD,RR,RADIUS,ZU0)
 !     SUBROUTINE MIESCT
@@ -2696,7 +2879,7 @@
 !-----------------------------------------------------------------------
 !      INCLUDE 'jv_mie.h'
 
-	implicit none
+       implicit none
 !jdf
       integer, parameter :: single = 4      !compiler dependent value real*4
       integer, parameter :: double = 8      !compiler dependent value real*8
@@ -2808,7 +2991,7 @@
 !-----------------------------------------------------------------------
 
 !      INCLUDE 'jv_mie.h'
-      	IMPLICIT NONE
+             IMPLICIT NONE
 !jdf
       integer, parameter :: single = 4      !compiler dependent value real*4
       integer, parameter :: double = 8      !compiler dependent value real*8
@@ -2883,7 +3066,7 @@
 !-----------------------------------------------------------------------
 
 !      INCLUDE 'jv_mie.h'
-	IMPLICIT NONE
+       IMPLICIT NONE
 !jdf
       integer, parameter :: single = 4      !compiler dependent value real*4
       integer, parameter :: double = 8      !compiler dependent value real*8
@@ -3150,17 +3333,17 @@
 ! aden23     1.45 km scale heigth (80% of extinction occurs below 5 km)
 !
 
-	implicit none
-	integer mz, nz
+       implicit none
+       integer mz, nz
         parameter (mz=33)
         real v,aerd
         real*8 zz ! compatability with fastj
         real alt, aden05, aden23, aer05,aer23      
       dimension alt(mz),aden05(mz),aden23(mz)
 !jdf  dimension zbaer(*),dbaer(*)
-	
-	real z, f, wth
-	integer k, kp
+       
+       real z, f, wth
+       integer k, kp
       save alt,aden05,aden23,nz
       
 
@@ -3216,7 +3399,7 @@
 !      write(*,'(2i5,1p5e11.3)') k,kp,z,aden05(k),aden05(kp),f,aerd
 
       return
-	end subroutine aeroden           
+       end subroutine aeroden           
 !=======================================================================
       subroutine locate(xx,n,x,j)
 !
@@ -3309,10 +3492,10 @@
 !-----------------------------------------------------------------------
 
         USE module_data_mosaic_other, only : kmaxd
-	USE module_fastj_data
-	USE module_peg_util, only:  peg_message, peg_error_fatal
-	
-	IMPLICIT NONE
+       USE module_fastj_data
+       USE module_peg_util, only:  peg_message, peg_error_fatal
+       
+       IMPLICIT NONE
 !jdf
 ! Print Fast-J diagnostics if iprint /= 0
         integer, parameter :: iprint = 0
@@ -3333,8 +3516,8 @@
         integer iday_fastj         !  Day of year
 !jdf
          integer i, j, k
-	 character*7  lpdep(3)
-	 character*80 msg
+        character*7  lpdep(3)
+        character*80 msg
 
          if(NJVAL.gt.NS) then
 ! fastj input files are not set up for current situation   
@@ -3342,7 +3525,7 @@
               'FASTJ  # xsect supplied > max allowed  '  //  &
               'NJVAL NS ', NJVAL, NS
             call peg_message( lunerr, msg )
-            msg = 		&
+            msg =               &
              'FASTJ Setup Error: # xsect supplied > max allowed. Increase NS'
             call peg_error_fatal( lunerr, msg )              
 !           write(6,300) NJVAL,NS
@@ -3354,7 +3537,7 @@
               'FASTJ  # aerosol/cloud types > NP  '  //  &
               'NAA NP ', NAA ,NP
             call peg_message( lunerr, msg )
-            msg = 		&
+            msg =               &
               'FASTJ Setup Error: Too many phase functions supplied. Increase NP'
             call peg_error_fatal( lunerr, msg )                       
 !            write(6,350) NAA
@@ -3374,9 +3557,11 @@
 !---Set mapping index
       do j=1,NJVAL
         do k=1,jppj
-          if(jlabel(k).eq.titlej(1,j)) jind(k)=j
-!	write(6,*)k,jind(k)  ! jcb
-!	write(6,*)jlabel(k),titlej(1,j)  ! jcb
+          if(jlabel(k).eq.titlej(1,j)) then
+                jind(k)=j
+          endif
+!       write(6,*)k,jind(k)  ! jcb
+!       write(6,*)jlabel(k),titlej(1,j)  ! jcb
         enddo
         do k=1,npdep
           if(lpdep(k).eq.titlej(1,j)) jpdep(j)=k
@@ -3427,7 +3612,7 @@
            write ( msg, '(a)' )  & 
               'FASTJ Using Herzberg bin for: ' 
            call peg_message( lunerr, msg )
-           write( msg, '(a,10a7)' )	&
+           write( msg, '(a,10a7)' )       &
               'FASTJ ', (jlabel(hzind(i)),i=1,nhz)     
 !          write(6,420) (jlabel(hzind(i)),i=1,nhz)
         end if 

@@ -188,6 +188,7 @@ CONTAINS
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    INTEGER :: i,j,k,l,debug_level
+
 !
 ! convert advected aerosol variables to ug/m3 from mixing ratio
 ! they will be converted back at the end of this driver
@@ -201,6 +202,7 @@ CONTAINS
          enddo
       enddo
    enddo
+
       do 100 j=jts,jte
          do 100 i=its,ite
            debug_level=0
@@ -258,6 +260,7 @@ CONTAINS
         drog_in(POLT3) = VDROG3(i,k,j,POLT3)
 !rs * biogenic organics DeltaROG
         if(p_ete.eq.1)then
+!Azimeh_test     if (p_api.eq.1)then !for R2SMH
             drog_in(PAPI1) = 0.
             drog_in(PAPI2) = 0.
             drog_in(PAPI3) = 0.
@@ -269,6 +272,7 @@ CONTAINS
             condvap_in(PSOALIM1) = 0.
             condvap_in(PSOALIM2) = 0.
         elseif(p_ete.gt.1)then
+!Azimeh test            elseif(p_api.gt.1)then
             drog_in(PAPI1) = VDROG3(i,k,j,PAPI1)
             drog_in(PAPI2) = VDROG3(i,k,j,PAPI2)
             drog_in(PAPI3) = VDROG3(i,k,j,PAPI3)
@@ -338,10 +342,14 @@ CONTAINS
          cblk(1,VNO3AI   ) = chem(i,k,j,p_no3ai)
          cblk(1,VNAAJ   )  = chem(i,k,j,p_naaj)
          cblk(1,VNAAI   )  = chem(i,k,j,p_naai)
-         cblk(1,VCLAJ   )  = chem(i,k,j,p_claj)
-         cblk(1,VCLAI   )  = chem(i,k,j,p_clai)
-!        cblk(1,VCLAJ   )  = 0.
-!        cblk(1,VCLAI   )  = 0.
+!Azimeh
+!         cblk(1,VCLAJ   )  = chem(i,k,j,p_claj)
+!         cblk(1,VCLAI   )  = chem(i,k,j,p_clai)
+        cblk(1,VCLAJ   )  = 0.
+        cblk(1,VCLAI   )  = 0.
+!Azimeh
+
+
 !
 ! Set emissions to zero when above level kemit.
 !
@@ -407,10 +415,10 @@ CONTAINS
       chem(i,k,j,p_no3ai) = cblk(1,VNO3AI   )
       chem(i,k,j,p_naaj) = cblk(1,VNAAJ   )
       chem(i,k,j,p_naai) = cblk(1,VNAAI   )
-
-      chem(i,k,j,p_claj) = cblk(1,VCLAJ   )
-      chem(i,k,j,p_clai) = cblk(1,VCLAI   )
-
+!Azimeh
+!      chem(i,k,j,p_claj) = cblk(1,VCLAJ   )
+!      chem(i,k,j,p_clai) = cblk(1,VCLAI   )
+!Azimeh
       chem(i,k,j,p_orgaro1j) = cblk(1,VORGARO1J)
       chem(i,k,j,p_orgaro1i) = cblk(1,VORGARO1I)
       chem(i,k,j,p_orgaro2j) = cblk(1,VORGARO2J)
@@ -480,6 +488,7 @@ CONTAINS
             enddo
          enddo
       enddo
+
 
     END SUBROUTINE sorgam_driver
 ! ///////////////////////////////////////////////////
@@ -7213,7 +7222,7 @@ END SUBROUTINE VDVG_2
 !
     SUBROUTINE aerosols_sorgam_init(chem,convfac,z_at_w,             &
          pm2_5_dry,pm2_5_water,pm2_5_dry_ec,                         &
-         chem_in_opt,aer_ic_opt, is_aerosol,                         &
+         chem_in_opt,aer_ic_opt,restart_run,is_aerosol,                         &
          ids,ide, jds,jde, kds,kde,                                  &
          ims,ime, jms,jme, kms,kme,                                  &
          its,ite, jts,jte, kts,kte, config_flags                     )
@@ -7227,6 +7236,9 @@ END SUBROUTINE VDVG_2
                                   ims,ime, jms,jme, kms,kme,    &
                                   its,ite, jts,jte, kts,kte
    LOGICAL, INTENT(OUT) :: is_aerosol(num_chem)
+!Azimeh
+   LOGICAL, INTENT(IN) ::  restart_run
+
    REAL,  DIMENSION( ims:ime , kms:kme , jms:jme, num_chem ) ,     &
           INTENT(INOUT   ) ::                                      &
                               chem
@@ -7364,7 +7376,6 @@ END SUBROUTINE VDVG_2
 ! initialize pointers used by aerosol-cloud-interaction routines
         call aerosols_sorgam_init_aercld_ptrs( &
            num_chem, is_aerosol, config_flags )
-        
 
         pm2_5_dry(its:ite, kts:kte-1, jts:jte)    = 0.
         pm2_5_water(its:ite, kts:kte-1, jts:jte)  = 0.
@@ -7391,7 +7402,8 @@ END SUBROUTINE VDVG_2
 !  IF USING OLD SIMULATION, DO NOT REINITIALIZE!
 !
 !
-        if(chem_in_opt == 1 ) return
+!Azimeh        if(chem_in_opt == 1 ) return
+        if(chem_in_opt == 1 .or. restart_run) return
         do l=p_so4aj,num_chem
          chem(ims:ime,kms:kme,jms:jme,l)=epsilc
         enddo
@@ -8187,8 +8199,12 @@ SUBROUTINE sorgam_addemiss(                                             &
                   dz8w(its:ite,kts:kte,jts:jte)
 !
 ! Increment the aerosol numbers...
+!Azimeh
     if(emissopt  .lt. 5 )then
-!
+!choon elseif haminja paintar khodesh 5 ra mide     if(emissopt  .le. 5 )then  !Azimeh !Eli:if(emissopt  .lt. 5 .or. emissopt.eq. 9 )then
+!                               ! but I use emissopt ==5 instead 9 from her
+!Azimeh
+                                    
 ! Aitken mode first...
 
   chem(its:ite,kts:kemit,jts:jte,p_nu0) =                        &

@@ -1,0 +1,101 @@
+chemics_init.F:     print*,p_so4aj,"so4aj"
+chemics_init.F:     print*,p_so4aj,"so4aj"
+module_aer_drydep.F:      cblk(1,vso4aj   ) =   max( epsilc, chem(i,k,j,p_so4aj)*convfac2 )
+module_aer_drydep.F:!       vgsa( vso4aj   )  =  vdep(1, vdmacc )
+module_aer_drydep.F:        vgsa( vso4aj   )  =  depvel3_add( 2 )  
+module_aer_drydep.F:        vgsa( vnh4aj   )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vno3aj   )  =  vgsa( vso4aj )
+module_aer_drydep.F:        if (p_naaj >= param_first_scalar) vgsa( vnaaj   )  =  vgsa( vso4aj )
+module_aer_drydep.F:        if (p_claj >= param_first_scalar) vgsa( vclaj   )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgaro1j)  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgaro2j)  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgalk1j)  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgole1j)  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgba1j )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgba2j )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgba3j )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgba4j )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vorgpaj  )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vecj     )  =  vgsa( vso4aj )
+module_aer_drydep.F:        vgsa( vp25aj   )  =  vgsa( vso4aj )
+module_aerosols_soa_vbs.F:   do l=p_so4aj,num_chem
+module_aerosols_soa_vbs.F:         cblk(1,VSO4AJ  ) = chem(i,k,j,p_so4aj)
+module_aerosols_soa_vbs.F:        chem(i,k,j,p_so4aj) = cblk(1,VSO4AJ )
+module_aerosols_soa_vbs.F:  do l=p_so4aj,num_chem
+module_aerosols_soa_vbs.F:         do n=p_so4aj,p_p25i
+module_aerosols_soa_vbs.F:      cblk(1,VSO4AJ   ) =   max(epsilc,chem(i,k,j,p_so4aj)*convfac2)
+module_aerosols_soa_vbs.F:        cblk(l,vso4aj) = cblk(l,vso4aj) + deltaso4a(l)*fconca(l) + mstrnsfr
+module_aerosols_soa_vbs.F:    cblk(lcell,vso4aj) = cblk(lcell,vso4aj) + cblk(lcell,vso4ai)*fm3
+module_aerosols_soa_vbs.F:                (cblk(lcell,vso4aj) +  cblk(lcell,vso4ai))/mw_so4_aer)*1.e-6        ! sulfate
+module_aerosols_soa_vbs.F:        fraci = cblk(lcell,vso4ai)/(cblk(lcell,vso4aj)+cblk(lcell,vso4ai))
+module_aerosols_soa_vbs.F:        so4 = cblk(lcell,vso4aj) + cblk(lcell,vso4ai)
+module_aerosols_soa_vbs.F:        fraci = cblk(lcell,vso4ai)/(cblk(lcell,vso4aj)+cblk(lcell,vso4ai))
+module_aerosols_soa_vbs.F:          vso4aj)+nh4fac*cblk(lcell,vnh4aj)+h2ofac*cblk(lcell, &
+module_aerosols_soa_vbs.F:        pmassa(lcell) = max(conmin,(cblk(lcell,vso4aj)+cblk(lcell, &
+module_aerosols_soa_vbs.F:            !mnono  = 0.0001*(cblk(lcell,vso4aj)+cblk(lcell,vnh4aj)+ cblk(lcell,vno3aj))
+module_aerosols_soa_vbs.F:        do l=p_so4aj,num_chem
+module_aerosols_soa_vbs.F:          chem(i,k,j,p_so4aj)=chem(ii,kk,jj,p_sulf)*CONVFAC(ii,kk,jj)*MWSO4*splitfac*so4vaptoaer
+module_aerosols_soa_vbs.F:      m3acc = so4fac*chem(i,k,j,p_so4aj) + nh4fac*chem(i,k,j,p_nh4aj) + &
+module_aerosols_soa_vbs.F:  chem(its:ite,kts:kemit,jts:jte,p_so4aj) =                      &
+module_aerosols_soa_vbs.F:       chem(its:ite,kts:kemit,jts:jte,p_so4aj) +                 &
+module_aerosols_sorgam.F:   do l=p_so4aj,num_chem
+module_aerosols_sorgam.F:!       print *,'pso4ai = ',chem(i,k,j,p_so4aj),chem(i,k,j,p_no3aj),chem(i,k,j,p_nh4aj),chem(i,k,j,p_naaj)
+module_aerosols_sorgam.F:         cblk(1,VSO4AJ   ) = chem(i,k,j,p_so4aj)
+module_aerosols_sorgam.F:!        cblk(1,VSO4AJ   ) = chem(i,k,j,p_so4aj)
+module_aerosols_sorgam.F:!        cblk(1,VSO4AJ   ) = chem(i,k,j,p_so4aj)+emis_ant(i,k,j,p_e_so4j)/dz8w(i,k,j)*dtstep
+module_aerosols_sorgam.F:      chem(i,k,j,p_so4aj) = cblk(1,VSO4AJ   )
+module_aerosols_sorgam.F:!       print *,'pso4ai = ',chem(i,k,j,p_so4aj),chem(i,k,j,p_no3aj),chem(i,k,j,p_nh4aj),chem(i,k,j,p_naaj)
+module_aerosols_sorgam.F:      do l=p_so4aj,num_chem
+module_aerosols_sorgam.F:         do n=p_so4aj,p_p25i
+module_aerosols_sorgam.F:      cblk(1,VSO4AJ   ) =   max(epsilc,chem(i,k,j,p_so4aj)*convfac2)
+module_aerosols_sorgam.F:        cblk(l,vso4aj) = cblk(l,vso4aj) + deltaso4a(l)*fconca(l) + mstrnsfr
+module_aerosols_sorgam.F:            cblk(lcell,vso4aj) = cblk(lcell,vso4aj) + cblk(lcell,vso4ai)*fm3
+module_aerosols_sorgam.F:                (cblk(lcell,vso4aj) +  cblk(lcell,vso4ai))/mw_so4_aer)*1.e-6        ! sulfate
+module_aerosols_sorgam.F:        fraci = cblk(lcell,vso4ai)/(cblk(lcell,vso4aj)+cblk(lcell,vso4ai))
+module_aerosols_sorgam.F:        so4 = cblk(lcell,vso4aj) + cblk(lcell,vso4ai)
+module_aerosols_sorgam.F:        fraci = cblk(lcell,vso4ai)/(cblk(lcell,vso4aj)+cblk(lcell,vso4ai))
+module_aerosols_sorgam.F:          vso4aj)+nh4fac*cblk(lcell,vnh4aj)+h2ofac*cblk(lcell, &
+module_aerosols_sorgam.F:        pmassa(lcell) = max(conmin,(cblk(lcell,vso4aj)+cblk(lcell, &
+module_aerosols_sorgam.F:        mnono = 0.0001*(cblk(lcell,vso4aj)+cblk(lcell,vnh4aj)+cblk(lcell, &
+module_aerosols_sorgam.F:        mnonow = 0.0001*(cblk(lcell,vso4aj)/mwso4+cblk(lcell,vnh4aj)/mwnh4+ &
+module_aerosols_sorgam.F:        do l=p_so4aj,num_chem
+module_aerosols_sorgam.F:          chem(i,k,j,p_so4aj)=chem(ii,kk,jj,p_sulf)*CONVFAC(ii,kk,jj)*MWSO4*splitfac*so4vaptoaer
+module_aerosols_sorgam.F:      m3acc = so4fac*chem(i,k,j,p_so4aj) + nh4fac*chem(i,k,j,p_nh4aj) + &
+module_aerosols_sorgam.F:      	lptr_so4_aer(    isize,itype,ai_phase) = p_so4aj
+module_aerosols_sorgam.F:!     chem(i,k,j,p_so4aj)    = mult*2.375
+module_aerosols_sorgam.F:      chem(i,k,j,p_so4aj)    = mult*0.300*0.97
+module_aerosols_sorgam.F:  chem(its:ite,kts:kemit,jts:jte,p_so4aj) =                      &
+module_aerosols_sorgam.F:       chem(its:ite,kts:kemit,jts:jte,p_so4aj) +                 &
+module_cam_mam_initmixrats.F:!     chem(i,k,j,p_so4aj)    = mult*0.300*0.97
+module_cam_mam_initmixrats.F:      real :: bv_so4ai, bv_so4aj,         &
+module_cam_mam_initmixrats.F:      bv_so4aj = mult*0.300*0.97 * so4_icbc_1p2_factor
+module_cam_mam_initmixrats.F:      tmpchem(p_so4_a1) = bv_so4aj
+module_cbmz.F:!	p_qv, p_so2, p_ho2, p_so4aj, p_corn, p_hcl, p_mtf
+module_cbmz.F:	p_qv, p_so2, p_ho2, p_so4aj, p_corn, p_hcl, p_mtf, &
+module_cbmz.F:	print 93010, 'p_so4aj, p_corn, p_hcl, p_mtf', p_so4aj, p_corn, p_hcl, p_mtf
+module_ctrans_grell.F:                              p_o3,p_ora1,p_op1,p_paa,p_sulf,p_so4aj,p_nh4aj,p_no3aj, &
+module_ctrans_grell.F:   if (p_so4aj .gt.1) wdi_so4(its:ite,jts:jte) = wdi_so4(its:ite,jts:jte) + wetdep_2d(its:ite,jts:jte,p_so4aj)*dt*0.001/mwso4 ! mmol/m2
+module_ctrans_grell.F:        aerosol(lso4acc) = tr_up(i,k,p_so4aj)*1.0e-9*mwdry/mwso4
+module_ctrans_grell.F:        tr_up(i,k,p_so4aj) = aerosol(lso4acc)*1.0e9*mwso4/mwdry
+module_data_soa_vbs.F:      INTEGER vso4aj
+module_data_soa_vbs.F:      PARAMETER (vso4aj=1)
+module_data_sorgam.F:      INTEGER vso4aj
+module_data_sorgam.F:      PARAMETER (vso4aj=1)
+module_ftuv_driver.F:!      so4 = p_so4aj       ( Sulfate conc. Acc. mode )
+module_ftuv_driver.F:             aso4(kp1) = chem(i,k,j,p_so4aj)
+module_input_chem_data.F:    real :: chemsulf_radm,chem_so4aj,chem_so4ai
+module_input_chem_data.F:     if   ( nch .eq. p_so4aj.or.nch.eq.p_so4ai                        &
+module_input_chem_data.F:       chem_so4aj=chemsulf_radm*CONVFAC*MWSO4*splitfac*so4vaptoaer
+module_input_chem_data.F:       if(nch.eq.p_so4aj)chem=chem_so4aj*alt
+module_input_chem_data.F:       m3acc=so4fac*chem_so4aj+conmin*(nh4fac+no3fac+orgfac*9+2*anthfac)
+module_input_chem_data.F:!   2=sorgam aerosol    for  p_so4aj   <= ic <= p_corn
+module_input_chem_data.F:      else if ((ic .ge. p_so4aj) .and. (ic .le. p_corn)) then
+module_input_chem_data.F:!   2=sorgam aerosol    for  p_so4aj   <= ic <= p_corn
+module_input_chem_data.F:      else if ((ic .ge. p_so4aj) .and. (ic .le. p_corn)) then
+module_input_chem_data.F:              bv_so4ai, bv_so4aj,         &
+module_input_chem_data.F:!     bv_so4aj  = mult*2.375
+module_input_chem_data.F:      bv_so4aj = mult*0.300*0.97
+module_input_chem_data.F:      m3acc = so4fac*bv_so4aj + nh4fac*bv_nh4aj + &
+module_input_chem_data.F:      if( nch == p_so4aj   ) chem = bv_so4aj
+module_mosaic_driver.F:			p_so2, p_ho2, p_so4aj, p_corn, p_hcl, p_mtf,  &
+module_mosaic_driver.F:    print 93010, 'p_so4aj, p_corn, p_hcl, p_mtf', p_so4aj, p_corn, p_hcl, p_mtf

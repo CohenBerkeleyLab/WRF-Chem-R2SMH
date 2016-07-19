@@ -1,0 +1,21 @@
+#!/bin/bash -f
+#SBATCH --job-name='Real'
+#
+#SBATCH --partition=savio
+#
+# Accout:
+#SBATCH --account=co_aiolos
+#
+# QoS (running a condo job)
+#SBATCH --qos=aiolos_normal
+#
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=20
+#
+# Wall clock limit:
+#SBATCH --time=24:00:00
+#
+# Mail me for any notification
+#SBATCH --mail-type=all
+#SBATCH --mail-user=azare@berkeley.edu
+mpirun -np 20 ./real.exe 

@@ -1,0 +1,1 @@
+/global/scratch/azare/Josh/DATA_Josh/Fine/East/Met_data/met_em.d02.2013-05-27_00:00:00.nc

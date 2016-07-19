@@ -1,0 +1,21 @@
+#!/bin/bash -f
+#SBATCH --job-name='MTNs_13'
+#
+#SBATCH --partition=savio
+#
+# Accout:
+#SBATCH --account=fc_nitrates 
+#
+# QoS (running a condo job)
+#SBATCH --qos=savio_debug
+#
+#SBATCH --nodes=8
+#SBATCH --ntasks-per-node=20
+#
+# Wall clock limit:
+#SBATCH --time=480:00:00
+#
+# Mail me for any notification
+#SBATCH --mail-type=all
+#SBATCH --mail-user=azare@berkeley.edu
+mpirun -np 160 ./wrf.exe 

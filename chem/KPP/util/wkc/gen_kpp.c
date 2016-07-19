@@ -61,28 +61,25 @@
 /*    cd chem/KPP/util/wkc; make -i -r CC="gcc" ; cd ../../../..
   in ~WRF:  chem/KPP/util/wkc/registry_kpp Registry/Registry          */
 
-
 int
 gen_kpp ( char * inc_dirname, char * kpp_dirname )
 {
 
 
-
   /* put chem compound names defined in Registry into linked list WRFC_packs */
 
        if ( DEBUGR == 1 )   printf("next: get_wrf_chem_specs \n");
+printf( "name1:");
      get_wrf_chem_specs () ;
        if ( DEBUGR == 2 ) write_list_to_screen( WRFC_packs ) ;
-   
       
-       
-
+printf( "name11:");
   /* put radical names defined in Registry into linked list WRFC_radicals */
 
        if ( DEBUGR == 1 )   printf("next: get_wrf_radicals \n");
      get_wrf_radicals () ;
        if ( DEBUGR == 2 ) write_list_to_screen( WRFC_radicals ) ;
-
+printf("khar2 ");
 
   /* put photolysis rates defined in Registry into linked list WRFC_jvals */
 
@@ -90,7 +87,7 @@ gen_kpp ( char * inc_dirname, char * kpp_dirname )
      get_wrf_jvals () ;
        if ( DEBUGR == 2 ) write_list_to_screen( WRFC_jvals ) ;
 
-
+printf("khar3 ");
   /* read KPP species files and put compound names into linked list KPP_packs */     
        if ( DEBUGR == 1 )   printf("next: get_kpp_chem_specs \n");     
      get_kpp_chem_specs ( kpp_dirname ) ; 
@@ -98,7 +95,7 @@ gen_kpp ( char * inc_dirname, char * kpp_dirname )
 
 
 
-    
+    printf("khar4 ");
 
   /* define pointer from each KPP package to corresponding WRF-Chem chemistry package  and check whether variable names are consistent. If *_wrfkpp.equiv file exists in KPP directory use it for name matching */
  
@@ -109,12 +106,12 @@ gen_kpp ( char * inc_dirname, char * kpp_dirname )
 
 
     
- 
+       printf("khar44 "); 
      /* write some output to screen  */
        if ( DEBUGR == 1 )   printf("next: screen_out \n");
      screen_out( );
 
-
+printf("khar5");
      /* make sure that wrf and kpp variables match and stop if not.  */
       if ( DEBUGR == 1 )   printf("next: check_all \n");
      check_all ( kpp_dirname );
@@ -183,16 +180,13 @@ int count;
 
    for ( p1 =   KPP_packs  ; p1 != NULL ; p1 = p1->next ) {
  
-     /* fprintf(stderr, "KPP PACK:  %s \n", p1->name); */
-
+      fprintf(stderr, "KPP PACK:  %s \n", p1->name); 
      p2 = p1->assoc_wrf_pack;
      if ( p2 ) {
      fprintf(stderr, "MATCHING PACK:  %s_kpp \n", p2->name);
      count =count+1;
           for ( pm1 = p1 -> members;  pm1 != NULL ; pm1 = pm1->next ) {
-         
 		 if ( pm1 -> found_match == 1 ) {
-                  
          	    if ( pm1 -> is_radical  == 1 ) {
 		      if ( DEBUGR == 2 ) {
                          fprintf(stderr, " 1 found (radical) %s %s  \n", pm1->name, pm1 -> assoc_wrf_name );
@@ -208,7 +202,9 @@ int count;
                   fprintf(stderr, " 1 found (special) %s %s  \n", pm1->name, pm1 -> assoc_wrf_name );
                  }
                  else {
-                fprintf(stderr, " 0 NOT found %s   \n", pm1->name );
+                    /*    fprintf(stderr, "compound name:  %s \n", pm1 -> found_match);  Azimeh */
+			fprintf(stderr, " 0 NOT found %s   \n", pm1->name );
+		
                 /* exit (0); */
 		 }
                 

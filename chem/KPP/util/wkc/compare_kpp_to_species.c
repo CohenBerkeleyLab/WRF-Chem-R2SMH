@@ -45,10 +45,8 @@ compare_kpp_to_species  ( char * kpp_dirname)
 
       /* printf(" ... test0  %s %s\n",p1->name, p2->name ); */
 
-
        if ( strcmp (p1->name, p2->name) == 0) {
 
-       
 
      /* point from a KPP-pack to the corresponding WRFC_pack */ 
 	  p1->assoc_wrf_pack = p2;         
@@ -58,7 +56,7 @@ compare_kpp_to_species  ( char * kpp_dirname)
     }
   } 
 
-
+ printf(" kpp_name,  wrf_name3   %s %s \n ", kpp_name, wrf_name  );
 
 
    for ( p1 =   KPP_packs  ; p1 != NULL ; p1 = p1->next ) {

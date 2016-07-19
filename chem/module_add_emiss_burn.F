@@ -161,6 +161,8 @@ CONTAINS
         enddo
         enddo
       CASE (RADM2SORG,RACMSORG_KPP, RADM2SORG_KPP, RACM_ESRLSORG_KPP, RACM_SOA_VBS_KPP,  &
+!Azimeh test
+            R2SMH_KPP, &       
             RADM2SORG_AQ, RADM2SORG_AQCHEM, RACMSORG_AQ, RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP)
           do j=jts,jte
           do i=its,ite

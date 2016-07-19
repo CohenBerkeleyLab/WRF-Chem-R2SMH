@@ -108,6 +108,10 @@ CONTAINS
    INTEGER :: nv,i,j,k,ICLDCK,ipr,jpr,npr
    REAL    :: tcrit,dp,dq,epsilc
    INTEGER :: itf,jtf,ktf,iopt
+
+
+
+
    epsilc=1.e-30
    wetdep_1d(:,:)   = 0.0
    wetdep_2d(:,:,:) = 0.0
@@ -131,7 +135,7 @@ CONTAINS
 !
 123  continue
      DO 100 J = jts,jtf
-     if(j.eq.jpr)print *,'dt = ',dt
+!    if(j.eq.jpr)print *,'dt = ',dt
      DO I=ITS,ITF
          ktop(i)=0
          PSUR(I)=p_phy(I,kts,J)*.01
@@ -183,9 +187,9 @@ CONTAINS
      DO I=ITS,ITF
          cu_co_ten(i,k,j)=0.
 !        hstary(i,k)=hstar4(nv)*exp(dhr(nv)*(1./t(i,k)-1./298.))
-         if(i.eq.ipr.and.j.eq.jpr)then
-          print *,k,pret(i),tracer(i,k,npr),p(i,k),z(i,k,j)
-         endif
+!        if(i.eq.ipr.and.j.eq.jpr)then
+!         print *,k,pret(i),tracer(i,k,npr),p(i,k),z(i,k,j)
+!        endif
      ENDDO
      ENDDO
 !    ENDDO
@@ -271,6 +275,8 @@ CONTAINS
    wd_no3(its:ite,jts:jte) = wd_no3(its:ite,jts:jte) + wdi_no3(its:ite,jts:jte) ! mmol/m2
    wd_so4(its:ite,jts:jte) = wd_so4(its:ite,jts:jte) + wdi_so4(its:ite,jts:jte) ! mmol/m2
    endif
+
+
    
    END SUBROUTINE GRELLDRVCT
 
@@ -771,15 +777,15 @@ CONTAINS
 !
 !--- percent of that that is evaporated (pwd is negative)
 !
-          if(i.eq.ipr.and.j.eq.jpr)then
-            print *,'xmb,edt,pwav = ',xmb(i),edt(i),pwav(i)
-            print *,'k,pwdper(i,k),pw,pwd(i,k)',z1(i)
-          endif
+!         if(i.eq.ipr.and.j.eq.jpr)then
+!           print *,'xmb,edt,pwav = ',xmb(i),edt(i),pwav(i)
+!           print *,'k,pwdper(i,k),pw,pwd(i,k)',z1(i)
+!         endif
           do k=1,ktop(i)
           pwdper(i,k)=-edt(i)*pwd(i,k)/pwav(i)
-          if(i.eq.ipr.and.j.eq.jpr)then
-            print *,k,pwdper(i,k),pw(i,k),pwd(i,k)
-          endif
+!         if(i.eq.ipr.and.j.eq.jpr)then
+!           print *,k,pwdper(i,k),pw(i,k),pwd(i,k)
+!         endif
           enddo
           endif
         enddo
@@ -829,27 +835,26 @@ CONTAINS
                     numgas,num_chem,ids,ide, jds,jde, kds,kde, &
                     ims,ime, jms,jme, kms,kme, &
                     its,ite, jts,jte, kts,kte)
-       if(j.eq.jpr)print *,'called dd_tracer'
-
+!      if(j.eq.jpr)print *,'called dd_tracer'
 
 !
-      if(j.eq.jpr)then
-        i=ipr
-        print *,'in 250 loop ',edt(ipr),ierr(ipr)
+!     if(j.eq.jpr)then
+!       i=ipr
+!       print *,'in 250 loop ',edt(ipr),ierr(ipr)
 !       if(ierr(i).eq.0.or.ierr(i).eq.3)then
-        print *,k22(I),kbcon(i),ktop(i),jmin(i)
-        print *,edt(i)
-        do k=kts,ktf
-          print *,k,z(i,k),he(i,k),hes(i,k)
-        enddo
-        do k=1,ktop(i)+1
-          print *,zu(i,k),zd(i,k),pw(i,k),pwd(i,k)
-        enddo
-        print *,'tr_up(i,k,6),tr_dd(i,k,6),tr_pw(i,k,6),tr_pwd(i,k,6)'
-        do k=1,ktop(i)+1
-          print *,tr_up(i,k,npr),tr_dd(i,k,npr),tr_pw(i,k,npr),tr_pwd(i,k,npr)
-        enddo
-        endif
+!       print *,k22(I),kbcon(i),ktop(i),jmin(i)
+!       print *,edt(i)
+!       do k=kts,ktf
+!         print *,k,z(i,k),he(i,k),hes(i,k)
+!       enddo
+!       do k=1,ktop(i)+1
+!         print *,zu(i,k),zd(i,k),pw(i,k),pwd(i,k)
+!       enddo
+!       print *,'tr_up(i,k,6),tr_dd(i,k,6),tr_pw(i,k,6),tr_pwd(i,k,6)'
+!       do k=1,ktop(i)+1
+!         print *,tr_up(i,k,npr),tr_dd(i,k,npr),tr_pw(i,k,npr),tr_pwd(i,k,npr)
+!       enddo
+!       endif
 !     endif
 !
 !--- calculate transport tendencies
@@ -872,12 +877,12 @@ CONTAINS
            ids,ide, jds,jde, kds,kde,                            &
            ims,ime, jms,jme, kms,kme,                            &
            its,ite, jts,jte, kts,kte                             )
-       if(j.eq.jpr)then
-        i=ipr
-        do k=kts,ktf
-          print *,k,tracer(i,k,npr),tracert(i,k,npr)
-        enddo
-       endif
+!      if(j.eq.jpr)then
+!       i=ipr
+!       do k=kts,ktf
+!         print *,k,tracer(i,k,npr),tracert(i,k,npr)
+!       enddo
+!      endif
 !
 ! may need more below for wet deposition......
 !
@@ -939,7 +944,7 @@ CONTAINS
      ktf=MIN(kte,kde-1)
 !
 !
-      if(j.eq.jpr)print *,'in cup dellabot '
+!     if(j.eq.jpr)print *,'in cup dellabot '
       tracert=0.
       do 100 i=its,itf
       if(ierr(i).ne.0)go to 100
@@ -956,8 +961,8 @@ CONTAINS
                  +subin*tre_cup(i,2,nv) &
                  -entdo*tracer(i,1,nv))*g/dp*xmb(i)
       enddo
-      if(j.eq.jpr.and.i.eq.ipr)print *,'in cup dellabot ',tracert(I,1,npr), &
-        detdo1,detdo2,subin,entdo,tr_dd(i,1,npr),tr_dd(i,2,npr),tracer(i,1,npr)
+!     if(j.eq.jpr.and.i.eq.ipr)print *,'in cup dellabot ',tracert(I,1,npr), &
+!       detdo1,detdo2,subin,entdo,tr_dd(i,1,npr),tr_dd(i,2,npr),tracer(i,1,npr)
  100  CONTINUE
 
    END SUBROUTINE cup_dellabot_tr
@@ -1022,11 +1027,11 @@ CONTAINS
       if(name.eq.'shallow')kstart=kts
 !
 !
-      i=ipr
-      if(j.eq.jpr)then
-        print *,'in dellas kpbl(i),k22(i),kbcon(i),ktop(i),jmin(i)'
-        print *,kpbl(i),k22(i),kbcon(i),ktop(i),jmin(i)
-      endif
+!     i=ipr
+!     if(j.eq.jpr)then
+!       print *,'in dellas kpbl(i),k22(i),kbcon(i),ktop(i),jmin(i)'
+!       print *,kpbl(i),k22(i),kbcon(i),ktop(i),jmin(i)
+!     endif
        do nv=2,num_chem
        DO K=kstart,kte
        do i=its,itf
@@ -1180,6 +1185,8 @@ END subroutine cup_env_clev_tr
                           its,ite, jts,jte, kts,kte,ipr,jpr,j,npr,num_chem,name)
 ! USE module_configure
   USE module_state_description, only: RADM2SORG,RADM2SORG_AQ,RACMSORG_AQ,RACMSORG_KPP,   &
+!Azimeh
+                                      R2SMH_KPP, &
                                       RADM2SORG_KPP,RACM_ESRLSORG_KPP,RACM_SOA_VBS_KPP,  &
                                       RADM2SORG_AQCHEM,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP
   USE module_ctrans_aqchem
@@ -1380,8 +1387,10 @@ END subroutine cup_env_clev_tr
       ! Aqueous chemistry
       !
       
-      if ((chemopt .EQ. RADM2SORG .OR. chemopt .EQ. RADM2SORG_AQ .OR. chemopt .EQ. RACMSORG_AQ .OR. & 
-           chemopt .EQ. RACMSORG_KPP .OR. chemopt .EQ. RADM2SORG_KPP .OR. chemopt .EQ. RACM_ESRLSORG_KPP .OR. & 
+      if ((chemopt .EQ. RADM2SORG .OR. chemopt .EQ. RADM2SORG_AQ .OR. chemopt .EQ. RACMSORG_AQ .OR.  &
+           chemopt .EQ. RACMSORG_KPP .OR. chemopt .EQ. RADM2SORG_KPP .OR. chemopt .EQ. RACM_ESRLSORG_KPP .OR. &
+!Azimeh test 
+           chemopt .EQ. R2SMH_KPP .OR. &
            chemopt .EQ. RACM_SOA_VBS_KPP .OR. chemopt .EQ. RADM2SORG_AQCHEM .OR. chemopt .EQ. RACMSORG_AQCHEM_KPP .OR. &
            chemopt .EQ. RACM_ESRLSORG_AQCHEM_KPP) &
            .and. (conv_tr_aqchem == 1)) then
@@ -1602,7 +1611,7 @@ END subroutine cup_up_tracer
       ! Calculate wet deposition with re-evaporation (based on wet scavenging in cup_up_tracer);
       ! assume no gas takeup by rain during fall for now
       
-      do i=its,ite
+      do i=its,itf
         
         IF(ierr(I).eq.0)then
             
@@ -1641,12 +1650,12 @@ END subroutine cup_up_tracer
       
       ! In downdraft, do only transport of tracers
       
-      do i=its,ite
+      do i=its,itf
         
         IF(ierr(I).eq.0)then
           
           do nv=1,num_chem
-            tr_dd(i,jmin(i),nv)=tre_cup(i,jmin(i),nv) ! Tracer amount in downdraft
+            tr_dd(i,jmin(i):ktf,nv)=tre_cup(i,jmin(i):ktf,nv) ! Tracer amount in downdraft
           enddo
           
           do ki=jmin(i)-1,1,-1
@@ -1665,7 +1674,7 @@ END subroutine cup_up_tracer
       
       ! Add evaporation from rain water:
       
-      do i=its,ite
+      do i=its,itf
         IF(ierr(I).eq.0)then
           do nv=1,num_chem
             do k=kts,ktf

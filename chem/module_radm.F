@@ -91,6 +91,7 @@
 ! following is for combination radm/sorgam only, p_nu0 must be defined
 ! in that case
 !
+
       iaerosol_sorgam=0
       if(p_nu0.gt.1)iaerosol_sorgam=1
 

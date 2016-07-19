@@ -346,7 +346,10 @@ SUBROUTINE setup_gasprofile_maps(chem_opt, numgas)
   case (SAPRC99_KPP,SAPRC99_MOSAIC_4BIN_VBS2_KPP)
      call setup_gasprofile_map_saprcnov
 
-
+!Azimeh
+   case (R2SMH_KPP)
+!Azimeh test for aerosol     call setup_gasprofile_map_racm2_mth
+     call       setup_gasprofile_map_radm_racm
 
   case (CBMZ, CBMZ_BB, CBMZ_BB_KPP, &
         CBMZ_MOSAIC_KPP, CBMZ_MOSAIC_4BIN, CBMZ_MOSAIC_4BIN_VBS2_KPP,  &
@@ -426,6 +429,81 @@ SUBROUTINE setup_gasprofile_map_radm_racm
                    'ONIT','CSL ','ISO ','HO  ','HO2 '           /)
 
 END SUBROUTINE setup_gasprofile_map_radm_racm
+
+!Azimeh
+SUBROUTINE setup_gasprofile_map_racm2_mth
+
+  iref(:)    = 7 !default value
+  iref(1:115) = (/12,19,2,2,1,3,&
+                  4,18,8,5,5,32,&
+                  6,6,6,30,30,10,&
+                 26,13,11,6,6,14,&
+                 15,15,23,23,32,32,&
+                 31,17,23,23,32,32,&
+                 7,32,32,22,32,32,&
+                 32,21,9,27,32,&
+                 32,32,32,32,32,32,&
+                 32,32,32,32,32,32,&
+                 17,32,25,20,32,&
+                 32,32,16,32,32,&
+                 32,32,32,32,32,32,&
+                 22,32,32,32,32,&
+                 32,32,32,32,32,&
+                 32,32,32,32,32,&
+                 32,32,32,32,32,32,&
+                 32,32,32,32,28,&
+                 32,32,32,32,32,&
+                 32,32,32,32,32,32,32,32,29 /)
+fracref(:)    = 1. !default value
+  fracref(1:115) = (/1.,1.,.75,.25,1.,1., &
+                    1.,1.,1.,1.,.5,.5,&
+                    6.25E-4,7.5E-4,6.25E-5,.1,.9,1.,&
+                    1.,1.,1.,8.E-3,1.,1.,&
+                    1.,.5,1.,1.,.5,1.0E-4,&
+                    1.,1.,1.,1.,1.0E-4,1.0E-4,&
+                    1.,1.0E-4,1.0E-4,1.,1.0E-4,1.0E-4,&
+                    1.0E-4,1.,1.,1.,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.,1.0E-4,1.,1.,1.0E-4,&
+                    1.0E-4,1.0E-4,1.,.25,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1./)
+
+ggnam(:) = 'JUNK' !default value
+  ggnam(1:115) = (/ 'SO2   ','SULF  ','NO2   ','NO    ','O3    ','HNO3  ',    &
+                   'H2O2  ','ALD   ','HCHO  ','OP1   ','OP2   ','PAA   ',    &
+                   'ORA1  ','ORA2  ','NH3   ','N2O5  ','NO3   ','PAN   ',    &
+                   'HC3   ','HC5   ','HC8   ','ETH   ','CO    ','ETE   ',    &
+                   'OLT   ','OLI   ','TOL   ','XYL   ','ACO3  ','HONO  ',    &
+                   'HNO4  ','KET   ','GLY   ','MGLY  ','ONIT  ','CSL   ',    &
+                   'ISO   ','CO2   ','CH4   ','HKET  ','API   ','LIM   ',    &
+                   'DIEN  ','MACR  ','ACD   ','ACE   ','ACT   ',   &
+                   'BALD  ','BEN   ','DCB1  ','DCB2  ','DCB3  ','EOH   ',    &
+                   'EPX   ','ETEG  ','ISHPA  ','ISON  ','MAHP  ','MCT   ',    &
+                   'MEK   ','MOH   ','MPAN  ','MVK   ','PER1  ',    &
+                   'PER2  ','PHEN  ','PPN   ','RCO3  ','ROH   ',    &
+                   'UALD  ','XYO   ','GLYC  ','ISOPND','ISOPNB','UHC   ',    &
+                   'HAC   ','MACRN ','MVKN  ','PROPNN','VRP   ',    &
+                   'IEPOXA ', 'IEPOXB ', 'IEPOXD ','IAP   ','DHMOB ',    &
+                   'MOBA  ','ETHLN ','ISNP  ','PYAC  ','HPALD ',    &
+                   'IMONIT','MONIT ','DONIT ','AONIT ','NAONIT','TONIT ', &
+                   'UTONIT','MBO   ','MBON  ','HONIT ','HO ', &
+                   'ICN', 'ISNOOA', 'ISNOOB','INPD','INPB',&
+                   'ISHPB','ISHPD','IHND','IHNB','INHED','INHEB', &
+                   'R4N','R4NO', 'HO2 '/)
+
+END SUBROUTINE setup_gasprofile_map_racm2_mth
+!!!!!!Azimeh
+
+
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Maps for indices and fractional apportionment of the default
@@ -1570,6 +1648,7 @@ END SUBROUTINE bdy_chem_value_ghg
           i_bdy_method = 1
 
         if (config_flags%chem_opt == RACM_KPP .or.          &
+            config_flags%chem_opt == R2SMH_KPP .or.          &
             config_flags%chem_opt == GOCARTRACM_KPP .or.      &
             config_flags%chem_opt == RACMSORG_KPP .or.      &
             config_flags%chem_opt == RACM_ESRLSORG_KPP .or.      &
@@ -1948,6 +2027,7 @@ END SUBROUTINE bdy_chem_value_ghg
           i_bdy_method = 1
 
         if (config_flags%chem_opt == RACM_KPP .or.          &
+            config_flags%chem_opt == R2SMH_KPP .or.          &
             config_flags%chem_opt == GOCARTRACM_KPP .or.      &
             config_flags%chem_opt == RACMSORG_KPP .or.      &
             config_flags%chem_opt == RACM_SOA_VBS_KPP .or.      & 
@@ -2564,7 +2644,7 @@ END SUBROUTINE bdy_chem_value_ghg
         get_last_gas = 0
 
      case (RADM2, RADM2_KPP, RADM2SORG, RADM2SORG_AQ, RADM2SORG_AQCHEM, RADM2SORG_KPP, &
-           RACM_KPP, RACMPM_KPP, RACM_MIM_KPP, RACMSORG_AQ, RACMSORG_AQCHEM_KPP,       &
+           RACM_KPP,R2SMH_KPP, RACMPM_KPP, RACM_MIM_KPP, RACMSORG_AQ, RACMSORG_AQCHEM_KPP,       &
            RACM_ESRLSORG_AQCHEM_KPP, RACM_ESRLSORG_KPP, RACMSORG_KPP, RACM_SOA_VBS_KPP,& 
            GOCARTRACM_KPP,GOCARTRADM2,GOCARTRADM2_KPP)
         get_last_gas = p_ho2
@@ -3424,7 +3504,7 @@ subroutine chem_dbg(i,j,k,dtstep,itimestep,                           &
      ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,             &
      ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,                  &
      ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,ph_n2o5, &
-     ph_o2                                                            )
+     ph_o2        )
 
   IMPLICIT NONE      
   INTEGER,      INTENT(IN   ) :: i,j,k,                        &
@@ -3483,6 +3563,8 @@ subroutine chem_dbg(i,j,k,dtstep,itimestep,                           &
      print*,"e_csl:",emis_ant(i,k,j,p_e_csl)*convg
      print*,"e_hcho:",emis_ant(i,k,j,p_e_hcho)*convg
      print*,"e_ald:",emis_ant(i,k,j,p_e_ald)*convg
+!     print*,"e_moh:",emis_ant(i,k,j,p_e_moh)*convg
+!    print*,"e_acd:",emis_ant(i,k,j,p_e_acd)*convg
      print*,"e_ket:",emis_ant(i,k,j,p_e_ket)*convg
      print*,"e_ora2:",emis_ant(i,k,j,p_e_ora2)*convg
      print*,"e_pm25:",emis_ant(i,k,j,p_e_pm_25)*conva
@@ -3496,6 +3578,7 @@ subroutine chem_dbg(i,j,k,dtstep,itimestep,                           &
      print*,"e_no3 f,c:",emis_ant(i,k,j,p_e_no3j)*conva
      print*,"e_orgc:",emis_ant(i,k,j,p_e_orgc)*conva
      print*,"e_ecc:",emis_ant(i,k,j,p_e_ecc)*conva
+     print*,"e_ch4:",emis_ant(i,k,j,p_e_ch4)*convg
      print*
   else
      print*,"dz8w=0 so cannot show adjusted emissions"

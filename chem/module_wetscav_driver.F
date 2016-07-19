@@ -265,6 +265,8 @@ REAL,  DIMENSION( ims:ime , kms:kme , jms:jme , ntot_amode ),       &
 
 !
 ! select which aerosol scheme to take
+
+
 !
    cps_select: SELECT CASE(config_flags%chem_opt)
 
@@ -377,7 +379,9 @@ CASE (CBMZ_CAM_MAM3_NOAQ,CBMZ_CAM_MAM3_AQ,CBMZ_CAM_MAM7_NOAQ,CBMZ_CAM_MAM7_AQ)
       enddo
     
     CASE DEFAULT
-      
+     
+
+ 
     END SELECT
    end subroutine wetscav_driver
 

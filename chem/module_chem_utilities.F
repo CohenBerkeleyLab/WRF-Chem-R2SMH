@@ -71,6 +71,9 @@ CONTAINS
     k_start = kts
     k_end = min( kte, kde-1 )
 
+
+
+
 !  compute thermodynamics and velocities at pressure points
     do j = j_start,j_end
     do k = k_start, k_end
@@ -178,5 +181,8 @@ CONTAINS
 
     enddo
     enddo
+
+
+
 END SUBROUTINE chem_prep
 END MODULE module_chem_utilities

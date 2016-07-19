@@ -114,7 +114,7 @@ int   in_comment, got_it;
                         got_it=1;
 		    }
                       if ( got_it == 0  && inln[n] !=  ' '){
-		    /* printf("%c %i \n ", inln[n], in_comment ); */
+		     /* printf("%c %i \n ", inln[n], in_comment ); */
 
                        kpp_spec[nn]=inln[n];
                        nn++;
@@ -127,10 +127,8 @@ int   in_comment, got_it;
 
           }
 
-	  /* printf("spec: %s \n ", kpp_spec);  */
           
 	  if (kpp_spec[0] != '\0'  && got_it == 1 )  {
-
             if ( DEBUGR == 1 ){
                   printf("spec: %s \n ", kpp_spec);
                   fprintf(stderr," p, name   %s %s \n", q->name, kpp_spec ); 
@@ -140,7 +138,6 @@ int   in_comment, got_it;
            strcpy( member->name , kpp_spec )   ;
            member->next = NULL ;
 	   add_knode_to_end( member , &(q->members) ) ;
-	  
 	  }
          } 
 

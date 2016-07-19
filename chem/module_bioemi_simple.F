@@ -80,6 +80,7 @@ MODULE module_bioemi_simple
 ! .. Intrinsic Functions ..
       INTRINSIC max, min
 !
+
       luse_typ=mminlu_loc
 !     print *,'luse_typ,iswater',luse_typ,iswater_temp
       iseason=1
@@ -145,6 +146,9 @@ MODULE module_bioemi_simple
 !       if(i.eq.5.and.j.eq.5)print *,emiss_bio(n)
       END DO
  100  continue
+ 
+
+
 END SUBROUTINE bio_emissions
 ! **********************************************************************
 ! **********************  SUBROUTINE BIOEMIIN **************************

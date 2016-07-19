@@ -24,6 +24,9 @@ CONTAINS
 
    integer :: i,k,j
    real :: tc2,tc3,h2o2,cldf
+
+
+
           do j=jts,jte
           do k=kts,kte
           do i=its,ite
@@ -66,6 +69,7 @@ CONTAINS
            enddo
 
 ! ****************************************************************************
+
 
 END  subroutine so2so4
 END MODULE module_gocart_so2so4

@@ -18,18 +18,18 @@
 !     NH    Maximum number of Herzberg X-sections that can be used
 !     MX    Number of aerosol/cloud types supplied from CTM
 !-----------------------------------------------------------------------
-	module module_fastj_data
+        module module_fastj_data
 
-!jdf	use module_fastj_cmnh, only:  double, kmaxd, jppj
+!jdf        use module_fastj_cmnh, only:  double, kmaxd, jppj
         USE module_data_mosaic_other, only : kmaxd
 !jdf
        integer, parameter :: double = 8        !compiler dependent value real*8
-       integer,parameter :: jppj=14        !Number of photolytic reactions supplied
+       integer,parameter :: jppj=37        !Number of photolytic reactions supplied
 !jdf
 
         INTEGER  NB, NC !values set in fastj_driver, don't confuse
                         !this nc with the one in module_fastj_mie
-        INTEGER, PARAMETER :: NS=15, NW=15, NP=21, NH=7, MX=3
+        INTEGER, PARAMETER :: NS=38, NW=15, NP=21, NH=7, MX=3
 
 !titls variables
         CHARACTER*55 TITLE0(3)
@@ -42,44 +42,44 @@
         REAL(kind=double), dimension(KMAXD+1,KMAXD+1) :: AMF        
         REAL(kind=double) ::  RAD,RFLECT,SZA,U0,TANHT,ZZHT  
 ! ccwvl variables
-	REAL(kind=double), dimension(NW) :: WL, FL, QBC 
-	REAL(kind=double), dimension(NW+1) :: WBIN, QRAYL
-	REAL(kind=double), dimension(NW,3) :: QO2, QO3, Q1D
-	REAL(kind=double), dimension(NW,2,NS-3) :: QQQ
-	REAL(kind=double), dimension(3,NS) :: TQQ
-	REAL(kind=double), dimension(4,NP) :: WAA, QAA, RAA, SSA
-	REAL(kind=double), dimension(8,4,NP) :: PAA
-	REAL(kind=double), dimension(NW, kmaxd) :: FFF
-	REAL(kind=double), dimension(NS) :: VALJ
-	INTEGER, dimension(MX) :: MIEDX
-	INTEGER :: NJVAL,NW1,NW2,NAA,NLBATM
+        REAL(kind=double), dimension(NW) :: WL, FL, QBC 
+        REAL(kind=double), dimension(NW+1) :: WBIN, QRAYL
+        REAL(kind=double), dimension(NW,3) :: QO2, QO3, Q1D
+        REAL(kind=double), dimension(NW,2,NS-3) :: QQQ
+        REAL(kind=double), dimension(3,NS) :: TQQ
+        REAL(kind=double), dimension(4,NP) :: WAA, QAA, RAA, SSA
+        REAL(kind=double), dimension(8,4,NP) :: PAA
+        REAL(kind=double), dimension(NW, kmaxd) :: FFF
+        REAL(kind=double), dimension(NS) :: VALJ
+        INTEGER, dimension(MX) :: MIEDX
+        INTEGER :: NJVAL,NW1,NW2,NAA,NLBATM
 ! clim variables
- 	 REAL(kind=double), dimension(51,18,12) :: TREF, OREF
- 	 REAL(kind=double), dimension(51) :: BREF
+          REAL(kind=double), dimension(51,18,12) :: TREF, OREF
+          REAL(kind=double), dimension(51) :: BREF
 ! jcntr variables
- 	REAL(kind=double) :: dtaumax,szamax
-! jvals variables	
- 	REAL(kind=double), dimension(kmaxd,jppj) :: zj
- 	REAL(kind=double), dimension(NW,3) :: zpdep
- 	REAL(kind=double), dimension(jppj) :: jfacta
- 	INTEGER, dimension(NS) :: jpdep
- 	INTEGER, dimension(jppj) :: jind
- 	INTEGER :: npdep
- 	CHARACTER*7, dimension(jppj) :: jlabel 	
+         REAL(kind=double) :: dtaumax,szamax
+! jvals variables        
+         REAL(kind=double), dimension(kmaxd,jppj) :: zj
+         REAL(kind=double), dimension(NW,3) :: zpdep
+         REAL(kind=double), dimension(jppj) :: jfacta
+         INTEGER, dimension(NS) :: jpdep
+         INTEGER, dimension(jppj) :: jind
+         INTEGER :: npdep
+         CHARACTER*7, dimension(jppj) :: jlabel         
 ! jvsub variables
-	REAL(kind=double) :: dtausub,dsubdiv
-	INTEGER, dimension(2*(KMAXD+1)) :: jadsub
- ! herz variables
- 	REAL(kind=double) :: hzo2,hzo3
- 	REAL(kind=double), dimension(NH) :: hztoa
- 	REAL(kind=double), dimension(kmaxd) :: fhz
- 	INTEGER :: nhz
- 	INTEGER, dimension(nh) :: hzind
- 	CHARACTER*7, dimension(nh) :: hzlab 
- 	REAL(kind=double), dimension(nh) :: hztmp
- 	
+        REAL(kind=double) :: dtausub,dsubdiv
+        INTEGER, dimension(2*(KMAXD+1)) :: jadsub
+! herz variables
+         REAL(kind=double) :: hzo2,hzo3
+         REAL(kind=double), dimension(NH) :: hztoa
+         REAL(kind=double), dimension(kmaxd) :: fhz
+         INTEGER :: nhz
+         INTEGER, dimension(nh) :: hzind
+         CHARACTER*7, dimension(nh) :: hzlab 
+         REAL(kind=double), dimension(nh) :: hztmp
+         
 ! data declarations
-! from inphot2 	
+! from inphot2         
         data RAD, ZZHT, dtaumax, dsubdiv   &
 !jdf      / 0.6375D+09,  0.5000D+06,  0.1000D+01,  0.1000D+02/
 !jdf needed to reduce dsubdiv, otherwise too many vertical subdivisions for clouds
@@ -89,11 +89,11 @@
           / 0.1000D+01,  0.9800D+02/ 
           
 ! from set_aer2          
-        data MIEDX   &
+        data MIEDX   & !?????? not updated yet
          /   &
            15,    10,    14   &
          /
-       data BREF   &
+       data BREF   & !?????? not updated yet
          /   &
          0.1000D-09,  0.1000D-09,  0.1000D-09,  0.1000D-09,   &
          0.1000D-09,  0.1000D-09,  0.0000D+00,  0.0000D+00,   &
@@ -111,13 +111,21 @@
          /
          
 ! from rd_js2
-       data jfacta   &
+       data jfacta   & !?????? updated
          /   &
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
-           0.1000D+01,  0.1000D+01   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01,  0.1000D+01,  0.1000D+01,   &
+           0.1000D+01 &
          /
        data jlabel   &
          /   &
@@ -125,7 +133,15 @@
           'H2O2   ', 'HCHO_a ', 'HCHO_b ',   &
           'MeOOH  ', 'NO3_X  ', 'NO3_L  ',   &
           'HONO   ', 'N2O5   ', 'HONO2  ',   &
-          'HO2NO2 ', 'C2H5O2 '   &
+          'HO2NO2 ', 'ALD    ', 'CH3CHO ',   &
+          'ACET   ', 'UALD   ', 'MEK    ',   &
+          'MACR   ', 'MVK    ', 'GLY_A  ',   &
+          'GLY_B  ', 'GLY_C  ', 'MGLY   ',   &
+          'PAA    ', 'iPrNO3 ', 'PAN_A  ',   &
+          'PAN_B  ', 'BALD   ', 'GLYC   ',   &
+          'ONIT1  ', 'ONITOH3', 'HPALD  ',   &
+          'NOA    ', 'IBUTALD', 'ONITOH1',   &
+          'ClNO2  '  &
          /         
 
 ! from rd_tjpl2
@@ -135,7 +151,7 @@
          /
        data NJVAL,NWWW,NW1,NW2   &
          /   &
-          15,    7,    1,    7   &
+          38,    7,    1,    7   &  !
          /
        data (WBIN(IW),IW=1,  8)   &
          /   &
@@ -149,15 +165,15 @@
          /
        data (FL(IW),IW=1,  7)   &
          /   &
-          0.7352E+15, 0.7332E+15, 0.5022E+15, 0.8709E+15,   &
-          0.3786E+16, 0.1544E+17, 0.2110E+18   &
+          0.5889E+15, 0.7678E+15, 0.5045E+15, 0.8092E+15,   &
+          0.3853E+16, 0.1547E+17, 0.2131E+18   &  !updated to Fast-JX 6.5 data
          /
        data (QRAYL(IW),IW=1,  7)   &
          /   &
-           0.618E-25,  0.543E-25,  0.492E-25,  0.454E-25,   &
-           0.363E-25,  0.209E-25,  0.383E-26   &
+           0.6131E-25,  0.5422E-25,  0.4923E-25,  0.4514E-25,   &
+           0.3643E-25,  0.2087E-25,  0.3848E-26   & !updated to Fast-JX 6.5 data
          /
-       data (QBC(IW),IW=1,  7)   &
+       data (QBC(IW),IW=1,  7)   & !Black Carbon absportion extinct
          /   &
             10.08,    9.96,    9.87,    9.79,   &
              9.58,    9.00,    6.50   &
@@ -206,184 +222,439 @@
          /
         data (QO3(IW, 1), IW=1,  7)   &
          /   &
-          0.8693E-18,   0.2365E-18,   0.8722E-19,   &
-          0.3694E-19,   0.4295E-20,   0.1804E-22,   &
-          0.1630E-20   &
+          0.7561E-18,   0.2367E-18,   0.8756E-19,   &
+          0.3690E-19,   0.4256E-20,   0.1806E-22,   &
+          0.1625E-20   &  !updated to Fast-JX 6.5 data
          /
         data (QO3(IW, 2), IW=1,  7)   &
          /   &
-          0.9189E-18,   0.2571E-18,   0.9673E-19,   &
-          0.4141E-19,   0.5457E-20,   0.2775E-22,   &
-          0.1630E-20   &
-         /
+          0.8016E-18,   0.2572E-18,   0.9710E-19,   &
+          0.4136E-19,   0.5409E-20,   0.2784E-22,   &
+          0.1625E-20   & !updated to Fast-JX 6.5 data
+         /  
+
         data (QO3(IW, 3), IW=1,  7)   &
          /   &
-          0.9574E-18,   0.2777E-18,   0.1075E-18,   &
-          0.4725E-19,   0.6782E-20,   0.4824E-22,   &
-          0.1630E-20   &
+         8.391E-19,    2.778E-19,    1.079E-19,    &
+         4.720E-20,    6.725E-21,    4.845E-23,    &
+         1.625E-21 & !updated to Fast-JX 6.5 data
          /
         data (Q1D(IW, 1), IW=1,  7)   &
          /   &
-          0.9500E+00,   0.9330E+00,   0.4270E+00,   &
-          0.6930E-01,   0.6060E-01,   0.0000E+00,   &
-          0.0000E+00   &
+          0.9000E+00,   0.8926E+00,   0.4516E+00,   &
+          0.8621E-01,   0.7740E-01,   0.0000E+00,   &
+          0.0000E+00   & !updated to Fast-JX 6.5 data
          /
         data (Q1D(IW, 2), IW=1,  7)   &
          /   &
-          0.9500E+00,   0.9420E+00,   0.4890E+00,   &
-          0.1360E+00,   0.7110E-01,   0.0000E+00,   &
-          0.0000E+00   &
+          0.9000E+00,   0.8934E+00,   0.5091E+00,   &
+          0.1472E+00,   0.8632E-01,   0.0000E+00,   &
+          0.0000E+00   & !updated to Fast-JX 6.5 data
          /
         data (Q1D(IW, 3), IW=1,  7)   &
          /   &
-          0.9500E+00,   0.9550E+00,   0.5870E+00,   &
-          0.2370E+00,   0.8570E-01,   0.0000E+00,   &
-          0.0000E+00   &
+          0.9000E+00,   0.8954E+00,   0.5723E+00,   &
+          0.2362E+00,   0.9937E-01,   0.0000E+00,   &
+          0.0000E+00   & !updated to Fast-JX 6.5 data
          /
-        data (TITLEJ(1,JTMP), JTMP=4,15)   &
+        data (TITLEJ(1,JTMP), JTMP=4,38)   &
          /   &
         'H2O2   ',  'HCHO_a ',  'HCHO_b ',  'MeOOH  ',   &
         'NO2    ',  'NO3_X  ',  'NO3_L  ',  'N2O5   ',   &
-        'HONO   ',  'HONO2  ',  'HO2NO2 ',  'C2H5O2 '   &
+        'HONO   ',  'HONO2  ',  'HO2NO2 ',  'ALD    ',   &
+        'CH3CHO ',  'ACET   ',  'UALD   ',  'MEK    ',   &
+        'MACR   ',  'MVK    ',  'GLY_A  ',  'GLY_B  ',   &
+        'GLY_C  ',  'MGLY   ',  'PAA    ',  'iPrNO3 ',   &
+        'PAN_A  ',  'PAN_B  ',  'BALD   ',  'GLYC   ',   &
+        'ONIT1  ',  'ONITOH3',  'HPALD  ',  'NOA    ',   &
+        'IBUTALD',  'ONITOH1',  'ClNO2  '    &
          /
-       data (TITLEJ(2,JTMP), JTMP=4,15)   &
+        data (TITLEJ(2,JTMP), JTMP=4,38)   &
          /   &
         'H2O2   ',  'HCHO_a ',  'HCHO_b ',  'MeOOH  ',   &
         'NO2    ',  'NO3_X  ',  'NO3_L  ',  'N2O5   ',   &
-        'HONO   ',  'HONO2  ',  'HO2NO2 ',  'C2H5O2 '   &
+        'HONO   ',  'HONO2  ',  'HO2NO2 ',  'ALD    ',   &
+        'CH3CHO ',  'ACET   ',  'UALD   ',  'MEK    ',   &
+        'MACR   ',  'MVK    ',  'GLY_A  ',  'GLY_B  ',   &
+        'GLY_C  ',  'MGLY   ',  'PAA    ',  'iPrNO3 ',   &
+        'PAN_A  ',  'PAN_B  ',  'BALD   ' , 'GLYC   ',   &
+        'ONIT1  ',  'ONITOH3',  'HPALD  ',  'NOA    ',   &
+        'IBUTALD',  'ONITOH1',  'ClNO2  '    &
          /
-        data (TQQ(1,JTMP), JTMP= 4,15)   &
-         /   &
-         200.,   223.,   223.,   200.,   &
-         200.,   200.,   200.,   225.,   &
-         200.,   200.,   200.,   200.   &
+        data (TQQ(1,JTMP), JTMP= 4,38)   &  
+         /   &                              
+         200.,   223.,   223.,   297.,   &
+         220.,   297.,   297.,   225.,   &
+         297.,   200.,   297.,   297.,   &
+         297.,   220.,   297.,   297.,   &
+         297.,   297.,   297.,   297.,   &
+         297.,   297.,   297.,   240.,   &
+         250.,   250.,   297.,   296.,   &
+         298.,   297.,   297.,   297.,   &
+         297.,   297.,   297.            &
          /
-        data (TQQ(2,JTMP), JTMP= 4,15)   &
-         /   &
-         300.,   293.,   293.,   300.,   &
-         300.,   300.,   300.,   300.,   &
-         300.,   300.,   300.,   300.   &
+        data (TQQ(2,JTMP), JTMP= 4,38)   & 
+         /   &                             
+         300.,   293.,   293.,   298.,   &
+         300.,   298.,   298.,   300.,   &
+         298.,   300.,   298.,   298.,   &
+         298.,   300.,   298.,   298.,   &
+         298.,   298.,   298.,   298.,   &
+         298.,   298.,   298.,   298.,   &
+         298.,   298.,   298.,   296.,   &
+         298.,   298.,   298.,   298.,   &
+         298.,   298.,   298.            &
          /
         data (QQQ(IW,1, 1), IW=1, 7)   &
          /   &
-         0.88510E-20,   0.50080E-20,   0.32150E-20,   0.21160E-20,   &
-         0.80100E-21,   0.20880E-22,   0.00000E+00   &
+         8.360E-21,    5.008E-21,     3.220E-21,      2.115E-21,    &
+         7.984E-22,    2.101E-23,     0.000E+00       & !updated to Fast-JX 6.5 HO2O2 at 200 K
          /
         data (QQQ(IW,1, 2), IW=1, 7)   &
          /   &
-         0.00000E+00,   0.19420E-19,   0.12740E-19,   0.19710E-19,   &
-         0.43550E-20,   0.50740E-25,   0.00000E+00   &
+         0.000E+00,    1.945E-20,     1.289E-20,      1.969E-20,     &
+         4.324E-21,    5.105E-26,     0.000E+00   &  !updated to Fast-JX 6.5 HCHO_a at 223
          /
         data (QQQ(IW,1, 3), IW=1, 7)   &
          /   &
-         0.00000E+00,   0.63870E-20,   0.43920E-20,   0.90270E-20,   &
-         0.10410E-19,   0.19490E-21,   0.00000E+00   &
+         0.000E+00,    6.397E-21,     4.443E-21,      9.027E-21,    &
+         1.040E-20,    1.960E-22,     0.000E+00   & !updated to Fast-JX 6.5 HCHO_b at 223
          /
         data (QQQ(IW,1, 4), IW=1, 7)   &
          /   &
-         0.58830E-20,   0.35730E-20,   0.24370E-20,   0.17560E-20,   &
-         0.74280E-21,   0.42360E-22,   0.00000E+00   &
+         5.621E-21,    3.573E-21,     2.441E-21,      1.755E-21,    &
+         7.405E-22,    4.261E-23,     0.000E+00   &!updated to Fast-JX 6.5  MeOOH at 297
          /
         data (QQQ(IW,1, 5), IW=1, 7)   &
          /   &
-         0.10480E-18,   0.14940E-18,   0.18980E-18,   0.22950E-18,   &
-         0.33910E-18,   0.42300E-18,   0.40470E-21   &
+         1.075E-19,    1.471E-19,     1.840E-19,      2.205E-19,    &
+         3.202E-19,    4.431E-19,     2.377E-22   & !updated to Fast-JX generate cross-section one that uses JPL 2006 values at 220 K
          /
         data (QQQ(IW,1, 6), IW=1, 7)   &
          /   &
          0.00000E+00,   0.00000E+00,   0.00000E+00,   0.00000E+00,   &
-         0.00000E+00,   0.00000E+00,   0.74310E-18   &
+         0.00000E+00,   0.00000E+00,   7.322E-19   & !updated to Fast-JX 6.5 NO3 at 297 *0.88586 for O channel 
          /
         data (QQQ(IW,1, 7), IW=1, 7)   &
          /   &
          0.00000E+00,   0.00000E+00,   0.00000E+00,   0.00000E+00,   &
-         0.00000E+00,   0.00000E+00,   0.95730E-19   &
+         0.00000E+00,   0.00000E+00,   9.435E-20   & !updated to Fast-JX 6.5 NO3 at 297 *0.11414 for O2 channel 
          /
         data (QQQ(IW,1, 8), IW=1, 7)   &
          /   &
-         0.41300E-19,   0.19980E-19,   0.11670E-19,   0.72500E-20,   &
-         0.22960E-20,   0.11630E-21,   0.00000E+00   &
+         3.823E-20,     1.998E-20,     1.170E-20,     7.246E-21,    &
+         2.286E-21,     1.173E-22,     0.000E+00  & !updated to Fast-JX 6.5 N2O5 at 225
          /
         data (QQQ(IW,1, 9), IW=1, 7)   &
          /   &
-         0.00000E+00,   0.00000E+00,   0.12000E-19,   0.34690E-19,   &
-         0.10900E-18,   0.86450E-19,   0.00000E+00   &
+         0.000E+00,     0.000E+00,     1.175E-20,     3.470E-20,    &
+         1.093E-19,     8.764E-20,     0.000E+00   & !updated to Fast-JX 6.5 HONO at 297
          /
         data (QQQ(IW,1,10), IW=1, 7)   &
          /   &
-         0.37060E-20,   0.13770E-20,   0.54510E-21,   0.21020E-21,   &
-         0.21540E-22,   0.87680E-25,   0.00000E+00   &
+         3.396E-21,     1.377E-21,     5.474E-22,     2.100E-22,    &
+         2.131E-23,     8.822E-26,     0.000E+00   & !updated to Fast-JX 6.5 HNO3 at 200
          /
         data (QQQ(IW,1,11), IW=1, 7)   &
          /   &
-         0.28690E-19,   0.11020E-19,   0.52220E-20,   0.27940E-20,   &
-         0.23010E-21,   0.00000E+00,   0.00000E+00   &
+         2.601E-20,     1.103E-20,     5.239E-21,     2.793E-21,    &
+         2.250E-22,     0.000E+00,     4.792E-23   & !updated to Fast-JX 6.5 HNO4 at 297
          /
         data (QQQ(IW,1,12), IW=1, 7)   &
          /   &
-         0.47500E-18,   0.12130E-19,   0.00000E+00,   0.00000E+00,   &
-         0.00000E+00,   0.00000E+00,   0.00000E+00   &
+         5.548E-20,     4.630E-20,     3.578E-20,     2.441E-20,    &
+         5.853E-21 ,    1.257E-23,     0.000E+00  & !updated to Fast-JX 6.5 EAld at 297
+         /
+        data (QQQ(IW,1,13), IW=1, 7)   &
+         /   &
+         2.161E-20,     1.460E-20,     8.410E-21,     3.335E-21,    &
+         1.751E-22,     0.000E+00,     0.000E+00  & !updated to Fast-JX 6.5 ActAld at 297
+         /
+        data (QQQ(IW,1,14), IW=1, 7)   &
+         /   &
+         3.100E-20,     1.944E-20,     1.088E-20,     5.532E-21,    &
+         4.637E-22,     3.425E-25,     0.000E+00 & !updated to Fast-JX 6.5 C3H6O at 220
+         /
+        data (QQQ(IW,1,15), IW=1, 7)   &
+         /   &
+         6.307E-021 ,   8.983E-021,    1.107E-020,    1.283E-020,   &
+         1.378E-020,    2.783E-021,    0.000E+000 & ! updated to xc gen UALD at 297
+         /
+        data (QQQ(IW,1,16), IW=1, 7)   &
+         /   &
+         4.170E-20,     2.684E-20,     1.570E-20,     7.721E-21,    &
+         8.142E-22,     3.734E-25,     0.000E+00  & !updated to Fast-JX 6.5 MEKeto at 297
+         /
+        data (QQQ(IW,1,17), IW=1, 7)   &
+         /   &
+         2.107E-22,     3.151E-22,     3.995E-22,     4.742E-22,    &
+         5.222E-22,     1.064E-22,     0.000E+00 & !updated to Fast-JX 6.5 MeAcr at 297
+         /
+        data (QQQ(IW,1,18), IW=1, 7)   &
+         /   &
+         5.521E-21,     7.955E-21,     8.828E-21,     7.236E-21,    &
+         3.374E-21,     1.790E-22,     0.000E+00 & !updated to Fast-JX 6.5 MeVK at 297
+         /
+        data (QQQ(IW,1,19), IW=1, 7)   &
+         /   &
+         1.297E-020,    1.312E-020,    1.269E-020,    1.106E-020,   &
+         6.018E-021,    1.768E-021,    4.813E-023  & ! updated to GLYX1_HCO_HCO 297 (GLY_A)
+         /
+        data (QQQ(IW,1,20), IW=1, 7)   &
+         /   &
+         7.890E-021,    6.216E-021,    4.649E-021,    3.148E-021,   &
+         8.819E-022,    1.361E-023,    0.000E+000 & ! updated to GLYX2_H2_2CO 297 (GLY_B)
+         /
+        data (QQQ(IW,1,21), IW=1, 7)   &
+         /   &
+         1.704E-020,    1.636E-020,    1.462E-020,    1.147E-020,   &
+         4.054E-021,    2.757E-022,    8.916E-025 & ! updated to GLYX3_HCHO_CO 297 (GLY_C)
+         /
+        data (QQQ(IW,1,22), IW=1, 7)   &
+         /   &
+         4.384E-20,     3.465E-20,     2.428E-20,     1.788E-20,    &
+         6.194E-21,     2.237E-20,     1.435E-21 & ! updated to Fast-JX 6.5 MGlyxl at 297
+         /
+        data (QQQ(IW,1,23), IW=1, 7)   &
+         /   &
+         1.881E-021 ,   9.965E-022,    5.856E-022,    3.730E-022,   &
+         1.059E-022,    0.000E+000,    0.000E+000 & ! updated to xc gen PAA at 297
+         /
+        data (QQQ(IW,1,24), IW=1, 7)   &
+         /   &
+         9.611E-021 ,   4.538E-021,    2.104E-021,    9.258E-022,   &
+         1.097E-022,    4.550E-025,    0.000E+000 & ! updated to xc gen iPrNO3 at 240
+         /
+        data (QQQ(IW,1,25), IW=1, 7)   &
+         /   &
+         1.937E-021,    6.087E-022,    2.592E-022,    1.374E-022,   &
+         3.247E-023,    3.977E-025,    0.000E+000 & ! updated to xc gen PAN_NO2 (PAN_A) at 250
+         /
+        data (QQQ(IW,1,26), IW=1, 7)   &
+         /   &
+         4.841E-022 ,  3.265E-022,     1.728E-022,    9.162E-023,   &
+         2.165E-023,   2.651E-025,     0.000E+000  & ! updated to xc gen PAN_NO3 (PAN_B) at 250
+         /
+        data (QQQ(IW,1,27), IW=1, 7)   &
+         /   &
+         2.671E-020,    4.379E-021,    4.251E-021,    5.162E-021,   &
+         5.519E-021,    1.006E-021,    0.000E+000 & ! updated to xc gen BALD at 297
+         /
+        data (QQQ(IW,1,28), IW=1, 7)   &
+         /   &
+         2.784E-20,    1.706E-20,      9.411E-21,    4.388E-21,  &
+         4.937E-22,    0.000E+00,      0.000E+00  & !updated to GEOS HOMeCHO at 296 (GLYC)
+         /
+        data (QQQ(IW,1,29), IW=1, 7)   &
+         /   & 
+         9.733E-21,    4.328E-21,     1.962E-21,     8.961E-22, &
+         2.277E-22,    2.907E-23,     0.000E+00  & !updated to Fast-JX 6.5 gen xs ONIT1 at 297
+         /
+        data (QQQ(IW,1,30), IW=1, 7)   &
+         /   &
+         6.873E-21,    3.983E-21,     2.343E-21,     1.342E-21, &
+         2.254E-22,    0.000E+00,     0.000E+00 & ! updated to Fast-JX 6.5 gen xs ONITOH3 at 297
+         /
+        data (QQQ(IW,1,31), IW=1, 7)   &
+         /   &
+         2.639E-20,    3.941E-20,     4.998E-20,     5.929E-20, &
+         6.528E-20,    1.330E-20,     0.000E+00 & !updated to Fast-JX 6.5 gen xs HPALD at 297
+         /
+        data (QQQ(IW,1,32), IW=1, 7)   &
+         /   &
+         2.973E-20,    1.662E-20,     8.676E-21,     4.228E-21, &
+         6.489E-22,    5.687E-24,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs NOA at 297
+         / 
+        data (QQQ(IW,1,33), IW=1, 7)   &
+         /   &
+         5.088E-20,    5.045E-20,     4.400E-20,     3.397E-20, &
+         8.279E-21,    1.483E-23,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs IBUTALD at 297
+         /
+        data (QQQ(IW,1,34), IW=1, 7)   &
+         /   &
+         3.244E-21,    1.443E-21,     6.540E-22,      2.987E-22, &
+         7.589E-23,    9.688E-24,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs ONITOH1 at 297
+         /
+        data (QQQ(IW,1,35), IW=1, 7)   &
+         /   &
+         1.529E-19,    1.346E-19,     1.204E-19,     1.035E-19, &
+         6.193E-20,    9.498E-21,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs ClNO2 at 297
          /
         data (QQQ(IW,2, 1), IW=1, 7)   &
          /   &
-         0.98180E-20,   0.57350E-20,   0.37970E-20,   0.25850E-20,   &
-         0.10490E-20,   0.26990E-22,   0.00000E+00   &
+         9.300E-21,     5.735E-21,     3.803E-21,     2.583E-21,    &
+         1.046E-21,     2.715E-23,     0.000E+00  & !updated to Fast-JX 6.5 H2O2 at 300
          /
         data (QQQ(IW,2, 2), IW=1, 7)   &
          /   &
-         0.00000E+00,   0.18470E-19,   0.13040E-19,   0.18960E-19,   &
-         0.39490E-20,   0.44400E-25,   0.00000E+00   &
+         0.000E+00,     1.850E-20,     1.317E-20,     1.895E-20,    &
+         3.922E-21,     4.467E-26,     0.000E+00   & !updated to Fast-JX 6.5 HCHO_a at 293
          /
         data (QQQ(IW,2, 3), IW=1, 7)   &
          /   &
-         0.00000E+00,   0.60770E-20,   0.45000E-20,   0.87150E-20,   &
-         0.94340E-20,   0.18920E-21,   0.00000E+00   &
+         0.000E+00,     6.086E-21,     4.543E-21,     8.717E-21,    &
+         9.424E-21,     1.903E-22,     0.000E+00   & !updated to Fast-JX 6.5 HCHO_b at 293
          /
         data (QQQ(IW,2, 4), IW=1, 7)   &
          /   &
-         0.58830E-20,   0.35730E-20,   0.24370E-20,   0.17560E-20,   &
-         0.74280E-21,   0.42360E-22,   0.00000E+00   &
-         /
+         5.621E-21,    3.573E-21,     2.441E-21,      1.755E-21,    &
+         7.405E-22,    4.261E-23,     0.000E+00   &!updated to Fast-JX 6.5  MeOOH at 298
+         /        
         data (QQQ(IW,2, 5), IW=1, 7)   &
          /   &
-         0.10390E-18,   0.14620E-18,   0.18450E-18,   0.22230E-18,   &
-         0.32560E-18,   0.41500E-18,   0.40200E-21   &
+         1.063E-19,     1.477E-19,     1.869E-19,     2.295E-19,    &
+         3.448E-19,     4.644E-19,     4.346E-22  & !updated to Fast-JX generate cross-section one that uses JPL 2006 values at 300 K
          /
         data (QQQ(IW,2, 6), IW=1, 7)   &
          /   &
          0.00000E+00,   0.00000E+00,   0.00000E+00,   0.00000E+00,   &
-         0.00000E+00,   0.00000E+00,   0.74310E-18   &
+         0.00000E+00,   0.00000E+00,   7.322E-19   & !updated to Fast-JX 6.5 NO3 at 298 *0.88586 for O channel 
          /
         data (QQQ(IW,2, 7), IW=1, 7)   &
          /   &
          0.00000E+00,   0.00000E+00,   0.00000E+00,   0.00000E+00,   &
-         0.00000E+00,   0.00000E+00,   0.95730E-19   &
+         0.00000E+00,   0.00000E+00,   9.435E-20   & !updated to Fast-JX 6.5 NO3 at 298 *0.11414 for O2 channel 
          /
         data (QQQ(IW,2, 8), IW=1, 7)   &
          /   &
-         0.57180E-19,   0.33170E-19,   0.22230E-19,   0.15520E-19,   &
-         0.64090E-20,   0.54290E-21,   0.00000E+00   &
+         5.404E-20,     3.317E-20,     2.226E-20,     1.551E-20,     & 
+         6.389E-21 ,    5.481E-22,     0.000E+00  & !updated to Fast-JX 6.5 N2O5 at 300
          /
         data (QQQ(IW,2, 9), IW=1, 7)   &
          /   &
-         0.00000E+00,   0.00000E+00,   0.12000E-19,   0.34690E-19,   &
-         0.10900E-18,   0.86450E-19,   0.00000E+00   &
+         0.000E+00,     0.000E+00,     1.175E-20,     3.470E-20,     &
+         1.093E-19,     8.764E-20,     0.000E+00   & !updated to Fast-JX 6.5 HONO at 298
          /
         data (QQQ(IW,2,10), IW=1, 7)   &
          /   &
-         0.47470E-20,   0.19230E-20,   0.83140E-21,   0.35890E-21,   &
-         0.47640E-22,   0.26670E-24,   0.00000E+00   &
+         4.384E-21,     1.923E-21,     8.345E-22,     3.586E-22,     &
+         4.720E-23,     2.683E-25,     0.000E+00   & !updated to Fast-JX 6.5 HNO3 at 300
          /
         data (QQQ(IW,2,11), IW=1, 7)   &
          /   &
-         0.28690E-19,   0.11020E-19,   0.52220E-20,   0.27940E-20,   &
-         0.23010E-21,   0.00000E+00,   0.00000E+00   &
+         2.601E-20,     1.103E-20,     5.239E-21,     2.793E-21,     &
+         2.250E-22,     0.000E+00,     4.792E-23  & !updated to Fast-JX 6.5 HNO4 at 298
          /
         data (QQQ(IW,2,12), IW=1, 7)   &
          /   &
-         0.47500E-18,   0.12130E-19,   0.00000E+00,   0.00000E+00,   &
-         0.00000E+00,   0.00000E+00,   0.00000E+00   &
+         5.548E-20,     4.630E-20,     3.578E-20,     2.441E-20,     &
+         5.853E-21,     1.257E-23,     0.000E+00   & !updated to Fast-JX 6.5 EAld at 298
          /
+        data (QQQ(IW,2,13), IW=1, 7)   &
+         /   &
+         2.161E-20,     1.460E-20,     8.410E-21,     3.335E-21,    &
+         1.751E-22,     0.000E+00,     0.000E+00  & !updated to Fast-JX 6.5 ActAld at 298
+         /
+        data (QQQ(IW,2,14), IW=1, 7)   &
+         /   &
+         3.439E-20,     2.255E-20,     1.356E-20,     7.273E-21,    &
+         8.481E-22,     6.682E-25,     0.000E+00 & !updated to Fast-JX 6.5 C3H6O at 300
+         /
+        data (QQQ(IW,2,15), IW=1, 7)   &
+         /   &
+         6.307E-021,   8.983E-021,     1.107E-020,    1.283E-020,   &
+         1.378E-020,   2.783E-021,     0.000E+000  & ! updated to xc gen UALD at 298
+         /
+        data (QQQ(IW,2,16), IW=1, 7)   &
+         /   &
+         4.170E-20,     2.684E-20,     1.570E-20,     7.721E-21,    &
+         8.142E-22,     3.734E-25,     0.000E+00  & !updated to Fast-JX 6.5 MEKeto at 298
+         /
+        data (QQQ(IW,2,17), IW=1, 7)   &
+         /   &
+         2.107E-22,     3.151E-22,     3.995E-22,     4.742E-22,    &
+         5.222E-22,     1.064E-22,     0.000E+00 & !updated to Fast-JX 6.5 MeAcr at 298
+         /
+        data (QQQ(IW,2,18), IW=1, 7)   &
+         /   &
+         5.521E-21,     7.955E-21,     8.828E-21,     7.236E-21,    &
+         3.374E-21,     1.790E-22,     0.000E+00 & !updated to Fast-JX 6.5 MeVK at 298
+         /
+        data (QQQ(IW,2,19), IW=1, 7)   &
+         /   &
+         1.297E-020,    1.312E-020,    1.269E-020,    1.106E-020,   &
+         6.018E-021,    1.768E-021,    4.813E-023  & ! updated to GLYX1_HCO_HCO 298 (GLY_A)
+         /
+        data (QQQ(IW,2,20), IW=1, 7)   &
+         /   &
+         7.890E-021,    6.216E-021,    4.649E-021,    3.148E-021,   &
+         8.819E-022,    1.361E-023,    0.000E+000 & ! updated to GLYX2_H2_2CO 298 (GLY_B)
+         /
+        data (QQQ(IW,2,21), IW=1, 7)   &
+         /   &
+         1.704E-020,    1.636E-020,    1.462E-020,    1.147E-020,   &
+         4.054E-021,    2.757E-022,    8.916E-025 & ! updated to GLYX3_HCHO_CO 298 (GLY_C)
+         /   
+        data (QQQ(IW,2,22), IW=1, 7)   &
+         /   &
+         4.384E-20,     3.465E-20,     2.428E-20,     1.788E-20,    &
+         6.194E-21,     2.237E-20,     1.435E-21 & !updated to Fast-JX 6.5 MGlyxl at 298
+         /
+        data (QQQ(IW,2,23), IW=1, 7)   &
+         /   &
+         1.881E-021 ,   9.965E-022,    5.856E-022,    3.730E-022,   &
+         1.059E-022,    0.000E+000,    0.000E+000  & ! updated to xc gen PAA at 298
+         /
+        data (QQQ(IW,2,24), IW=1, 7)   &
+         /   &
+         1.269E-020,    6.330E-021,    3.142E-021,    1.500E-021,   & 
+         2.116E-022,    1.234E-024,    0.000E+000 & ! updated to xc gen iPrNO3 at 298
+         /
+        data (QQQ(IW,2,25), IW=1, 7)   &
+         /   &
+         2.824E-021 ,   9.196E-022,    4.017E-022,    2.179E-022,   &
+         5.486E-023,    7.246E-025,    0.000E+000 & ! updated to xc gen PAN_NO2 (PAN_A) at 298
+         /
+        data (QQQ(IW,2,26), IW=1, 7)   &
+         /   &
+         7.061E-022 ,   4.947E-022,    2.678E-022,    1.452E-022,   &
+         3.658E-023,    4.831E-025,    0.000E+000 & ! updated to xc gen PAN_NO3 (PAN_B) at 298
+         /
+        data (QQQ(IW,2,27), IW=1, 7)   &
+         /   &
+         2.671E-020,    4.379E-021,    4.251E-021,    5.162E-021,   &
+         5.519E-021,    1.006E-021,    0.000E+000 & ! updated to xc gen BALD at 298
+         /
+        data (QQQ(IW,2,28), IW=1, 7)   &
+         /   &
+         2.784E-20,    1.706E-20,      9.411E-21,    4.388E-21,  &
+         4.937E-22,    0.000E+00,      0.000E+00  & !updated to GEOS HOMeCHO at 296 (GLYC)
+         /
+        data (QQQ(IW,2,29), IW=1, 7)   &
+         /   &
+         9.733E-21,    4.328E-21,     1.962E-21,     8.961E-22, &
+         2.277E-22,    2.907E-23,     0.000E+00  & !updated to Fast-JX 6.5 gen xs ONIT1 at 298
+         /
+        data (QQQ(IW,2,30), IW=1, 7)   &
+         /   &
+         6.873E-21,    3.983E-21,     2.343E-21,     1.342E-21, &
+         2.254E-22,    0.000E+00,     0.000E+00 & ! updated to Fast-JX 6.5 gen xs ONITOH3 at 298
+         /
+        data (QQQ(IW,2,31), IW=1, 7)   &
+         /   &
+         2.639E-20,    3.941E-20,     4.998E-20,     5.929E-20, &
+         6.528E-20,    1.330E-20,     0.000E+00 & !updated to Fast-JX 6.5 gen xs HPALD at 298
+         /
+        data (QQQ(IW,2,32), IW=1, 7)   &
+         /   &
+         2.973E-20,    1.662E-20,     8.676E-21,     4.228E-21, &
+         6.489E-22,    5.687E-24,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs NOA at 298
+         /
+        data (QQQ(IW,2,33), IW=1, 7)   &
+         /   &
+         5.088E-20,    5.045E-20,     4.400E-20,     3.397E-20, &
+         8.279E-21,    1.483E-23,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs IBUTALD at 298
+         /
+        data (QQQ(IW,2,34), IW=1, 7)   &
+         /   &
+         3.244E-21,    1.443E-21,     6.540E-22,      2.987E-22, &
+         7.589E-23,    9.688E-24,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs ONITOH1 at 298
+         /
+        data (QQQ(IW,2,35), IW=1, 7)   &
+         /   &
+         1.529E-19,    1.346E-19,     1.204E-19,     1.035E-19, &
+         6.193E-20,    9.498E-21,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs ClNO2 at 298
+         / 
        data TITLE0(2)   &
          /   &
        '          ============================================='   &
@@ -941,8 +1212,8 @@
             0.1310D-04,    0.7240D-05,   &
             0.0000D00,     0.0000D00   &
          /
-! from rd_prof2                                 	
- 	
+! from rd_prof2                                         
+         
 
        data (OREF( 1, 1, mtmp), mtmp=1,12)   &
          /   &

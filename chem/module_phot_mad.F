@@ -1266,6 +1266,7 @@
       integer :: naerspec
       real :: zsurf
 
+
 !     print *,'gmt,julday in madronich1= ',gmt,julday
       xtime=curr_secs/60._8   !min since simulation start
       ixhour=int(gmt+.01,8)+int(xtime/60._8,8)

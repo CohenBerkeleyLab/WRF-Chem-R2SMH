@@ -111,6 +111,8 @@
    select case (config_flags%chem_opt)
    case ( RADM2SORG,           RADM2SORG_KPP,      RADM2SORG_AQ, RADM2SORG_AQCHEM, &
           GOCART_SIMPLE,       RACMSORG_KPP,       RACMSORG_AQ,  RACMSORG_AQCHEM_KPP, &
+!Azimeh test
+ !         R2SMH_KPP, &
           RACM_ESRLSORG_AQCHEM_KPP, RACM_SOA_VBS_KPP,                                      &
           GOCARTRACM_KPP,      GOCARTRADM2_KPP,    GOCARTRADM2,  &
           RACM_ESRLSORG_KPP,   MOZCART_KPP,                      &

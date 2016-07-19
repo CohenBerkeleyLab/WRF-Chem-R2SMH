@@ -161,6 +161,7 @@ SUBROUTINE wesely_driver( id, ktau, dtstep, config_flags, current_month,  &
 !-----------------------------------------------------------
       INTRINSIC max, min                             
 
+
       dep_vap= config_flags%depo_fact
 
       CALL wrf_debug(15,'in dry_dep_wesely')
@@ -229,6 +230,8 @@ tile_lon_loop : &
 !--- deposition
 !-----------------------------------------------------------
 !     if(snowc(i,j).gt.0.)iseason=4
+!Azimeh
+!in 3ta subroutine zir dvel ra hesab mikonan
             CALL rc( rcx, ta, rad, rhchem, iland, &
                      iseason, numgas, wetflag, rainflag, highnh3, &
                      iprt, moist(i,kts,j,p_qv), p8w(i,kts,j), config_flags%chem_opt )
@@ -614,6 +617,75 @@ tile_lon_loop : &
             end do
          end do
       end if
+
+!Azimeh
+!-----------------------------------------------------------
+! For racm2sorg and racm2sorg_ecb
+!-----------------------------------------------------------
+      if( config_flags%chem_opt == R2SMH_KPP)   then
+         do j=jts,jte
+            do i=its,ite
+              ddvel(i,j,p_acd)     = ddvel(i,j,p_ald) !use ald since was lumpedin for racm
+               ddvel(i,j,p_ace)     = ddvel(i,j,p_hc3) !use hc3 since was lumpedin for racm
+               ddvel(i,j,p_bald)     = ddvel(i,j,p_ald) !use ald since lumped in for racm
+               ddvel(i,j,p_ben)     = ddvel(i,j,p_tol) !use tol since lumped in for racm
+               ddvel(i,j,p_dcb2)     = ddvel(i,j,p_dcb1) !use dcb since lumped in for racm
+               ddvel(i,j,p_dcb3)     = ddvel(i,j,p_dcb2) !use dcb since lumped in for racm
+               ddvel(i,j,p_epx)     =  ddvel(i,j,p_csl) !use csl for now
+               ddvel(i,j,p_eteg)     = 0. !ignore for now
+               ddvel(i,j,p_ishpa)     = ddvel(i,j,p_hno3) !use hno3 since this is what mozart does  geos uses h2o2
+!Azimeh 3 isomers of ishp follow by St. Clair et al. 2015
+               ddvel(i,j,p_ishpb)     = ddvel(i,j,p_hno3) !use hno3 since thisis what mozart does  geos uses h2o2
+               ddvel(i,j,p_ishpd)     = ddvel(i,j,p_hno3) !use hno3 since this is what mozartdoes  geos uses h2o2
+               ddvel(i,j,p_mct)     = ddvel(i,j,p_csl) !use csl since lumped in for racm
+               ddvel(i,j,p_mek)     = 0. !set to zero since this is done for mozart chem
+               ddvel(i,j,p_mpan)     =   ddvel(i,j,p_pan)     !Azimeh from Geos_chem !ddvel(i,j,p_mpan)/3. !copy wrf mozart
+!Azimeh        ddvel(i,j,p_mvk)     = 0. !wrf mozart sets to zero
+               ddvel(i,j,p_per1)     = 0. !since intermediates
+               ddvel(i,j,p_per2)     = 0. !since intermediates
+               ddvel(i,j,p_phen)     = ddvel(i,j,p_csl) !use csl since lumped in racm
+               ddvel(i,j,p_ppn)     = ddvel(i,j,p_pan) !same as geos-chem
+               ddvel(i,j,p_rco3)     = ddvel(i,j,p_aco3) !for now
+               ddvel(i,j,p_uald)     = ddvel(i,j,p_ald) !assume same as ald
+               ddvel(i,j,p_xyo)     = ddvel(i,j,p_xyl) !since lumped in racm
+               ddvel(i,j,p_isopnb)    = ddvel(i,j,p_isopnd) !same as isopnd  Ito et al 2007
+               ddvel(i,j,p_uhc)      = ddvel(i,j,p_hac) !treat like hydroxy acetone
+!Azimeh: test dry dep Nguyen et al., 2015 : Tables:S2 & S4
+               ddvel(i,j,p_mvkn)   =  ddvel(i,j,p_macrn) !same as macrn how geos does it
+!Azimeh        ddvel(i,j,p_propnn) = ddvel(i,j,p_monit) !assume wrf racm onit
+               ddvel(i,j,p_vrp)  = ddvel(i,j,p_mahp) !assume oragnic peroxide from Ito et al 2007 w/ mw of mahp
+!Azimeh        ddvel(i,j,p_iepox) = ddvel(i,j,p_h2o2)  !same as geos
+                ddvel(i,j,p_iepoxd) = ddvel(i,j,p_iepoxa)  !for iepox isomers
+                ddvel(i,j,p_iepoxb) = ddvel(i,j,p_iepoxa)  !
+               ddvel(i,j,p_iap) = ddvel(i,j,p_mahp) !assume oragnic peroxide from Ito et al 2007 w/ mw of mahp
+               ddvel(i,j,p_dhmob) = 0. !ignore for now b/c looks like geos does
+               ddvel(i,j,p_moba)  = 0. !ignore for now b/c looks like geos does
+               ddvel(i,j,p_isnp) = ddvel(i,j,p_mahp) !assume oragnic peroxide from Ito et al 2007 w/ mw of mahp
+               ddvel(i,j,p_pyac) = 0. !ignore for now
+               ddvel(i,j,p_hpald) = 0. !ignore for now
+               ddvel(i,j,p_imonit) = ddvel(i,j,p_tonit) !assume like tonit for now
+               ddvel(i,j,p_utonit) = ddvel(i,j,p_tonit) 
+               ddvel(i,j,p_honit) = ddvel(i,j,p_hno3)
+               ddvel(i,j,p_donit) = ddvel(i,j,p_monit) !assume wrf racm onit
+               ddvel(i,j,p_aonit) = ddvel(i,j,p_monit) !assume onit
+               ddvel(i,j,p_hket) = ddvel(i,j,p_hac) !assume hydroxy acetone
+!Aimeh  :: !uses same dep vel as isopnd : Xie et al. 2013
+ !Xie et al. 2013 assum all ING1&2 (second generation isoprene organic nitrates)
+ !contains PROPNN+ETHLN+IMONIT+MVKN+MACRN
+ !have HSTAR = 17000 that is same fro all ING1 at night time chemistry as well.
+               ddvel(i,j,p_inpd) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_inpb) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_icn) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_r4n) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_r4no) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_ihnd) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_ihnb) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_inhed) = ddvel(i,j,p_iepoxa)
+               ddvel(i,j,p_inheb) = ddvel(i,j,p_iepoxa)
+            enddo
+         enddo
+      endif
+!Azimeh
 
 
 END SUBROUTINE wesely_driver
@@ -1869,11 +1941,32 @@ is_cbm4_kpp : &
               hstar(p_co)   = 8.20E-3
               hstar(p_h2o2) = 7.45E+4
               hstar(p_hcho) = 2.97E+3
-              hstar(p_pan)  = 2.97
+              hstar(p_pan)  =  2.97 
               hstar(p_paa)  = 473.
-              hstar(p_onit) = 1.13
+              hstar(p_onit)   = 1.13
+!Azimeh              hstar(p_monit)  = 1.13
+!              hstar(p_donit)  = 1.13
+!              hstar(p_aonit)  = 1.13
+!              hstar(p_propnn) = 1.13
+!              hstar(p_mahp)   = 340 
+!              hstar(p_vrp)    = 340
+!              hstar(p_iap)    = 340
+!              hstar(p_isnp)   = 340
+              hstar(p_ishp)   = 2.69E+13 !for other scheme but r2smh !Azimeh
+!              hstar(p_honit)  = 2.69E+13
+!              hstar(p_iepox)  = 75400 
+!              hstar(p_isopnd) = 17000
+!              hstar(p_isopnb) = 17000
+!              hstar(p_tonit)  = 17000
+!              hstar(p_imonit) = 17000
+!              hstar(p_utonit) = 17000
+!              hstar(p_macrn)  = 17000
+!              hstar(p_mvkn)   = 17000
+!              hstar(p_ison)   = 17000
+!              hstar(p_ethln)   = 17000
+!Azimeh
            end if
-        hstar(p_no2)  = 6.40E-3
+        hstar(p_no2)  = 0.01E0  !Azimeh like GeosChem 6.40E-3
         hstar(p_no)   = 1.90E-3
         hstar(p_aco3) = 1.14E+1
         hstar(p_tpan) = 2.97E+0
@@ -1950,6 +2043,7 @@ is_cbm4_kpp : &
            DVJ(p_UDD )=0.092
            DVJ(p_HKET)=0.116
         endif
+
 !--------------------------------------------------
 !     -DH/R (for temperature correction)
 !     [-DH/R]=K
@@ -2115,6 +2209,26 @@ is_cbm4_kpp : &
            dhr(p_pan)  = 5760.
            dhr(p_onit) = 5487.
            dhr(p_paa)  = 6170.
+!Azimeh    dhr(p_monit)  = 5487. 
+!           dhr(p_donit)  = 5487. 
+!           dhr(p_aonit)  = 5487. 
+           dhr(p_propnn) = 5487. 
+!           dhr(p_mahp)   = 6000.  
+!           dhr(p_vrp)    = 6000. 
+!           dhr(p_iap)    = 6000. 
+!           dhr(p_isnp)   = 6000. 
+           dhr(p_ishp)   = 8684.
+!           dhr(p_honit)  = 8684.
+           dhr(p_iepoxa)  = 6615. !Azimeh isomer
+!           dhr(p_isopnd) = 9200. 
+!           dhr(p_isopnb) = 9200. 
+!           dhr(p_tonit)  = 9200. 
+!           dhr(p_imonit) = 9200. 
+!           dhr(p_utonit) = 9200. 
+!           dhr(p_macrn)  = 9200. 
+!           dhr(p_mvkn)   = 9200. 
+!           dhr(p_ison)   = 9200. 
+!           dhr(p_ethln)  = 9200.
         end if
         dhr(p_no2)  = 2500.
         dhr(p_no)   = 1480.
@@ -2305,10 +2419,30 @@ is_cbm4_kpp : &
         else
            f0(p_hcho) = 0.
            f0(p_onit) = 0.
+!Azimeh    f0(p_monit)  = 0. 
+!           f0(p_donit)  = 0. 
+!           f0(p_aonit)  = 0. 
+!           f0(p_propnn) = 0. 
+!           f0(p_mahp)   = 0.1  
+!           f0(p_vrp)    = 0.1 
+!           f0(p_iap)    = 0.1 
+!           f0(p_isnp)   = 0.1 
+           f0(p_ishp)   = 0.
+!           f0(p_honit)  = 0.
+!           f0(p_iepox)  = 1.
+!           f0(p_isopnd) = 0. 
+!           f0(p_isopnb) = 0. 
+!           f0(p_tonit)  = 0. 
+!           f0(p_imonit) = 0. 
+!           f0(p_utonit) = 0. 
+!           f0(p_macrn)  = 0. 
+!           f0(p_mvkn)   = 0. 
+!           f0(p_ison)   = 0. 
+!           f0(p_ethln)  = 0.
         end if
         f0(p_no2)  = 0.1
         f0(p_no)   = 0.
-        f0(p_pan)  = 0.1
+        f0(p_pan)  = 1  ! Azimeh from GeosChem 0.1
         f0(p_o3)   = 1.
         f0(p_aco3) = 1.
         f0(p_tpan) = 0.1
@@ -2542,6 +2676,107 @@ is_cbm4_kpp : &
         dvj(p_n2o5) = 0.110
         dvj(p_ho) = 0.243
         dvj(p_ho2) = 0.174
+
+!Azimeh
+!asl e if az Ellie gereftam vali taghirati ham bar asas e maghale Nguyn 2015 and
+!code GeosChem az file drydep_mod.F gereftam.
+
+        if( config_flags%chem_opt == R2SMH_KPP ) then
+          hstar(p_act)    = 27.  !use mozart acetone
+         dhr(p_act)    = 5300.
+         f0(p_act)    = small_value
+         dvj(p_act)    = 0.1312
+
+         hstar(p_dcb1)  = 1.40E+6 !use RACM DCB
+         dhr(p_dcb1) = 0.
+         f0(p_dcb1)  = 0.
+         dvj(p_dcb1)  = 0.107
+
+         hstar(p_eoh)  = 200.  !use mozart c2h5oh
+         dhr(p_eoh)  = 6500.
+         f0(p_eoh)  = small_value
+         dvj(p_eoh)  = 0.1473
+
+         hstar(p_mahp)  = 3.4E+2  !use Ito et al 2007 organic peroxide
+         dhr(p_mahp)    = 6000.
+         f0(p_mahp)     = 0.1 !use mekooh from mozart
+         dvj(p_mahp)    = 0.099 !1/sqrt(102)
+
+         hstar(p_moh)   = 220. !use mozart ch3oh
+         dhr(p_moh)   = 4934.
+         f0(p_moh)   = small_value
+         dvj(p_moh)   = 0.1767
+
+         hstar(p_ethln) = 1.7E+4 !use Ito et al 2007
+         dhr(p_ethln)  =  9200.  ! hydroxy alkyl nitrates from biogenics
+         f0(p_ethln)   = 0.   !use onit
+         dvj(p_ethln)  = 0.0976   !1/sqrt(105)
+
+         hstar(p_roh)  = 54.  !from geos alcohols
+         dhr(p_roh)  = 6500. !from mozart eoh
+         f0(p_roh)  = 0. !from geos
+         dvj(p_roh)  = 0.1291 !1/sqrt(60)
+
+         hstar(p_tonit) =2.0E+6    !1.7E+4 !2.0E+6  ! man khodam taghir dadam choon Nguyen oon ra
+!barayw isopnd taghir dade bood va Ellie inha ra ghablan moshabeh gerefte bood
+!man baraye inke ina moshabe dar biad taghir dadam. 1.7E+4 !use Ito et al 2007
+         dhr(p_tonit)   = 9200.  ! hydroxy alkyl nitrates from biogenics
+         f0(p_tonit)    = 0.           !use onit
+         dvj(p_tonit)   =0.0682   !1/sqrt(215)
+
+         hstar(p_monit) = 1.13 !use wrf racm onit 
+         dhr(p_monit) = 5487.
+         f0(p_monit) = 0.
+         dvj(p_monit) = 0.092
+                                      !Azimeh: test dry dep Nguyen et al., 2015
+         hstar(p_isopnd) =2.0E+6      ! 1.7E+4 !use Ito et al 2007
+         dhr(p_isopnd)  = 9200.  ! hydroxy alkyl nitrates from biogenics
+         f0(p_isopnd)   = 1.   !      ! use onit
+         dvj(p_isopnd)  = 0.0825   !1/sqrt(147)
+
+                                      !Azimeh: test dry dep Nguyen et al., 2015
+         hstar(p_glyc)  =  2.00E+7   !4.14e4 !mozart wrf
+         dhr(p_glyc)  = 4630.
+         f0(p_glyc)  = 1   ! Azimeh from Nguyen et al., 2015 small_value
+         dvj(p_glyc)  = 0.129
+                                      !Azimeh: test dry dep Nguyen et al., 2015
+         hstar(p_hac) = 1.4E+6         !6.3e3 !use mozart acetol
+         dhr(p_hac)   = 6425.
+         f0(p_hac)    = 1.             !small_value
+         dvj(p_hac)   = 0.116
+
+                                      !Azimeh: test dry dep Nguyen et al., 2015
+         hstar(p_macrn) = 2.0E+6      !1.7E+4 !use Ito et al 2007
+         dhr(p_macrn)  = 9200.  ! hydroxy alkyl nitrates from biogenics
+         f0(p_macrn)   = 1.           !use onit
+         dvj(p_macrn)  = 0.0819   !1/sqrt(149)
+
+!Azimeh: test dry dep Nguyen et al., 2015 : Tables:S4 
+         hstar(p_h2o2) = 5.0e+7
+
+         hstar(p_hno3) = 1.0e+14
+         f0(p_hno3)    = 0.
+
+         hstar(p_propnn) = 5.0e+5
+         f0(p_propnn)    = 1.
+!Azimeh iepox with 3 ismoers follows by St. Clair et al. 2015
+         hstar(p_iepoxa) = 8.0e+7 !hsatr &f0 from Nguyen et al., 2015
+         f0(p_iepoxa)    = 1.
+         dhr(p_iepoxa)  = 6615. !dhr & dvj similar to h2o2 :az ghabl
+         dvj(p_iepoxa) = 0.171
+
+         hstar(p_pan)  =3.6  !Azimeh from GEOS_Chem 2.97
+
+         hstar(p_mvk) = 4.4E+1 !Azimeh from GEOS_Chem
+         f0(p_mvk) = 1.
+
+         hstar(p_macr) = 6.5 !Azimeh from GEOS_Chem
+         f0(p_macr) = 1. 
+
+        end if
+!Azimeh
+
+
         if(p_ol2 > 1) dvj(p_ol2) = 0.189
         if(p_par > 1) dvj(p_par) = 0.118   !wig, 1-May-2007: for CBMZ
 ! Dep constants for SAPRCNOV, produced automatically using create_WRF_dep.m script,05-Oct-2009 pablosaide@uiowa.edu

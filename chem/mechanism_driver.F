@@ -8,13 +8,17 @@
                ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,    &
                ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,         &
                ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,&
-               ph_n2o5,ph_o2,backg_oh,backg_h2o2,backg_no3,            &
+               ph_n2o5,ph_ald,ph_o2,ph_uald,ph_hcochoc,ph_bald,ph_iprno3,ph_pana,   &
+               ph_panb,ph_glyc,ph_onit1,ph_onitoh3,ph_hpald,ph_noa,    &
+               ph_ibutald,ph_onitoh1,ph_clno2,backg_oh,backg_h2o2,backg_no3,    &
                addt,addx,addc,etep,oltp,olip,cslp,limp,hc5p,hc8p,tolp, &
                xylp,apip,isop,hc3p,ethp,o3p,tco3,mo2,o1d,olnn,rpho,xo2,&
                ketp,olnd,                                              &
                ids,ide, jds,jde, kds,kde,                              &
                ims,ime, jms,jme, kms,kme,                              &
                its,ite, jts,jte, kts,kte                               )
+
+
 !----------------------------------------------------------------------
   USE module_configure
   USE module_state_description
@@ -56,7 +60,9 @@
            ph_hno3,ph_hno4,ph_h2o2,ph_ch2or,ph_ch2om,ph_ch3cho,        &
            ph_ch3coch3,ph_ch3coc2h5,ph_hcocho,ph_ch3cocho,             &
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,    &
-           ph_n2o5,ph_o2
+           ph_uald, ph_hcochoc, ph_bald, ph_iprno3, ph_pana,           &
+           ph_panb, ph_glyc, ph_onit1, ph_onitoh3, ph_hpald,ph_noa,    &
+           ph_ibutald, ph_onitoh1, ph_n2o5,ph_ald,ph_clno2,ph_o2
 !
 ! RACM radicals
 !
@@ -64,8 +70,7 @@
          INTENT(INOUT ) ::                                             &
                addt,addx,addc,etep,oltp,olip,cslp,limp,hc5p,hc8p,tolp, &
                xylp,apip,isop,hc3p,ethp,o3p,tco3,mo2,o1d,olnn,rpho,xo2,&
-               ketp,olnd
-
+               ketp,olnd 
 
 !
 ! on input from meteorological model 
@@ -138,7 +143,8 @@
                ims,ime, jms,jme, kms,kme,                              &
                its,ite, jts,jte, kts,kte                               )
 
-     CASE (RACMSORG_KPP,RADM2SORG_KPP,RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACM_ESRLSORG_KPP,RACM_SOA_VBS_KPP)
+     CASE (RACMSORG_KPP, R2SMH_KPP, RADM2SORG_KPP,RACMSORG_AQ,RACMSORG_AQCHEM_KPP, & 
+                RACM_ESRLSORG_AQCHEM_KPP,RACM_ESRLSORG_KPP,RACM_SOA_VBS_KPP)
        vcsulf_old(its:ite,kts:kte,jts:jte) = &
           max(chem(its:ite,kts:kte,jts:jte,p_sulf),epsilc)
 

@@ -35,6 +35,10 @@ CONTAINS
          ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,              &
          ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,     &
          ebio_dms,                                                         &
+!Azimeh
+         ebio_moh,ebio_act,ebio_acd,ebio_eoh,                    &
+         ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,                   &
+!Azimeh
          ebio_alk3, ebio_alk4, ebio_alk5, ebio_ole1, ebio_ole2,            &    
          ebio_aro1, ebio_aro2, ebio_ccho, ebio_meoh,                       &    
          ebio_ethene, ebio_hcooh, ebio_terp, ebio_bald,                    &    
@@ -212,6 +216,10 @@ CONTAINS
                ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,    &
                ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,    &
                ebio_so2,ebio_dms, ebio_co2oce ,                        &
+!Azimeh
+               ebio_moh,ebio_act,ebio_acd,ebio_eoh,           &
+               ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,         &
+!Azimeh
                ebio_alk3, ebio_alk4, ebio_alk5, ebio_ole1, ebio_ole2,  &    
                ebio_aro1, ebio_aro2, ebio_ccho, ebio_meoh,             &    
                ebio_ethene, ebio_hcooh, ebio_terp, ebio_bald,          &    
@@ -307,6 +315,8 @@ CONTAINS
 ! .. Intrinsic Functions ..
 !     INTRINSIC max, min
 ! ..
+
+
 
 ! Flags for turning on or off sea salt and/or dust emissions...
 ! for PNNL modules:   >0 = sea salt/dust emissions turned on
@@ -504,7 +514,7 @@ CONTAINS
                                  +emis_vol(i,k,j,p_e_vash9)*conv    &
                                  +.5*emis_vol(i,k,j,p_e_vash8)*conv
                enddo
-      CASE (RADM2SORG,RADM2SORG_AQ,RADM2SORG_KPP,RACMSORG_KPP,RACMSORG_AQ,RACM_ESRLSORG_KPP, &
+      CASE (RADM2SORG,RADM2SORG_AQ,RADM2SORG_KPP,RACMSORG_KPP, R2SMH_KPP, RACMSORG_AQ,RACM_ESRLSORG_KPP, &
             RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP)
 !       write(0,*)'do later'
                   do k=kts,kte
@@ -760,7 +770,7 @@ CONTAINS
          beis314_check_mechanism_ok: SELECT CASE(config_flags%chem_opt) 
             CASE (RADM2, RADM2_KPP, RADM2SORG, RADM2SORG_AQ, RADM2SORG_AQCHEM, RADM2SORG_KPP, &
                   RACM_KPP, RACMPM_KPP, RACM_MIM_KPP, RACMSORG_AQ,RACMSORG_AQCHEM_KPP,        &
-                  RACM_ESRLSORG_AQCHEM_KPP, RACMSORG_KPP,RACM_ESRLSORG_KPP, RACM_SOA_VBS_KPP, &
+                  RACM_ESRLSORG_AQCHEM_KPP, RACMSORG_KPP, R2SMH_KPP, RACM_ESRLSORG_KPP, RACM_SOA_VBS_KPP, &
                   CBM4_KPP, NMHC9_KPP, GOCARTRACM_KPP,GOCARTRADM2,GOCARTRADM2_KPP)
             CASE DEFAULT 
                CALL wrf_error_fatal( &
@@ -805,6 +815,10 @@ CONTAINS
                ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
                ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
                ebio_dms,                                                       &
+!Azimeh
+               ebio_moh,ebio_act,ebio_acd,ebio_eoh, &
+               ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,         &
+!Azimeh
                ebio_c5h8,ebio_apinene,ebio_bpinene,ebio_toluene,       &
                ebio_ch3cho,ebio_ch3co2h,ebio_tbut2ene,ebio_c2h5cho,    &
                ebio_nc4h10, &
@@ -818,7 +832,23 @@ CONTAINS
                ims,ime, jms,jme, kms,kme,                              &
                its,ite, jts,jte, kts,kte                               )
        endif
-
+!Azimeh
+        sebio_iso = ebio_iso
+        sebio_oli = ebio_oli
+        sebio_api = ebio_api
+        sebio_lim = ebio_lim
+        sebio_hc3 = ebio_hc3
+        sebio_ete = ebio_ete
+        sebio_olt = ebio_olt
+        sebio_hcho = ebio_hcho
+        sebio_eth = ebio_eth
+        sebio_ora2 = ebio_ora2
+        sebio_co = ebio_co
+        sebio_nr = ebio_nr
+        sebio_ket = ebio_ket
+        sebio_ald = ebio_ald
+        sebio_xyl = ebio_tol
+!Azimeh
      CASE DEFAULT 
        if( do_bioemiss ) &
             e_bio(its:ite,jts:jte,1:ne_area) = 0.
@@ -832,8 +862,8 @@ CONTAINS
     gas_addemiss_select: SELECT CASE(config_flags%chem_opt)
     CASE (RADM2, RADM2_KPP, RADM2SORG, RADM2SORG_AQ, RADM2SORG_AQCHEM, RADM2SORG_KPP, &
           RACM_KPP, RACMPM_KPP, RACM_MIM_KPP, RACMSORG_AQ, RACMSORG_AQCHEM_KPP, RACM_ESRLSORG_AQCHEM_KPP, RACMSORG_KPP, &
-          RACM_SOA_VBS_KPP, RACM_ESRLSORG_KPP, MOZART_KPP, MOZCART_KPP, MOZART_MOSAIC_4BIN_VBS0_KPP, CRIMECH_KPP, &
-          CRI_MOSAIC_8BIN_AQ_KPP, CRI_MOSAIC_4BIN_AQ_KPP )
+          R2SMH_KPP, RACM_SOA_VBS_KPP, RACM_ESRLSORG_KPP, MOZART_KPP, MOZCART_KPP, MOZART_MOSAIC_4BIN_VBS0_KPP, &
+          CRIMECH_KPP, CRI_MOSAIC_8BIN_AQ_KPP, CRI_MOSAIC_4BIN_AQ_KPP )
        IF(config_flags%emiss_inpt_opt /= 3 ) then
        IF(config_flags%kemit .GT. kte-ksub) THEN
          k=config_flags%kemit
@@ -854,10 +884,17 @@ CONTAINS
             ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,               &
             ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,               &
             ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,       &
-            ebio_sesq,ebio_mbo,                                         & 
+            ebio_sesq,ebio_mbo,   &
+         ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,     & !Azimeh
+         ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,        &
+         ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+         ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+         ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, & !Azimeh
             ids,ide, jds,jde, kds,kde,                                  &
             ims,ime, jms,jme, kms,kme,                                  &
             its,ite, jts,jte, kts,kte                                   )
+
+
 !      IF(config_flags%emiss_inpt_opt == EMISS_INPT_MOZCEM ) then
 !        do j=jts,jte  
 !          do i=its,ite  
@@ -929,7 +966,12 @@ CONTAINS
             ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,               &
             ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,               &
             ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,       &
-            ebio_sesq,ebio_mbo,                                         & 
+            ebio_sesq,ebio_mbo,   &
+         ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,     & !Azimeh
+         ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,        &
+         ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+         ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+         ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, & !Azimeh
             ids,ide, jds,jde, kds,kde,                                  &
             ims,ime, jms,jme, kms,kme,                                  &
             its,ite, jts,jte, kts,kte                                   )
@@ -1120,7 +1162,12 @@ CONTAINS
             ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,               &
             ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,               &
             ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,       &
-            ebio_sesq,ebio_mbo,                                         & 
+             ebio_sesq,ebio_mbo,  &
+           ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,    &!Azimeh
+           ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
+           ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+           ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+           ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, &!Azimeh
             ids,ide, jds,jde, kds,kde,                                  &
             ims,ime, jms,jme, kms,kme,                                  &
             its,ite, jts,jte, kts,kte                                   )
@@ -1159,7 +1206,12 @@ CONTAINS
                ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,               &
                ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,               &
                ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,       &
-               ebio_sesq,ebio_mbo,                                         & 
+           ebio_sesq,ebio_mbo,      &
+           ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,      & !Azimeh
+           ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
+           ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+           ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+        ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, & !Azimeh
                ids,ide, jds,jde, kds,kde,                                  &
                ims,ime, jms,jme, kms,kme,                                  &
                its,ite, jts,jte, kts,kte                                   )
@@ -1337,7 +1389,12 @@ CONTAINS
             ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,               &
             ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,               &
             ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,       &
-            ebio_sesq,ebio_mbo,                                         & 
+             ebio_sesq,ebio_mbo,  & !Azimeh
+           ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,         &
+           ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
+           ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+           ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+        ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, & !Azimeh
             ids,ide, jds,jde, kds,kde,                                  &
             ims,ime, jms,jme, kms,kme,                                  &
             its,ite, jts,jte, kts,kte                                   )
@@ -1358,16 +1415,20 @@ CONTAINS
        call wrf_debug(15,'emissions_driver calling add_biogenics')
        ! Do NOT call add_biogenics if using MEGAN v2.04 biogenic emissions
        ! module
-       call add_biogenics(id,dtstep,dz8w,config_flags,rho_phy,chem,     &
+  call add_biogenics(id,dtstep,dz8w,config_flags, rho_phy,chem,     &
             e_bio,ne_area,                                              &
             ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,               &
             ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,               &
             ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,       &
-            ebio_sesq,ebio_mbo,                                         & 
+             ebio_sesq,ebio_mbo,  & !Azimeh
+           ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,         &
+           ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
+           ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+           ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+        ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, & !Azimeh
             ids,ide, jds,jde, kds,kde,                                  &
             ims,ime, jms,jme, kms,kme,                                  &
-            its,ite, jts,jte, kts,kte                                   )
-
+            its,ite, jts,jte, kts,kte    )
        end if ! emiss_inpt_opt /= 3
 
 !
@@ -1470,8 +1531,8 @@ CONTAINS
 
     aer_addemiss_select: SELECT CASE(config_flags%chem_opt)
 
-    CASE (RADM2SORG,RADM2SORG_AQ,RADM2SORG_AQCHEM,RADM2SORG_KPP, &
-          RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACMSORG_KPP,RACM_ESRLSORG_KPP,CBMZSORG,CBMZSORG_AQ)
+    CASE (RADM2SORG,RADM2SORG_AQ,RADM2SORG_AQCHEM,RADM2SORG_KPP, CBMZSORG,CBMZSORG_AQ, &
+          RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACMSORG_KPP,R2SMH_KPP, RACM_ESRLSORG_KPP)
        call wrf_debug(15,'emissions_driver calling sorgam_addemiss')
        call sorgam_addemiss( id, dtstep, u10, v10, alt, dz8w, xland, chem,  &
             ebu,                                                        &
@@ -1482,7 +1543,8 @@ CONTAINS
             config_flags%num_soil_layers,config_flags%emiss_opt,        &
 !jdf
             config_flags%dust_opt,                                      &
-            ktau,p8w,u_phy,v_phy,rho_phy,g,dx,erod,                     &
+            ktau,p8w,u_phy,v_phy,rho_phy,g,dx,erod,                     &!Azimeh
+!in2khat ra ziadi dare 
 !jdf
             ids,ide, jds,jde, kds,kde,                                  &
             ims,ime, jms,jme, kms,kme,                                  &
@@ -1571,6 +1633,8 @@ CONTAINS
             lnox_ic=tracer(:,:,:,p_lnox_ic),             &
             lnox_cg=tracer(:,:,:,p_lnox_cg)          &
           )
+
+
 
     END subroutine emissions_driver
 

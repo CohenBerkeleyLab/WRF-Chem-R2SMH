@@ -78,8 +78,8 @@ lex.yy.c: scan.l scan.h
 	@$(FLEX) scan.l
 
 y.tab.c: scan.y scan.h
-	@echo "  "$(YACC) scan.y
-	@$(YACC) scan.y
+	@echo "  "$(YACC) -d scan.y
+	@$(YACC) -d scan.y
 
 flex: lex.yy.c y.tab.c
 

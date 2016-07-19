@@ -1,0 +1,17 @@
+slurmstepd: *** JOB 646595 ON n0040.savio1 CANCELLED AT 2016-05-11T11:38:40 ***
+forrtl: error (78): process killed (SIGTERM)
+Image              PC                Routine            Line        Source             
+emiss_v04.exe      000000000048EA29  Unknown               Unknown  Unknown
+emiss_v04.exe      000000000048D2FE  Unknown               Unknown  Unknown
+emiss_v04.exe      0000000000443E02  Unknown               Unknown  Unknown
+emiss_v04.exe      000000000040DC03  Unknown               Unknown  Unknown
+emiss_v04.exe      00000000004117B9  Unknown               Unknown  Unknown
+libpthread.so.0    00002B78B6A187E0  Unknown               Unknown  Unknown
+libc.so.6          00002B78B6CD265C  Unknown               Unknown  Unknown
+libc.so.6          00002B78B6C64609  Unknown               Unknown  Unknown
+emiss_v04.exe      000000000040A9CA  Unknown               Unknown  Unknown
+emiss_v04.exe      000000000040689A  Unknown               Unknown  Unknown
+emiss_v04.exe      0000000000403E21  Unknown               Unknown  Unknown
+emiss_v04.exe      0000000000403DC6  Unknown               Unknown  Unknown
+libc.so.6          00002B78B6C44D5D  Unknown               Unknown  Unknown
+emiss_v04.exe      0000000000403CB9  Unknown               Unknown  Unknown

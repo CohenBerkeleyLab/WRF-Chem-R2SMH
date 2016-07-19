@@ -1,0 +1,10 @@
+--------------------------------------------------------------------------
+mpirun was unable to launch the specified application as it could not access
+or execute an executable:
+
+Executable: ./wrf.exe
+Node: n0054.savio0
+
+while attempting to start process rank 0.
+--------------------------------------------------------------------------
+480 total processes failed to start

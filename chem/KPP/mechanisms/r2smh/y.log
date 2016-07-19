@@ -1,0 +1,29 @@
+../../../chemics_init.F:                   chem(i,k,j,p_ishpa)=chem(i,k,j,p_api) !Azimeh isomers
+../../../chemics_init.F:                   chem(i,k,j,p_ishpb)=chem(i,k,j,p_api)
+../../../chemics_init.F:                   chem(i,k,j,p_ishpd)=chem(i,k,j,p_api)
+../../../chemics_init.F:     print*,p_ishpa,"ishpa" !Azimeh isomers
+../../../chemics_init.F:     print*,p_ishpb,"ishpb"
+../../../chemics_init.F:     print*,p_ishpd,"ishpd"
+../../../module_dep_simple.F:               ddvel(i,j,p_ishpa)     = ddvel(i,j,p_hno3) !use hno3 since this is what mozart does  geos uses h2o2
+../../../module_dep_simple.F:!Azimeh 3 isomers of ishp follow by St. Clair et al. 2015
+../../../module_dep_simple.F:               ddvel(i,j,p_ishpb)     = ddvel(i,j,p_hno3) !use hno3 since thisis what mozart does  geos uses h2o2
+../../../module_dep_simple.F:               ddvel(i,j,p_ishpd)     = ddvel(i,j,p_hno3) !use hno3 since this is what mozartdoes  geos uses h2o2
+../../../module_dep_simple.F:!              hstar(p_ishp)   = 2.69E+13 
+../../../module_dep_simple.F:!           dhr(p_ishp)   = 8684.
+../../../module_dep_simple.F:!           f0(p_ishp)   = 0.
+../../../module_input_chem_data.F:                   'EPX   ','ETEG  ','ISHP  ','ISON  ','MAHP  ','MCT   ',    &
+../../../module_kpp_r2smh_Parameters.F:  INTEGER, PARAMETER :: ind_ISHP = 85 
+../../../module_kpp_r2smh_interface.F:    var(ind_ISHP) = conv  * REAL( MAX(chem(i,k,j,P_ishp),0.), KIND=dp)  
+../../../module_kpp_r2smh_interface.F:    chem(i,k,j,P_ishp) = MAX ( REAL (oconv * var(ind_ISHP), KIND=sp), 0.)  
+../../../module_kpp_racm_esrlsorg_Parameters.F:  INTEGER, PARAMETER :: ind_ISHP = 7 
+../../../module_kpp_racm_esrlsorg_aqchem_Parameters.F:  INTEGER, PARAMETER :: ind_ISHP = 7 
+../../../module_kpp_racm_esrlsorg_aqchem_interface.F:    var(ind_ISHP) = conv  * REAL( MAX(chem(i,k,j,P_ishp),0.), KIND=dp)  
+../../../module_kpp_racm_esrlsorg_aqchem_interface.F:    chem(i,k,j,P_ishp) = MAX ( REAL (oconv * var(ind_ISHP), KIND=sp), 0.)  
+../../../module_kpp_racm_esrlsorg_interface.F:    var(ind_ISHP) = conv  * REAL( MAX(chem(i,k,j,P_ishp),0.), KIND=dp)  
+../../../module_kpp_racm_esrlsorg_interface.F:    chem(i,k,j,P_ishp) = MAX ( REAL (oconv * var(ind_ISHP), KIND=sp), 0.)  
+../../../module_kpp_racm_mim_Parameters.F:  INTEGER, PARAMETER :: ind_ISHP = 7 
+../../../module_kpp_racm_mim_interface.F:    var(ind_ISHP) = conv  * REAL( MAX(chem(i,k,j,P_ishp),0.), KIND=dp)  
+../../../module_kpp_racm_mim_interface.F:    chem(i,k,j,P_ishp) = MAX ( REAL (oconv * var(ind_ISHP), KIND=sp), 0.)  
+../../../module_kpp_racm_soa_vbs_Parameters.F:  INTEGER, PARAMETER :: ind_ISHP = 15 
+../../../module_kpp_racm_soa_vbs_interface.F:    var(ind_ISHP) = conv  * REAL( MAX(chem(i,k,j,P_ishp),0.), KIND=dp)  
+../../../module_kpp_racm_soa_vbs_interface.F:    chem(i,k,j,P_ishp) = MAX ( REAL (oconv * var(ind_ISHP), KIND=sp), 0.)  

@@ -171,7 +171,7 @@ gen_map_kpp_to_wrf (  FILE * ofile,  knode_t * nl )
 
 		 } 
                 else if ( pml -> found_match != 2 ) {
-                fprintf(stderr, " NOT found %s   \n", pml->name );
+                fprintf(stderr, " NOT found  %s   \n", pml->name );
                 exit (0);
 		 }
                 

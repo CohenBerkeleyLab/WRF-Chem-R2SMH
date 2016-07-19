@@ -101,6 +101,8 @@ CONTAINS
           print*,"e_tol=",emis_ant(i,k,j,p_e_tol)*conv_rho
           print*,"e_xyl=",emis_ant(i,k,j,p_e_xyl)*conv_rho
           print*,"e_ket=",emis_ant(i,k,j,p_e_ket)*conv_rho
+!        print*,"e_moh=",emis_ant(i,k,j,p_e_moh)*conv_rho
+!        print*,"e_ace=",emis_ant(i,k,j,p_e_ace)*conv_rho
        end if
 #endif
 
@@ -206,6 +208,24 @@ CONTAINS
                          +emis_ant(i,k,j,p_e_xyl)*conv_rho
         chem(i,k,j,p_ket)  =  chem(i,k,j,p_ket)                        &     
                          +emis_ant(i,k,j,p_e_ket)*conv_rho
+!Azimeh
+        if( config_flags%chem_opt == R2SMH_KPP ) then
+             chem(i,k,j,p_acd)    = chem(i,k,j,p_acd) +emis_ant(i,k,j,p_e_acd)*conv_rho
+             chem(i,k,j,p_bald)   = chem(i,k,j,p_bald) +emis_ant(i,k,j,p_e_bald)*conv_rho
+             chem(i,k,j,p_act)    = chem(i,k,j,p_act) +emis_ant(i,k,j,p_e_act)*conv_rho
+             chem(i,k,j,p_mek)    = chem(i,k,j,p_mek) +emis_ant(i,k,j,p_e_mek)*conv_rho
+             chem(i,k,j,p_moh)    = chem(i,k,j,p_moh) +emis_ant(i,k,j,p_e_moh)*conv_rho
+             chem(i,k,j,p_gly)    = chem(i,k,j,p_gly) +emis_ant(i,k,j,p_e_gly)*conv_rho
+             chem(i,k,j,p_mgly)   = chem(i,k,j,p_mgly) +emis_ant(i,k,j,p_e_mgly)*conv_rho
+             chem(i,k,j,p_phen)   = chem(i,k,j,p_phen) +emis_ant(i,k,j,p_e_phen)*conv_rho
+             chem(i,k,j,p_macr)    = chem(i,k,j,p_macr) +emis_ant(i,k,j,p_e_macr)*conv_rho
+             chem(i,k,j,p_mvk)    = chem(i,k,j,p_mvk) +emis_ant(i,k,j,p_e_mvk)*conv_rho
+             chem(i,k,j,p_ace)    = chem(i,k,j,p_ace) +emis_ant(i,k,j,p_e_ace)*conv_rho
+             chem(i,k,j,p_ben)    = chem(i,k,j,p_ben) +emis_ant(i,k,j,p_e_ben)*conv_rho
+             chem(i,k,j,p_xyo)    = chem(i,k,j,p_xyo) +emis_ant(i,k,j,p_e_xyo)*conv_rho
+             chem(i,k,j,p_dien)   = chem(i,k,j,p_dien) +emis_ant(i,k,j,p_e_dien)*conv_rho
+       end if
+!Azimeh
        endif
       END DO                                                          
  100  continue
@@ -233,7 +253,12 @@ CONTAINS
          ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,                 &
          ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,                 &
          ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,         &
-         ebio_sesq,ebio_mbo,                                           & 
+         ebio_sesq,ebio_mbo,    & !Azimeh
+         ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,        &
+         ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,           &
+         ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,  &
+         ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+         ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ktau,stepbioe, & !Azimeh   
          ids,ide, jds,jde, kds,kde,                                    &
          ims,ime, jms,jme, kms,kme,                                    &
          its,ite, jts,jte, kts,kte                                     )
@@ -253,19 +278,40 @@ CONTAINS
    REAL, DIMENSION( ims:ime, jms:jme,ne_area ),                            &
          INTENT(IN ) ::                                                    &
                  e_bio
-   REAL, DIMENSION( ims:ime, jms:jme ),                                    &
+!Azimeh
+   INTEGER,      INTENT(IN   ) ::                                          &
+                               ktau,stepbioe
+!Azimeh
+!   REAL, DIMENSION( ims:ime, jms:jme ),                                    &
+!         INTENT(IN ) ::                                                    &
+!         ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,                     &
+!         ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,                     &
+!         ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,             &
+!         ebio_sesq,ebio_mbo,                                               & 
+!Azimeh
+  REAL, DIMENSION( ims:ime, jms:jme ),                                    &
          INTENT(IN ) ::                                                    &
          ebio_iso,ebio_oli,ebio_api,ebio_lim,ebio_xyl,                     &
          ebio_hc3,ebio_ete,ebio_olt,ebio_ket,ebio_ald,                     &
          ebio_hcho,ebio_eth,ebio_ora2,ebio_co,ebio_nr,ebio_no,             &
-         ebio_sesq,ebio_mbo 
-!
+         ebio_c10h16,ebio_tol,ebio_bigalk,ebio_ch3oh,ebio_acet,         &
+         ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
+         ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
+         ebio_dms,ebio_moh,ebio_act,ebio_acd,ebio_eoh,ebio_bald, &
+         ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,ebio_sesq,ebio_mbo
+
+
+
+
    REAL,  DIMENSION( ims:ime , kms:kme , jms:jme )         ,               &
           INTENT(IN   ) ::                                                 &
                                           rho_phy,dz8w
     integer i,j,k,n
     real :: conv_rho
     real :: con2ppm(its:ite,jts:jte)
+!Azimeh
+   real :: emis2ppm
+!Azimeh
 !--- deposition and emissions stuff
 ! .. Parameters ..       
    TYPE(grid_config_rec_type),  INTENT(IN   )    :: config_flags     
@@ -408,18 +454,79 @@ CONTAINS
       enddo
       enddo
      CASE (MEGAN2)
-      do j = jts,jte
-        con2ppm(its:ite,j) = dtstep/(dz8w(its:ite,kts,j)*60.)
-      end do
-      do n = 1,ne_area
-        if( any( e_bio(its:ite,jts:jte,n) /= 0. ) ) then
-          do j = jts,jte  
-            chem(its:ite,kts,j,n+1) = chem(its:ite,kts,j,n+1) &
-                                    + con2ppm(its:ite,j)*e_bio(its:ite,j,n)
-          end do
-        endif
-      end do
+!      do j = jts,jte
+!        con2ppm(its:ite,j) = dtstep/(dz8w(its:ite,kts,j)*60.)
+!      end do
+!      do n = 1,ne_area
+!        if( any( e_bio(its:ite,jts:jte,n) /= 0. ) ) then
+!          do j = jts,jte  
+!            chem(its:ite,kts,j,n+1) = chem(its:ite,kts,j,n+1) &
+!                                    + con2ppm(its:ite,j)*e_bio(its:ite,j,n)
+!          end do
+!        endif
+!      end do
+!!!!!!!!!!!!!!
+!!Azimeh
+     if (ktau.eq.1.or.mod(ktau,stepbioe).eq.0) then
+     CALL wrf_debug(100,'not adding MEGAN bc bioemdt time step')
+     else
+     CALL wrf_debug(100,'adding biogenic emissions: MEGAN2')
+      do j=jts,jte
+      do i=its,ite
+        emis2ppm = 0.02897*dtstep/(rho_phy(i,kts,j)*dz8w(i,kts,j)*3600.)
 
+        chem(i,kts,j,p_iso)=chem(i,kts,j,p_iso) + ebio_iso(i,j)*emis2ppm
+        chem(i,kts,j,p_oli)=chem(i,kts,j,p_oli) + ebio_oli(i,j)*emis2ppm
+        chem(i,kts,j,p_api)=chem(i,kts,j,p_api) + ebio_api(i,j)*emis2ppm
+        chem(i,kts,j,p_lim)=chem(i,kts,j,p_lim) + ebio_lim(i,j)*emis2ppm
+        chem(i,kts,j,p_hc3)=chem(i,kts,j,p_hc3) + ebio_hc3(i,j)*emis2ppm
+        chem(i,kts,j,p_ete)=chem(i,kts,j,p_ete) + ebio_ete(i,j)*emis2ppm
+        chem(i,kts,j,p_olt)=chem(i,kts,j,p_olt) + ebio_olt(i,j)*emis2ppm
+        chem(i,kts,j,p_ket)=chem(i,kts,j,p_ket) + ebio_ket(i,j)*emis2ppm
+        chem(i,kts,j,p_ald)=chem(i,kts,j,p_ald) + ebio_ald(i,j)*emis2ppm
+        chem(i,kts,j,p_hcho)=chem(i,kts,j,p_hcho) + ebio_hcho(i,j)*emis2ppm
+        chem(i,kts,j,p_eth)=chem(i,kts,j,p_eth) + ebio_eth(i,j)*emis2ppm
+        chem(i,kts,j,p_ora2)=chem(i,kts,j,p_ora2) + ebio_ora2(i,j)*emis2ppm
+        chem(i,kts,j,p_co)=chem(i,kts,j,p_co) + ebio_co(i,j)*emis2ppm
+        chem(i,kts,j,p_no)=chem(i,kts,j,p_no) + ebio_no(i,j)*emis2ppm
+        chem(i,kts,j,p_hc5)=chem(i,kts,j,p_hc5) + ebio_hc5(i,j)*emis2ppm
+        chem(i,kts,j,p_hc8)=chem(i,kts,j,p_hc8) + ebio_hc8(i,j)*emis2ppm
+        chem(i,kts,j,p_ora1)=chem(i,kts,j,p_ora1) + ebio_ora1(i,j)*emis2ppm
+!!Azimeh
+
+        if(p_moh.gt.1) chem(i,kts,j,p_moh)=chem(i,kts,j,p_moh) +ebio_moh(i,j)*emis2ppm
+        if(p_moh.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2MOH')
+
+        if(p_act.gt.1) chem(i,kts,j,p_act)=chem(i,kts,j,p_act) +ebio_act(i,j)*emis2ppm
+        if(p_act.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2ACT')
+
+        if(p_acd.gt.1) chem(i,kts,j,p_acd)=chem(i,kts,j,p_acd) +ebio_acd(i,j)*emis2ppm
+        if(p_acd.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2ACD')
+
+        if(p_eoh.gt.1) chem(i,kts,j,p_eoh)=chem(i,kts,j,p_eoh) +ebio_eoh(i,j)*emis2ppm
+        if(p_eoh.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2EOH')
+
+        if(p_bald.gt.1) chem(i,kts,j,p_bald)=chem(i,kts,j,p_bald) +ebio_bald(i,j)*emis2ppm
+        if(p_bald.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2BALD')
+
+        if(p_ch4.gt.1) chem(i,kts,j,p_ch4)=chem(i,kts,j,p_ch4) +ebio_ch4(i,j)*emis2ppm
+        if(p_ch4.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2CH4')
+
+        if(p_tol.gt.1) chem(i,kts,j,p_tol)=chem(i,kts,j,p_tol) +ebio_tol(i,j)*emis2ppm
+
+        if(p_tol.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2TOL')
+
+        if(p_so2.gt.1) chem(i,kts,j,p_so2)=chem(i,kts,j,p_so2) +ebio_so2(i,j)*emis2ppm
+        if(p_so2.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2SO2')
+
+        if(p_hno3.gt.1) chem(i,kts,j,p_hno3)=chem(i,kts,j,p_hno3) +ebio_hno3(i,j)*emis2ppm
+        if(p_hno3.gt.1) CALL wrf_debug(300,'adding biogenic emissions: MEGAN2HNO3')
+
+      enddo
+      enddo
+     end if
+!
+!Azimeh
      CASE DEFAULT
 
    END SELECT bioem_select

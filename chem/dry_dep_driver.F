@@ -177,6 +177,9 @@ CONTAINS
 ! .. Intrinsic Functions ..
       INTRINSIC max, min
 
+
+
+
       !Balwinder.Singh@pnnl.gov: Following code sets vertMixAero(:) flag to true or false based on whether
       !a particular CHEM array constituent should be mixed (vertically) by dry_dep_driver or not
       !The constituents which are  mixed in CAMMGMP microphysics are NOT mixed in dry_dep_driver. 
@@ -245,6 +248,99 @@ CONTAINS
                ids,ide, jds,jde, kds,kde,                                 &
                ims,ime, jms,jme, kms,kme,                                 &
                its,ite, jts,jte, kts,kte                                  )
+
+!Azimeh
+         if (config_flags%diagnostic_chem == DEPVELRACM2) then
+               do j = jts,jte
+                  dvel(its:ite,1,j,p_dvel_o3) = m2cm*ddvel(its:ite,j,p_o3)
+                  dvel(its:ite,1,j,p_dvel_no) = m2cm*ddvel(its:ite,j,p_no)
+                  dvel(its:ite,1,j,p_dvel_no2) = m2cm*ddvel(its:ite,j,p_no2)
+                  dvel(its:ite,1,j,p_dvel_hno3) = m2cm*ddvel(its:ite,j,p_hno3)
+                  dvel(its:ite,1,j,p_dvel_hno4) = m2cm*ddvel(its:ite,j,p_hno4)
+                  dvel(its:ite,1,j,p_dvel_h2o2) = m2cm*ddvel(its:ite,j,p_h2o2)
+                  dvel(its:ite,1,j,p_dvel_co) = m2cm*ddvel(its:ite,j,p_co)
+                  dvel(its:ite,1,j,p_dvel_hcho) = m2cm*ddvel(its:ite,j,p_hcho)
+                  dvel(its:ite,1,j,p_dvel_ald) = m2cm*ddvel(its:ite,j,p_ald)
+                  dvel(its:ite,1,j,p_dvel_act) = m2cm*ddvel(its:ite,j,p_act)
+                  dvel(its:ite,1,j,p_dvel_mgly) = m2cm*ddvel(its:ite,j,p_mgly)
+                  dvel(its:ite,1,j,p_dvel_onit) = m2cm*ddvel(its:ite,j,p_onit)
+                  dvel(its:ite,1,j,p_dvel_pan) = m2cm*ddvel(its:ite,j,p_pan)
+                  dvel(its:ite,1,j,p_dvel_dcb1) = m2cm*ddvel(its:ite,j,p_dcb1)
+                  dvel(its:ite,1,j,p_dvel_hc3) = m2cm*ddvel(its:ite,j,p_hc3)
+                  dvel(its:ite,1,j,p_dvel_hc5) = m2cm*ddvel(its:ite,j,p_hc5)
+                  dvel(its:ite,1,j,p_dvel_hc8) = m2cm*ddvel(its:ite,j,p_hc8)
+                  dvel(its:ite,1,j,p_dvel_csl) = m2cm*ddvel(its:ite,j,p_csl)
+                  dvel(its:ite,1,j,p_dvel_mahp) = m2cm*ddvel(its:ite,j,p_mahp)
+                  dvel(its:ite,1,j,p_dvel_tol) = m2cm*ddvel(its:ite,j,p_tol)
+                  dvel(its:ite,1,j,p_dvel_mpan) = m2cm*ddvel(its:ite,j,p_mpan)
+                  dvel(its:ite,1,j,p_dvel_aco3) = m2cm*ddvel(its:ite,j,p_aco3)
+                  dvel(its:ite,1,j,p_dvel_xyl) = m2cm*ddvel(its:ite,j,p_xyl)
+                  dvel(its:ite,1,j,p_dvel_hket) = m2cm*ddvel(its:ite,j,p_hket)
+                  dvel(its:ite,1,j,p_dvel_eoh) = m2cm*ddvel(its:ite,j,p_eoh)
+                  dvel(its:ite,1,j,p_dvel_ison) = m2cm*ddvel(its:ite,j,p_ison)
+                  dvel(its:ite,1,j,p_dvel_moh) = m2cm*ddvel(its:ite,j,p_moh)
+                  dvel(its:ite,1,j,p_dvel_ethln) = m2cm*ddvel(its:ite,j,p_ethln)
+                  dvel(its:ite,1,j,p_dvel_glyc) = m2cm*ddvel(its:ite,j,p_glyc)
+               enddo
+            endif
+!Azimeh
+            if(config_flags%diagnostic_chem == DEPVELRACM2ECB) then
+               do j = jts,jte
+                  dvel(its:ite,1,j,p_dvel_o3) = m2cm*ddvel(its:ite,j,p_o3)
+                  dvel(its:ite,1,j,p_dvel_no) = m2cm*ddvel(its:ite,j,p_no)
+                  dvel(its:ite,1,j,p_dvel_no2) = m2cm*ddvel(its:ite,j,p_no2)
+                  dvel(its:ite,1,j,p_dvel_hno3) = m2cm*ddvel(its:ite,j,p_hno3)
+                  dvel(its:ite,1,j,p_dvel_hno4) = m2cm*ddvel(its:ite,j,p_hno4)
+                  dvel(its:ite,1,j,p_dvel_h2o2) = m2cm*ddvel(its:ite,j,p_h2o2)
+                  dvel(its:ite,1,j,p_dvel_co) = m2cm*ddvel(its:ite,j,p_co)
+                  dvel(its:ite,1,j,p_dvel_hcho) = m2cm*ddvel(its:ite,j,p_hcho)
+                  dvel(its:ite,1,j,p_dvel_ald) = m2cm*ddvel(its:ite,j,p_ald)
+                  dvel(its:ite,1,j,p_dvel_act) = m2cm*ddvel(its:ite,j,p_act)
+                  dvel(its:ite,1,j,p_dvel_mgly) = m2cm*ddvel(its:ite,j,p_mgly)
+                  dvel(its:ite,1,j,p_dvel_pan) = m2cm*ddvel(its:ite,j,p_pan)
+                  dvel(its:ite,1,j,p_dvel_dcb1) = m2cm*ddvel(its:ite,j,p_dcb1)
+                  dvel(its:ite,1,j,p_dvel_hc3) = m2cm*ddvel(its:ite,j,p_hc3)
+                  dvel(its:ite,1,j,p_dvel_hc5) = m2cm*ddvel(its:ite,j,p_hc5)
+                  dvel(its:ite,1,j,p_dvel_hc8) = m2cm*ddvel(its:ite,j,p_hc8)
+                  dvel(its:ite,1,j,p_dvel_csl) = m2cm*ddvel(its:ite,j,p_csl)
+                  dvel(its:ite,1,j,p_dvel_mahp) = m2cm*ddvel(its:ite,j,p_mahp)
+                  dvel(its:ite,1,j,p_dvel_tol) = m2cm*ddvel(its:ite,j,p_tol)
+                  dvel(its:ite,1,j,p_dvel_aco3) = m2cm*ddvel(its:ite,j,p_aco3)
+                  dvel(its:ite,1,j,p_dvel_xyl) = m2cm*ddvel(its:ite,j,p_xyl)
+                  dvel(its:ite,1,j,p_dvel_isopnd) =m2cm*ddvel(its:ite,j,p_isopnd)
+                  dvel(its:ite,1,j,p_dvel_hket) = m2cm*ddvel(its:ite,j,p_hket)
+                  dvel(its:ite,1,j,p_dvel_monit) = m2cm*ddvel(its:ite,j,p_monit)
+                  dvel(its:ite,1,j,p_dvel_mvkn) = m2cm*ddvel(its:ite,j,p_mvkn)
+                  dvel(its:ite,1,j,p_dvel_eoh) = m2cm*ddvel(its:ite,j,p_eoh)
+                  dvel(its:ite,1,j,p_dvel_moh) = m2cm*ddvel(its:ite,j,p_moh)
+                  dvel(its:ite,1,j,p_dvel_ethln) = m2cm*ddvel(its:ite,j,p_ethln)
+                  dvel(its:ite,1,j,p_dvel_glyc) = m2cm*ddvel(its:ite,j,p_glyc)
+!Azimeh2
+                  dvel(its:ite,1,j,p_dvel_tonit) =m2cm*ddvel(its:ite,j,p_tonit)
+                  dvel(its:ite,1,j,p_dvel_onit) = m2cm*ddvel(its:ite,j,p_onit)
+                  dvel(its:ite,1,j,p_dvel_macrn) = m2cm*ddvel(its:ite,j,p_macrn)
+                  dvel(its:ite,1,j,p_dvel_propnn)=m2cm*ddvel(its:ite,j,p_propnn)
+                  dvel(its:ite,1,j,p_dvel_isopnb) =m2cm*ddvel(its:ite,j,p_isopnb)
+                  dvel(its:ite,1,j,p_dvel_imonit) = m2cm*ddvel(its:ite,j,p_imonit)
+                  dvel(its:ite,1,j,p_dvel_honit)=m2cm*ddvel(its:ite,j,p_honit)
+                  dvel(its:ite,1,j,p_dvel_aonit) = m2cm*ddvel(its:ite,j,p_aonit)
+                  dvel(its:ite,1,j,p_dvel_mpan) = m2cm*ddvel(its:ite,j,p_mpan)
+                  dvel(its:ite,1,j,p_dvel_donit)=m2cm*ddvel(its:ite,j,p_donit)
+                  dvel(its:ite,1,j,p_dvel_utonit) =m2cm*ddvel(its:ite,j,p_utonit)
+
+                  dvel(its:ite,1,j,p_dvel_inpb) = m2cm*ddvel(its:ite,j,p_inpb)
+                  dvel(its:ite,1,j,p_dvel_inpd) = m2cm*ddvel(its:ite,j,p_inpd)
+                  dvel(its:ite,1,j,p_dvel_ihnd) = m2cm*ddvel(its:ite,j,p_ihnd)
+                  dvel(its:ite,1,j,p_dvel_ihnb) = m2cm*ddvel(its:ite,j,p_ihnb)
+                  dvel(its:ite,1,j,p_dvel_icn)= m2cm*ddvel(its:ite,j,p_icn)
+                  dvel(its:ite,1,j,p_dvel_r4n) = m2cm*ddvel(its:ite,j,p_r4n)
+                  dvel(its:ite,1,j,p_dvel_r4no) = m2cm*ddvel(its:ite,j,p_r4no)
+                  dvel(its:ite,1,j,p_dvel_inhed)=m2cm*ddvel(its:ite,j,p_inhed)
+                  dvel(its:ite,1,j,p_dvel_inheb)=m2cm*ddvel(its:ite,j,p_inheb)
+
+               enddo
+              endif
+!Azimeh
 !-----------------------------------------------------------------
 ! this does aerosol species (dust,seas, bc,oc) for gocart only
 !-----------------------------------------------------------------
@@ -382,7 +478,7 @@ CONTAINS
                 RACM_ESRLSORG_KPP,RACM_SOA_VBS_KPP, &
                 CBMZSORG,CBMZSORG_AQ)
              aer_mech_id = 1
-          CASE (RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACMSORG_KPP)
+          CASE (RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACMSORG_KPP,R2SMH_KPP)
              aer_mech_id = 2
           CASE ( CBMZ_MOSAIC_4BIN, CBMZ_MOSAIC_KPP, CBMZ_MOSAIC_8BIN, CBMZ_MOSAIC_4BIN_AQ, &
                  CBMZ_MOSAIC_8BIN_AQ,CBMZ_MOSAIC_4BIN_VBS2_KPP,SAPRC99_MOSAIC_4BIN_VBS2_KPP,MOZART_MOSAIC_4BIN_VBS0_KPP,  &
@@ -420,7 +516,7 @@ CONTAINS
                ids,ide, jds,jde, kds,kde,                               &
                ims,ime, jms,jme, kms,kme,                               &
                its,ite, jts,jte, kts,kte                                )
-     CASE (RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACMSORG_KPP)
+     CASE (RACMSORG_AQ,RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACMSORG_KPP,R2SMH_KPP)
        CALL wrf_debug(15,'DOING DRY DEP VELOCITIES FOR AEROSOLS/RACM')
        call sorgam_depdriver (id,config_flags,ktau,dtstep,              &
                ust,t_phy,moist,p8w,t8w,rmol,znt,pbl,                    &
@@ -512,7 +608,7 @@ CONTAINS
     CASE DEFAULT 
                                                      
    END SELECT drydep_select                              
-
+!Azimeh
 ! Add dep_vel here for all aerosol and gas species in the dvel array 
       ll = max( 1, min( config_flags%ndepvel, num_vert_mix ) )
       dep_vel(:,:,:,:) = 0.
@@ -525,6 +621,8 @@ CONTAINS
       enddo
       enddo
       enddo
+!Azimeh
+
 
 !   This will be called later from subgrd_transport_driver.F !!!!!!!!
 !
@@ -706,6 +804,9 @@ CONTAINS
    END SELECT settling_select
 
        CALL wrf_debug(15,'end of dry_dep_driver')
+
+
+
 
 END SUBROUTINE dry_dep_driver
 

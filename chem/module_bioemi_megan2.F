@@ -43,6 +43,10 @@ CONTAINS
        ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,            &
        ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2,   &
        ebio_dms,                                                       &
+!Azimeh
+       ebio_moh,ebio_act,ebio_acd,ebio_eoh,                  &
+       ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,     &
+!Azimeh
        ebio_c5h8,ebio_apinene,ebio_bpinene,ebio_toluene,               &
        ebio_ch3cho,ebio_ch3co2h,ebio_tbut2ene,ebio_c2h5cho, &
        ebio_nc4h10, &
@@ -54,7 +58,7 @@ CONTAINS
        e_bio,                                                          &
        ids,ide, jds,jde, kds,kde,                                      &
        ims,ime, jms,jme, kms,kme,                                      &
-       its,ite, jts,jte, kts,kte                                       )
+       its,ite, jts,jte, kts,kte           )
 
     USE module_configure
     USE module_state_description
@@ -172,6 +176,10 @@ CONTAINS
          ebio_nh3,ebio_no2,ebio_c2h5oh,ebio_ch3cooh,ebio_mek,          &
          ebio_bigene,ebio_c2h6,ebio_c2h4,ebio_c3h6,ebio_c3h8,ebio_so2, &
          ebio_dms,                                                     &
+!Azimeh
+       ebio_moh,ebio_act,ebio_acd,ebio_eoh,                  &
+       ebio_ch4,ebio_ora1,ebio_hc5,ebio_hc8,ebio_hno3,     &
+!Azimeh
          ebio_c5h8,ebio_apinene,ebio_bpinene,ebio_toluene,             &
          ebio_ch3cho,ebio_ch3co2h,ebio_tbut2ene,ebio_c2h5cho,          &
          ebio_nc4h10,                                                  &
@@ -367,6 +375,18 @@ CONTAINS
     ebio_nc4h10   ( its:ite , jts:jte ) = 0.0
     ebio_sesq  ( its:ite , jts:jte ) = 0.0
     ebio_mbo   ( its:ite , jts:jte ) = 0.0
+!Azimeh
+    ebio_moh( its:ite , jts:jte ) = 0.0
+    ebio_act( its:ite , jts:jte ) = 0.0
+    ebio_acd( its:ite , jts:jte ) = 0.0
+    ebio_eoh( its:ite , jts:jte ) = 0.0
+    ebio_bald( its:ite , jts:jte ) = 0.0
+    ebio_hc8( its:ite , jts:jte ) = 0.0
+    ebio_ch4( its:ite , jts:jte ) = 0.0
+    ebio_ora1( its:ite , jts:jte ) = 0.0
+    ebio_hc5( its:ite , jts:jte ) = 0.0
+    ebio_hno3( its:ite , jts:jte ) = 0.0
+!Azimeh
     e_bio     ( its:ite , jts:jte , 1:ne_area) = 0.0
     
     !...the following is redundant if there is no
@@ -451,7 +471,10 @@ CONTAINS
        ! get p_of_megan2racm(:), p_of_racm(:), and racm_per_megan(:)
        CALL get_megan2racm_table
 
-    CASE (RACM_SOA_VBS_KPP)
+       CASE (R2SMH_KPP)
+       CALL get_megan2racm2_table
+
+      CASE (RACM_SOA_VBS_KPP)
 
         !get p_of_megan2racm(:), p_of_racm(:), and racm_per_megan(:)
         CALL get_megan2racmSOA_table
@@ -677,7 +700,7 @@ CONTAINS
           ! wrfbiochemi_d<domain> file; therefore, actual emissions rate
           ! can be calculated here already.
           ! (mol km-2 hr-1)
-          E_megan2(is_isoprene) = adjust_factor(imgn_isop)*msebio_isop(i,j)
+          E_megan2(is_isoprene) = adjust_factor(imgn_isop)*msebio_isop(i,j)!*.8 !Azimeh
           IF ( E_megan2(is_isoprene) .LT. min_emis ) E_megan2(is_isoprene)=0.
 
 
@@ -938,7 +961,8 @@ is_mozcart_species : &
              END DO
 
            CASE (RACMSORG_AQ, RACMSORG_AQCHEM_KPP, RACM_ESRLSORG_AQCHEM_KPP, RACM_ESRLSORG_KPP, RACM_KPP, GOCARTRACM_KPP, &
-                 RACMSORG_KPP, RACM_MIM_KPP, RACMPM_KPP)
+                 RACMSORG_KPP,  RACM_MIM_KPP, RACMPM_KPP)
+
 
              DO icount = 1, n_megan2racm
 
@@ -958,18 +982,18 @@ is_mozcart_species : &
                       ! ebio_xxx (mol km-2 hr-1) were originally used by the 
                       ! BEIS3.11 biogenic emissions module. 
                       ! I have also borrowed variable e_bio (ppm m min-1).
-                      IF ( p_in_chem .EQ. p_iso ) THEN
-                         ebio_iso(i,j)        = ebio_iso(i,j)       + gas_emis
-                         e_bio(i,j,p_iso-1)   = e_bio(i,j,p_iso-1)  + gas_emis*convert2
+                      IF ( p_in_chem .EQ. p_iso ) THEN 
+                         ebio_iso(i,j)        = ebio_iso(i,j)       +  gas_emis
+                         e_bio(i,j,p_iso-1)   = e_bio(i,j,p_iso-1)  +  gas_emis*convert2
                       ELSE IF ( p_in_chem .EQ. p_oli) THEN
                          ebio_oli(i,j)        = ebio_oli(i,j)       + gas_emis
                          e_bio(i,j,p_oli-1)   = e_bio(i,j,p_oli-1)  + gas_emis*convert2
                       ELSE IF ( p_in_chem .EQ. p_api) THEN
-                         ebio_api(i,j)        = ebio_api(i,j)       + gas_emis
-                         e_bio(i,j,p_api-1)   = e_bio(i,j,p_api-1)  + gas_emis*convert2
+                         ebio_api(i,j)        = ebio_api(i,j)       + gas_emis 
+                        e_bio(i,j,p_api-1)   = e_bio(i,j,p_api-1)  +  gas_emis*convert2   
                       ELSE IF ( p_in_chem .EQ. p_lim) THEN
                          ebio_lim(i,j)        = ebio_lim(i,j)       + gas_emis
-                         e_bio(i,j,p_lim-1)   = e_bio(i,j,p_lim-1)  + gas_emis*convert2
+                         e_bio(i,j,p_lim-1)   = e_bio(i,j,p_lim-1)  + gas_emis*convert2 
                       ELSE IF ( p_in_chem .EQ. p_hc3) THEN
                          ebio_hc3(i,j)        = ebio_hc3(i,j)       + gas_emis
                          e_bio(i,j,p_hc3-1)   = e_bio(i,j,p_hc3-1)  + gas_emis*convert2
@@ -998,22 +1022,184 @@ is_mozcart_species : &
                          ebio_co(i,j)         = ebio_co(i,j)        + gas_emis
                          e_bio(i,j,p_co-1)    = e_bio(i,j,p_co-1)   + gas_emis*convert2
                       ELSE IF ( p_in_chem .EQ. p_no) THEN
-                         ebio_no(i,j)         = ebio_no(i,j)        + gas_emis   
-                         e_bio(i,j,p_no-1)    = e_bio(i,j,p_no-1)   + gas_emis*convert2
+                         ebio_no(i,j)         = ebio_no(i,j)        +  gas_emis 
+                         e_bio(i,j,p_no-1)    = e_bio(i,j,p_no-1)   +  gas_emis*convert2 
                       ELSE IF ( p_in_chem .EQ. p_hc5) THEN
-                          e_bio(i,j,p_hc5-1)  = e_bio(i,j,p_hc5-1)  + gas_emis*convert2
+                         e_bio(i,j,p_hc5-1)  = e_bio(i,j,p_hc5-1)  + gas_emis*convert2
+                          ebio_hc5(i,j)         = ebio_hc5(i,j)        + gas_emis
                       ELSE IF ( p_in_chem .EQ. p_hc8) THEN
                           e_bio(i,j,p_hc8-1)  = e_bio(i,j,p_hc8-1)  + gas_emis*convert2
+                        ebio_hc8(i,j)         = ebio_hc8(i,j)        + gas_emis
                       ELSE IF ( p_in_chem .EQ. p_ora1) THEN
                           e_bio(i,j,p_ora1-1) = e_bio(i,j,p_ora1-1) + gas_emis*convert2
+                        ebio_ora1(i,j)         = ebio_ora1(i,j)        +gas_emis
                       END IF
-
                    END IF !( p_in_chem > param_first_scalar )
                    
 
                 END IF !( p_of_racm(icount) .NE. non_react )
 
              END DO
+
+
+
+!Azimeh
+
+
+         CASE (R2SMH_KPP)
+
+             !WRITE(mesg,*) 'in case RACM2'
+             !    CALL wrf_message(mesg)
+
+             DO icount = 1, n_megan2racm
+
+                IF ( p_of_racm(icount) .NE. non_react ) THEN
+
+                   ! Get index to chem array for the corresponding RACM
+                   ! species.  
+                   p_in_chem = p_of_racm(icount)
+
+                   ! Check if the species is actually in the mechanism
+                   IF( p_in_chem > param_first_scalar ) THEN
+
+                      ! Emission rate of mechanism species in mol km-2 hr-1
+                      gas_emis =  racm_per_megan(icount) *E_megan2(p_of_megan2racm(icount))
+
+
+!Azimeh
+                        ! Increase gas-phase concentrations (in ppmv) due to
+!                       ! biogenic emissions
+
+
+                      IF ( p_in_chem .EQ. p_api) THEN
+                         chem(i,kts,j,p_in_chem) = chem(i,kts,j,p_in_chem) +2.0 * gas_emis * emis2ppm
+                      ELSE
+                         chem(i,kts,j,p_in_chem) = chem(i,kts,j,p_in_chem) +gas_emis * emis2ppm
+                      END IF
+
+
+
+                      ! Add emissions to diagnostic output variables.
+                      ! ebio_xxx (mol km-2 hr-1) were originally used by the 
+                      ! BEIS3.11 biogenic emissions module. 
+                      ! I have also borrowed variable e_bio (ppm m min-1).
+                      IF ( p_in_chem .EQ. p_iso ) THEN
+                         ebio_iso(i,j)        = ebio_iso(i,j)       + gas_emis
+                         e_bio(i,j,p_iso-1)   = e_bio(i,j,p_iso-1)  +gas_emis*convert2
+                         !WRITE(mesg,*) 'ebio_iso', ebio_iso(i,j)
+                         !CALL wrf_message(mesg)
+                      ELSE IF ( p_in_chem .EQ. p_oli) THEN
+                         ebio_oli(i,j)        = ebio_oli(i,j)       + gas_emis
+                         e_bio(i,j,p_oli-1)   = e_bio(i,j,p_oli-1)  +gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_api) THEN
+                         ebio_api(i,j)        = ebio_api(i,j)       + gas_emis !* 2.0 !Azimeh
+                         e_bio(i,j,p_api-1)   = e_bio(i,j,p_api-1)  +gas_emis*convert2 !*2.0 !Azimeh
+                      ELSE IF ( p_in_chem .EQ. p_lim) THEN
+                         ebio_lim(i,j)        = ebio_lim(i,j)       + gas_emis
+                         e_bio(i,j,p_lim-1)   = e_bio(i,j,p_lim-1)  + &
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_hc3) THEN
+                         ebio_hc3(i,j)        = ebio_hc3(i,j)       + gas_emis
+                         e_bio(i,j,p_hc3-1)   = e_bio(i,j,p_hc3-1)  + &
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_ete) THEN
+                         ebio_ete(i,j)        = ebio_ete(i,j)       + gas_emis
+                         e_bio(i,j,p_ete-1)   = e_bio(i,j,p_ete-1)  +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_olt) THEN
+                         ebio_olt(i,j)        = ebio_olt(i,j)       + gas_emis
+                         e_bio(i,j,p_olt-1)   = e_bio(i,j,p_olt-1)  +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_ket) THEN
+                         ebio_ket(i,j)        = ebio_ket(i,j)       + gas_emis
+                         e_bio(i,j,p_ket-1)   = e_bio(i,j,p_ket-1)  +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_ald) THEN
+                         ebio_ald(i,j)        = ebio_ald(i,j)       + gas_emis
+                         e_bio(i,j,p_ald-1)   = e_bio(i,j,p_ald-1)  +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_hcho) THEN
+                         ebio_hcho(i,j)       = ebio_hcho(i,j)      + gas_emis
+                         e_bio(i,j,p_hcho-1)  = e_bio(i,j,p_hcho-1) +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_eth) THEN
+                         ebio_eth(i,j)        = ebio_eth(i,j)       + gas_emis
+                         e_bio(i,j,p_eth-1)   = e_bio(i,j,p_eth-1)  +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_ora2) THEN
+                         ebio_ora2(i,j)       = ebio_ora2(i,j)      + gas_emis
+                         e_bio(i,j,p_ora2-1)  = e_bio(i,j,p_ora2-1) +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_co) THEN
+                         ebio_co(i,j)         = ebio_co(i,j)        + gas_emis
+                         e_bio(i,j,p_co-1)    = e_bio(i,j,p_co-1)   +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_no) THEN
+                         ebio_no(i,j)         = ebio_no(i,j)        + gas_emis !* 0.5  !Azimeh  half_bioNOX: not for using NEI
+                         e_bio(i,j,p_no-1)    = e_bio(i,j,p_no-1)   +&
+                         gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_hc5) THEN
+                         ebio_hc5(i,j)         = ebio_hc5(i,j)        + gas_emis
+                          e_bio(i,j,p_hc5-1)  = e_bio(i,j,p_hc5-1)  +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_hc8) THEN
+                         ebio_hc8(i,j)         = ebio_hc8(i,j)        + gas_emis
+                          e_bio(i,j,p_hc8-1)  = e_bio(i,j,p_hc8-1)  +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_ora1) THEN
+                         ebio_ora1(i,j)         = ebio_ora1(i,j)        +gas_emis
+                          e_bio(i,j,p_ora1-1) = e_bio(i,j,p_ora1-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_moh) THEN
+                         ebio_moh(i,j)         = ebio_moh(i,j)        + gas_emis
+                          e_bio(i,j,p_moh-1) = e_bio(i,j,p_moh-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_act) THEN
+                         ebio_act(i,j)         = ebio_act(i,j)        + gas_emis
+                          e_bio(i,j,p_act-1) = e_bio(i,j,p_act-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_acd) THEN
+                         ebio_acd(i,j)         = ebio_acd(i,j)        + gas_emis
+                          e_bio(i,j,p_acd-1) = e_bio(i,j,p_acd-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_eoh) THEN
+                         ebio_eoh(i,j)         = ebio_eoh(i,j)        + gas_emis
+                          e_bio(i,j,p_eoh-1) = e_bio(i,j,p_eoh-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_bald) THEN
+                         ebio_bald(i,j)         = ebio_bald(i,j)      +gas_emis
+                          e_bio(i,j,p_bald-1) = e_bio(i,j,p_bald-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_ch4) THEN
+                         ebio_ch4(i,j)         = ebio_ch4(i,j)        + gas_emis
+                          e_bio(i,j,p_ch4-1) = e_bio(i,j,p_ch4-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_tol) THEN
+                         ebio_tol(i,j)         = ebio_tol(i,j)        + gas_emis
+                          e_bio(i,j,p_tol-1) = e_bio(i,j,p_tol-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_so2) THEN
+                         ebio_so2(i,j)         = ebio_so2(i,j)        + gas_emis
+                         e_bio(i,j,p_so2-1) = e_bio(i,j,p_so2-1) +&
+                          gas_emis*convert2
+                      ELSE IF ( p_in_chem .EQ. p_hno3) THEN
+                         ebio_hno3(i,j)         = ebio_hno3(i,j)      +gas_emis
+                         e_bio(i,j,p_hno3-1) = e_bio(i,j,p_hno3-1) +&
+                          gas_emis*convert2
+                      END IF
+                   ELSE
+                        !WRITE(mesg,*) 'could not match index at icount', icount
+                        !CALL wrf_message(mesg)
+
+
+                   END IF !( p_in_chem > param_first_scalar )
+
+
+                END IF !( p_of_racm(icount) .NE. non_react )
+
+             END DO
+
+
 
           CASE (RACM_SOA_VBS_KPP)
 

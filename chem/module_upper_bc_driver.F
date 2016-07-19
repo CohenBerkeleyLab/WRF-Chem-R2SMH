@@ -117,6 +117,8 @@ module module_upper_bc_driver
       real, allocatable :: chem_temp(:)
       character(len=132) :: message
 
+
+
 !-----------------------------------------------------------------------
 ! tile dimensions, needed for nest domains!!
 !-------------------------------------------
@@ -359,6 +361,9 @@ lev_loop_b: do k = kmax-1,lev_relax,-1      ! from top to bottom
    if( allocated( table_ox ) ) then
      deallocate( table_ox )
    endif
+
+
+
 
    end subroutine upper_bc_driver
 

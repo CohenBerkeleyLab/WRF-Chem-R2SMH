@@ -143,6 +143,27 @@ CONTAINS
                          +r_antro*emis_ant(i,k,j,p_e_pm_25)/rho_phy(i,k,j)/dz8w(i,k,j)*dtstep
         chem(i,k,j,p_pm_10)  =  chem(i,k,j,p_pm_10)                        &
                          +r_antro*emis_ant(i,k,j,p_e_pm_10)/rho_phy(i,k,j)/dz8w(i,k,j)*dtstep
+!Azimeh
+        chem(i,k,j,p_xyo)  =  chem(i,k,j,p_xyo)                        &
+                        +emis_ant(i,k,j,p_e_xyo)*conv_rho
+        chem(i,k,j,p_phen)  =  chem(i,k,j,p_phen)                        &
+                +emis_ant(i,k,j,p_e_phen)*conv_rho
+        chem(i,k,j,p_ben)  =  chem(i,k,j,p_ben)                        &
+                +emis_ant(i,k,j,p_e_ben)*conv_rho
+        chem(i,k,j,p_act)  =  chem(i,k,j,p_act)                        &
+                +emis_ant(i,k,j,p_e_act)*conv_rho
+        chem(i,k,j,p_mek)  =  chem(i,k,j,p_mek)                        &
+                +emis_ant(i,k,j,p_e_mek)*conv_rho
+        chem(i,k,j,p_acd)  =  chem(i,k,j,p_acd)                        &
+                +emis_ant(i,k,j,p_e_acd)*conv_rho
+        chem(i,k,j,p_bald)  =  chem(i,k,j,p_bald)                        &
+                +emis_ant(i,k,j,p_e_bald)*conv_rho
+        chem(i,k,j,p_moh)  =  chem(i,k,j,p_moh)                        &
+                +emis_ant(i,k,j,p_e_moh)*conv_rho
+        chem(i,k,j,p_ace)  =  chem(i,k,j,p_ace)                        &
+                +emis_ant(i,k,j,p_e_ace)*conv_rho
+!Azimeh
+
  100  continue
 
 

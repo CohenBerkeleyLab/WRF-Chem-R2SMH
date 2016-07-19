@@ -1,0 +1,16 @@
+1c1
+< fastj_driver(id,curr_secs,dtstep,config_flags,             &
+---
+> fastj_driver(id,curr_secs,dtstep,config_flags,       &
+8,11c8,11
+<                tauaer1,tauaer2,tauaer3,tauaer4,                        &
+<                ph_n2o5,ph_uald,ph_hcochoc,ph_bald,ph_iprno3,ph_pana,   &
+<                ph_panb,ph_glyc,ph_onit1,ph_onitoh3,ph_hpald,ph_noa,    &
+<                ph_ibutald,ph_onitoh1,ph_clno2,                         &
+---
+>                ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
+>                ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
+>                ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, &
+>                tauaer1,tauaer2,tauaer3,tauaer4,              &
+18a19
+> 

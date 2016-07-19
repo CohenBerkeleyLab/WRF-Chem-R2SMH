@@ -48,7 +48,8 @@
  { 48:027 } OH+HO2=H2O{+O2}                : ARR2(4.6D-11, -230.0_dp, TEMP);
  { 49:028 } OH+SO2=SULF+HO2              : TROE( 3.00D-31 , 3.3_dp , 1.50D-12 , 0.0_dp , TEMP, C_M) ;
  { 50:029 } CO+OH=HO2+CO2                : (1.5D-13 * (1._dp + 2.439D-20*C_M));
- { 51:030 } CH4+OH=MO2+H2O               : THERMAL_T2(6.95D-18, 1280.0_dp, TEMP) ;
+ { 51:030 } CH4+OH=MO2+H2O+LCH4               : THERMAL_T2(6.95D-18, 1280.0_dp, TEMP) ;
+ { 51:030 } LCH4=JUNK                    : 1;
  { 52:031 } ETH+OH=ETHP+H2O              : THERMAL_T2(1.37D-17, 444.0_dp, TEMP) ;
  { 53:032 } HC3+OH=0.83 HC3P+0.17 HO2
                   +0.009 HCHO+0.075 ALD

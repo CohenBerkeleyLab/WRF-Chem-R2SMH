@@ -555,6 +555,7 @@ end if
 
    if( .NOT. config_flags%restart ) then
    kpp_select: SELECT CASE(config_flags%chem_opt)
+!     CASE (GOCARTRACM_KPP,RACM_KPP,RACMPM_KPP,RACMSORG_KPP,R2SMH_KPP,RACM_MIM_KPP,RACM_ESRLSORG_KPP, &
      CASE (GOCARTRACM_KPP,RACM_KPP,RACMPM_KPP,RACMSORG_KPP,RACM_MIM_KPP,RACM_ESRLSORG_KPP, &
            RACMSORG_AQCHEM_KPP,RACM_ESRLSORG_AQCHEM_KPP,RACM_SOA_VBS_KPP)
         if(config_flags%chem_in_opt == 0 )then
@@ -575,6 +576,83 @@ end if
              enddo
           enddo
         endif
+!Azimeh test ba backup file doublecheck shavad
+
+       CASE (R2SMH_KPP)
+        if(config_flags%chem_in_opt == 0 )then
+          do j=jts,jte
+             do k=kts,kte
+                do i=its,ite
+                   chem(i,k,j,p_co2)=370.
+                   chem(i,k,j,p_ch4)=1.7
+                   chem(i,k,j,p_api)=chem(i,k,j,p_olt)
+                   chem(i,k,j,p_api)=epsilc
+                   chem(i,k,j,p_lim)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_dien)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_act)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_bald)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ben)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_dcb1)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_dcb2)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_dcb3)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_eoh)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_epx)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_eteg)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ishpa)=chem(i,k,j,p_api) !Azimeh isomers
+                   chem(i,k,j,p_ishpb)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ishpd)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ison)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_mahp)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_mct)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_moh)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_nald)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_per1)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_per2)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_phen)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_roh)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_uald)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_xyo)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_glyc)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_isopnd)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_isopnb)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_uhc)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_hac)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_macrn)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_mvkn)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_propnn)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_vrp)=chem(i,k,j,p_api)
+!Azimeh 3 isomers                   chem(i,k,j,p_iepox)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_iepoxa)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_iepoxb)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_iepoxd)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_iap)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_dhmob)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_moba)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ethln)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_isnp)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_pyac)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_hpald)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_imonit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_monit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_donit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_aonit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_tonit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_utonit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_honit)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_inpd)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_inpb)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_icn)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_r4n)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_r4no)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ihnd)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_ihnb)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_inhed)=chem(i,k,j,p_api)
+                   chem(i,k,j,p_inheb)=chem(i,k,j,p_api)
+               enddo
+             enddo
+          enddo
+        endif
+
      CASE (RADM2_KPP,RADM2SORG_KPP,GOCARTRADM2,GOCARTRADM2_KPP,SAPRC99_KPP)
         if(config_flags%chem_in_opt == 0 )then
           do j=jts,jte
@@ -764,62 +842,64 @@ end if
    END SELECT kpp_select
    endif
 
+!Azimeh
+!
+!!! Initialize some greenhouse gas species for 16th and 17th chemistry options:
+!!! CO2 mixing ratios for the background GHG tracers are set as a constant value.
+!!! Some spin-up is necessary to get spatial variability right!
+!!! Warning: initial values for CO2 components have to be subtracted from the output!
+!!! The purpose of this is to avoid negative values due to the biospheric uptake!
+!!! This subroutine is called at every initialization, however it's carried out if
+!!! restart=0 and chem_in_opt=0
+!ghg_block: IF (config_flags%gas_ic_opt==GAS_IC_GHG) THEN
+!   IF( (.not. config_flags%restart) .AND. config_flags%chem_in_opt==0 ) THEN
+!! CO2 tracers:
+!       do j=jts,jte
+!        do k=kts,kte
+!         do i=its,ite
+!            chem(i,k,j,p_co2_bck)=380.  ! background CO2 tracer
+!            chem(i,k,j,p_co2_bio)=380.  ! A user should subtract this from the output fields!
+!            chem(i,k,j,p_co2_oce)=380.   ! A user should subtract this from the output fields!
+!            chem(i,k,j,p_co2_ant)=380.   ! A user should subtract this from the output fields!
+!            chem(i,k,j,p_co2_tst)=380.   ! A user should subtract this from the output fields!
+!
+!            if (p_co2_bbu>1) chem(i,k,j,p_co2_bbu)=380.  ! A user should subtract this from the output fields!
+!
+!         enddo
+!        enddo
+!       enddo
+!
+!! CO tracers:
+!       do j=jts,jte
+!        do k=kts,kte
+!         do i=its,ite
+!            chem(i,k,j,p_co_bck)=0.1  ! background CO tracer
+!            chem(i,k,j,p_co_ant)=0.1  ! A user should subtract this from the output fields!
+!            if (p_co_tst>1) chem(i,k,j,p_co_tst)=0.1     ! A user should subtract this from the output fields!
+!            if (p_co_bbu>1) chem(i,k,j,p_co_bbu)=0.1     ! A user should subtract this from the output fields!
+!         enddo
+!        enddo
+!       enddo
+!
+!! CH4 tracers:
+!     IF (p_ch4_bck.gt.1) THEN
+!      do j=jts,jte
+!       do k=kts,kte
+!        do i=its,ite
+!           chem(i,k,j,p_ch4_bck)=1.77   ! background CH4 tracer
+!           chem(i,k,j,p_ch4_bio)=1.77   ! A user should subtract this from the output fields!
+!           chem(i,k,j,p_ch4_ant)=1.77   ! A user should subtract this from the output fields!
+!           chem(i,k,j,p_ch4_bbu)=1.77   ! A user should subtract this from the output fields!
+!           chem(i,k,j,p_ch4_tst)=1.77   ! A user should subtract this from the output fields!
+!        enddo
+!       enddo
+!      enddo
+!      ENDIF
+!
+!   ENDIF
+!ENDIF ghg_block
+!!Azimeh
 
-!! Initialize some greenhouse gas species for 16th and 17th chemistry options:
-!! CO2 mixing ratios for the background GHG tracers are set as a constant value.
-!! Some spin-up is necessary to get spatial variability right!
-!! Warning: initial values for CO2 components have to be subtracted from the output!
-!! The purpose of this is to avoid negative values due to the biospheric uptake!
-!! This subroutine is called at every initialization, however it's carried out if
-!! restart=0 and chem_in_opt=0
-ghg_block: IF (config_flags%gas_ic_opt==GAS_IC_GHG) THEN
-   IF( (.not. config_flags%restart) .AND. config_flags%chem_in_opt==0 ) THEN
-! CO2 tracers:
-       do j=jts,jte
-        do k=kts,kte
-         do i=its,ite
-            chem(i,k,j,p_co2_bck)=380.  ! background CO2 tracer
-            chem(i,k,j,p_co2_bio)=380.  ! A user should subtract this from the output fields!
-            chem(i,k,j,p_co2_oce)=380.   ! A user should subtract this from the output fields!
-            chem(i,k,j,p_co2_ant)=380.   ! A user should subtract this from the output fields!
-            chem(i,k,j,p_co2_tst)=380.   ! A user should subtract this from the output fields!
-
-            if (p_co2_bbu>1) chem(i,k,j,p_co2_bbu)=380.  ! A user should subtract this from the output fields!
-
-         enddo
-        enddo
-       enddo
-
-! CO tracers:
-       do j=jts,jte
-        do k=kts,kte
-         do i=its,ite
-            chem(i,k,j,p_co_bck)=0.1  ! background CO tracer
-            chem(i,k,j,p_co_ant)=0.1  ! A user should subtract this from the output fields!
-            if (p_co_tst>1) chem(i,k,j,p_co_tst)=0.1     ! A user should subtract this from the output fields!
-            if (p_co_bbu>1) chem(i,k,j,p_co_bbu)=0.1     ! A user should subtract this from the output fields!
-         enddo
-        enddo
-       enddo
-
-! CH4 tracers:
-     IF (p_ch4_bck.gt.1) THEN
-      do j=jts,jte
-       do k=kts,kte
-        do i=its,ite
-           chem(i,k,j,p_ch4_bck)=1.77   ! background CH4 tracer
-           chem(i,k,j,p_ch4_bio)=1.77   ! A user should subtract this from the output fields!
-           chem(i,k,j,p_ch4_ant)=1.77   ! A user should subtract this from the output fields!
-           chem(i,k,j,p_ch4_bbu)=1.77   ! A user should subtract this from the output fields!
-           chem(i,k,j,p_ch4_tst)=1.77   ! A user should subtract this from the output fields!
-        enddo
-       enddo
-      enddo
-      ENDIF
-
-   ENDIF
-ENDIF ghg_block
-!!
    aer_select: SELECT CASE(config_flags%chem_opt)
      CASE (RACMPM_KPP)
         if(config_flags%chem_in_opt == 0 )then
@@ -943,12 +1023,12 @@ ENDIF ghg_block
         ch_dust(:,:) = 0.8D-9
 
      CASE (RADM2SORG, RADM2SORG_AQ, RADM2SORG_AQCHEM, RACMSORG_AQ, RACMSORG_AQCHEM_KPP, RACM_ESRLSORG_AQCHEM_KPP, RADM2SORG_KPP, &
-           RACMSORG_KPP, RACM_ESRLSORG_KPP, CBMZSORG, CBMZSORG_AQ)
+           RACMSORG_KPP, R2SMH_KPP, RACM_ESRLSORG_KPP, CBMZSORG, CBMZSORG_AQ)
        CALL wrf_debug(15,'call MADE/SORGAM aerosols initialization')
 
        call aerosols_sorgam_init(chem,convfac,z_at_w,                &
                pm2_5_dry,pm2_5_water,pm2_5_dry_ec,                   &
-               chem_in_opt,config_flags%aer_ic_opt,is_aerosol,       &
+               chem_in_opt,config_flags%aer_ic_opt,config_flags%restart,is_aerosol,       &
                ids,ide, jds,jde, kds,kde,                            &
                ims,ime, jms,jme, kms,kme,                            &
                its,ite, jts,jte, kts,kte, config_flags               )
@@ -1335,18 +1415,21 @@ subroutine print_chem_species_index( chem_opt )
      print*,p_mgly,"mgly"
      print*,p_dcb,"dcb"
      print*,p_onit,"onit"
+     print*,p_honit,"honit"
      print*,p_csl,"csl"
      print*,p_iso,"iso"
      print*,p_co2,"co2"
      print*,p_ch4,"ch4"
-     print*,p_udd,"udd"
+     print*,p_udd,"udd"  !Azimeh
      print*,p_hket,"hket"
      print*,p_api,"api"
      print*,p_lim,"lim"
      print*,p_dien,"dien"
      print*,p_macr,"macr"
-     print*,p_ho,"ho"
+     print*,p_ishp,"ishp"
      print*,p_ho2,"ho2"
+!Azimeh
+!!!!!!!!
   case (CBMZ)
      print*,p_so2,"so2"
      print*,p_sulf,"sulf"
@@ -1657,7 +1740,7 @@ subroutine print_chem_species_index( chem_opt )
 !
   select case (chem_opt)
   case (RADM2SORG, RADM2SORG_AQ, RADM2SORG_AQCHEM, RADM2SORG_KPP, RACMSORG_AQ, RACMSORG_AQCHEM_KPP, &
-        RACM_ESRLSORG_AQCHEM_KPP, RACMSORG_KPP, RACM_ESRLSORG_KPP, CBMZSORG, CBMZSORG_AQ,RACMSORG)
+        RACM_ESRLSORG_AQCHEM_KPP, RACMSORG_KPP, R2SMH_KPP, RACM_ESRLSORG_KPP, CBMZSORG, CBMZSORG_AQ,RACMSORG)
      print*,p_so4aj,"so4aj"
      print*,p_so4ai,"so4ai"
      print*,p_nh4aj,"nh4aj"

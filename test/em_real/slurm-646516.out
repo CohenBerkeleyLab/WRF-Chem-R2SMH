@@ -1,0 +1,10 @@
+--------------------------------------------------------------------------
+mpirun was unable to launch the specified application as it could not access
+or execute an executable:
+
+Executable: ./real.exe
+Node: n0032.savio1
+
+while attempting to start process rank 0.
+--------------------------------------------------------------------------
+20 total processes failed to start
