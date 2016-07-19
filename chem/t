@@ -1,3 +1,0 @@
-mechanism_driver.F:       call radm_driver(id,curr_secs,dtstepc,config_flags,             &
-module_radm.F:      subroutine radm_driver(id,curr_secs,dtstep,config_flags,         &
-module_radm.F:END SUBROUTINE radm_driver
