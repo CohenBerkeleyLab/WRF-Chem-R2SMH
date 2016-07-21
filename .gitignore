@@ -1,0 +1,19 @@
+# Ignore input files
+**/namelist.input*
+#
+# Output files
+**/namelist.output*
+**/wrfout*
+**/wrfrst*
+#
+# Configuration files
+configure.wrf
+#
+# Compiled files
+*.o
+*.mod
+*.exe
+#
+# Random files generated during configuration
+tools/fseeko64_test
+tools/fseeko_test
