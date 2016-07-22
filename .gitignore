@@ -1,10 +1,17 @@
 # Ignore input files
 **/namelist.input*
+**/met_em*
+**/wrfbiochemi*
+**/wrfchemi*
+**/wrfem*
+**/wrfbdy*
+**/wrfinput*
 #
 # Output files
 **/namelist.output*
 **/wrfout*
 **/wrfrst*
+**/rsl*
 #
 # Configuration files
 configure.wrf
@@ -17,3 +24,95 @@ configure.wrf
 # Random files generated during configuration
 tools/fseeko64_test
 tools/fseeko_test
+
+# Ignore any further changes to the test subdirectories
+test/**
+
+#
+# Many files are generated from the registry or KPP during compilation.
+# First ignore patterns. Can't just ignore all .f90 files because some
+# are not auto-generated.
+
+# Auto generated KPP mechanism files
+chem/KPP/mechanisms/**/Makefile*
+chem/KPP/mechanisms/**/*.map
+chem/KPP/mechanisms/**/*_Function.f90
+chem/KPP/mechanisms/**/*_Global.f90
+chem/KPP/mechanisms/**/*_Initialize.f90
+chem/KPP/mechanisms/**/*_Integrator.f90
+chem/KPP/mechanisms/**/*_Jacobian.f90
+chem/KPP/mechanisms/**/*_JacobianSP.f90
+chem/KPP/mechanisms/**/*_LinearAlgebra.f90
+chem/KPP/mechanisms/**/*_Main.f90
+chem/KPP/mechanisms/**/*_Model.f90
+chem/KPP/mechanisms/**/*_Monitor.f90
+chem/KPP/mechanisms/**/*_Parameters.f90
+chem/KPP/mechanisms/**/*_Precision.f90
+chem/KPP/mechanisms/**/*_Rates.f90
+chem/KPP/mechanisms/**/*_Update_Rconst.f90
+chem/KPP/mechanisms/**/*_Util.f90
+chem/KPP/mechanisms/**/*_mex_Fun.f90
+chem/KPP/mechanisms/**/*_mex_Jac_SP.f90
+# Only .f90 files in chem are auto generated
+chem/*.f90
+# As are the module files from KPP
+chem/module_kpp_*
+
+# Only .f90 files in dyn_em are auto generated
+dyn_em/*.f90
+
+# external seems to have more variety of file extensions
+external/esmf_time_f90/*.f
+external/**/*.a
+
+# frame is simple again - all .f90 files auto generated
+frame/*.f90
+
+# inc contains lots of files after compiling, but most are auto-generated
+inc/*.inc
+
+# main's .f90 all auto generated. And .a files, whatever those are
+main/*.f90
+main/*.a
+
+# phys .f90 files all auto generated.
+phys/*.f90
+
+# share .f90 files all auto generated.
+share/*.f90
+
+# Second the list of specific files to ignore
+Registry/Registry
+Registry/io_boilerplate_temporary.inc
+chem/KPP/configure.kpp
+chem/KPP/kpp/kpp-2.1/Makefile.defs
+chem/KPP/kpp/kpp-2.1/src/lex.yy.c
+chem/KPP/kpp/kpp-2.1/src/y.tab.c
+chem/KPP/kpp/kpp-2.1/src/y.tab.h
+chem/KPP/util/mod_registry.temp
+chem/kpp_mechanism_driver.F
+chem/module_wkppc_constants.F
+external/RSL_LITE/f_pack.f
+external/RSL_LITE/f_xpose.f
+external/io_grib1/io_grib1.f90
+external/io_grib_share/io_grib_share.f90
+external/io_int/diffwrf
+external/io_int/diffwrf.f
+external/io_int/io_int.f
+external/io_int/io_int_idx_tags.h
+external/io_int/module_internal_header_util.f
+external/io_int/module_io_int_read.f
+external/io_int/test_io_idx
+external/io_netcdf/diffwrf
+external/io_netcdf/diffwrf.f
+external/io_netcdf/field_routines.f
+external/io_netcdf/module_wrfsi_static.f
+external/io_netcdf/wrf_io.f
+frame/md_calls.inc
+frame/module_dm.F
+frame/module_state_description.F
+inc/dm_comm_cpp_flags
+inc/wrf_io_flags.h
+inc/wrf_status_codes.h
+tools/gen_comms.c
+tools/registry
