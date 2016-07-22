@@ -9,5 +9,6 @@ during compilation.
 A greater level of output is available currently as a separate branch, 'chemDiag'.
 Switch to this and recompile to get more chemistry and meteorology in output files.
 Note that this will double the size of said files and increase run time as well.
+To check it out, run 'git checkout -b chemDiag origin/chemDiag'
 
 Josh Laughner 22 Jul 2016
