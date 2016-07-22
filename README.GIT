@@ -6,4 +6,8 @@ files are not visible with "git status," you can also check the .gitignore
 file but there is a good chance that any changes to those files will be overwritten
 during compilation.
 
+A greater level of output is available currently as a separate branch, 'chemDiag'.
+Switch to this and recompile to get more chemistry and meteorology in output files.
+Note that this will double the size of said files and increase run time as well.
+
 Josh Laughner 22 Jul 2016
