@@ -57,6 +57,8 @@ chem/KPP/mechanisms/**/*_mex_Jac_SP.f90
 chem/*.f90
 # As are the module files from KPP
 chem/module_kpp_*
+# The registry_kpp file is an executable generated from registry_kpp.c and should not be tracked
+chem/KPP/util/wkc/registry_kpp
 
 # Only .f90 files in dyn_em are auto generated
 dyn_em/*.f90
