@@ -696,9 +696,13 @@ state    real  dvel_ethln    i%jf      dvel           1         -      rh      "
 state    real  dvel_isopnd   i%jf      dvel           1         -      rh      "dvel_isopnd"    " dvel_isopnd deposition velocity "  "cm/s"
 state    real  dvel_isopnb   i%jf      dvel           1         -      rh      "dvel_isopnb"    " dvel_isopnb deposition velocity "  "cm/s"
 state    real  dvel_tonit    i%jf      dvel           1         -      rh      "dvel_tonit "    " dvel_tonit  deposition velocity "  "cm/s"
+state    real  dvel_tonin    i%jf      dvel           1         -      rh      "dvel_tonin "    " dvel_tonin  deposition velocity "  "cm/s"
+state    real  dvel_utonin    i%jf      dvel           1         -      rh      "dvel_utonin "    " dvel_utonin  deposition velocity "  "cm/s"
 state    real  dvel_imonit   i%jf      dvel           1         -      rh      "dvel_imonit"    " dvel_imonit deposition velocity "  "cm/s"
 state    real  dvel_utonit   i%jf      dvel           1         -      rh      "dvel_utonit"    " dvel_utonit deposition velocity "  "cm/s"
 state    real  dvel_macrn    i%jf      dvel           1         -      rh      "dvel_macrn "    " dvel_macrn  deposition velocity "  "cm/s"
+state    real  dvel_tonih    i%jf      dvel           1         -      rh      "dvel_tonih "    " dvel_tonih  deposition velocity "  "cm/s"
+
 # Azimeh 
  state    real  dvel_mvkn     i%jf      dvel           1         -     rh      "dvel_mvkn  "    " dvel_mvkn  deposition velocity "    "cm/s"
 state    real  dvel_mahp     i%jf      dvel           1         -      -      "dvel_mahp  "     " dvel_mahp  deposition velocity "    "cm/s"
@@ -725,7 +729,7 @@ state    real  dvel_inheb    i%jf      dvel           1         -      rh      "
 state    real  dvel_ihnb     i%jf      dvel           1         -      rh      "dvel_ihnb  "     " dvel_ihnb  deposition velocity "   "cm/s"
 state    real  dvel_r4n      i%jf      dvel           1         -      rh      "dvel_r4n"        " dvel_r4n  deposition velocity "    "cm/s"
 state    real  dvel_inpd     i%jf      dvel           1         -      rh      "dvel_inpd"       " dvel_inpd  deposition velocity "   "cm/s"
-
+state    real  dvel_nh4co3     i%jf      dvel           1         -      rh      "dvel_nh4co3"       " dvel_nh4co3  deposition velocity "   "cm/s"
 #Azimeh
 state    real  dvel_act  i%jf      dvel           1         -      -      "dvel_act"    "ACT deposition velocity "  "cm/s"
 state    real  dvel_dcb1  i%jf      dvel           1         -      -      "dvel_dcb1"    "DCB1 deposition velocity "  "cm/s"
@@ -1028,9 +1032,6 @@ state    real    tr2        ikj     misc        1         -      r        "tr2" 
 state    real    xy2        ikj     misc        1         -      r        "xy2"                 "Radicals" "ppm"
 state    real    xyl1       ikj     misc        1         -      r        "xyl1"                 "Radicals" "ppm"
 state    real    xyo2       ikj     misc        1         -      r        "xyo2"                 "Radicals" "ppm"
-state    real   isnohoo     ikj     misc        1         -     r        "isnohoo"            "Radicals"   "ppmv"
-state    real   isnooa      ikj     misc        1         -     r        "isnooa"             "Radicals"   "ppmv"
-state    real   isnoob      ikj     misc        1         -     r        "isnoob"             "Radicals"   "ppmv"
 state    real   ino2        ikj     misc        1         -     r        "ino2"               "Radicals"   "ppmv"
 state    real   ino         ikj     misc        1         -     r        "ino"                "Radicals"   "ppmv"
 state    real   idhno2d     ikj     misc        1         -     r        "idhno2d"            "Radicals"   "ppmv"
@@ -1079,6 +1080,9 @@ state   real    lonvpho     ikj     misc        1         -       r     "LONVPHO
 state   real    lisnpho     ikj     misc        1         -       r     "LISNPHO"                "Radicals"   "ppm"
 state   real    lisnoh      ikj     misc        1         -       r     "LISNOH"                "Radicals"   "ppm"
 state   real    lisnno3     ikj     misc        1         -       r     "LISNNO3"                "Radicals"   "ppm"
+state   real    lonihno3    ikj     misc        1         -       r     "LONIHNO3"                "Radicals"   "ppm"
+state   real    lonmhno3    ikj     misc        1         -       r     "LONMHNO3"                "Radicals"   "ppm"
+state   real    lonmno3    ikj     misc        1         -       r 	 "LONMNO3"	          "Radicals"   "ppm"
 #Azimeh
 state    real    fno        ikj     misc        1         -      r       "FNO"                "Radicals" "ppm"
 state    real    fiso        ikj     misc        1         -      r       "FISO"                "Radicals" "ppm"
@@ -1354,12 +1358,16 @@ state   real   donit   ikjftb    chem       1         -   i0{12}rhusdf=(bdy_inte
 state   real   aonit   ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "aonit"     " mixing ratio"     "ppmv"
 state   real   tonit   ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "tonit"     " mixing ratio"     "ppmv"
 state   real   utonit  ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "utonit"    " mixing ratio"     "ppmv"
+state   real   tonin   ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "tonin"     " mixing ratio"     "ppmv"
+state   real   utonin  ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "utonin"    " mixing ratio"     "ppmv"
+state   real   tonih  ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "tonih"    " mixing ratio"     "ppmv"
 #Azimeh: night time-isoprene chemistry
 state   real   icn      ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt) "icn"       "mixing ratio"   "ppmv"
 state   real   ihnd     ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt) "ihnd"      "mixing ratio"   "ppmv"
 state   real   ihnb     ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt) "ihnb"      "mixing ratio"   "ppmv"
 state   real   r4n      ikjftb   chem        1         -   i0{12}rusdf=(bdy_interp:dt) "r4n"       "mixing ratio"   "ppmv"
 state   real   r4no     ikjftb   chem        1         -   i0{12}rusdf=(bdy_interp:dt) "r4no"      "mixing ratio"   "ppmv"
+state   real   nh4co3      ikjftb   chem        1         -   i0{12}rusdf=(bdy_interp:dt) "nh4co3"    "mixing ratio"   "ppmv"
 state   real   inpb     ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt) "inpb"      "mixing ratio"   "ppmv"
 state   real   inpd     ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt) "inpd"      "mixing ratio"   "ppmv"
 state   real   inhed    ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt) "inhed"     "mixing ratio"   "ppmv"
@@ -3143,7 +3151,7 @@ package   mozart_kpp        chem_opt==111                  -          chem:o3,o1
 package   mozcart_kpp       chem_opt==112                  -          chem:o3,o1d_cb4,o,no,no2,no3,n2o5,hno3,hno4,so2,ho,ho2,h2o2,sulf,co,hcho,ch3ooh,ch3o2,ch4,h2,eo2,ch3cooh,c2h4,n2o,ch3oh,aco3,acet,mgly,paa,gly,c3h6ooh,pan,mpan,macr,mvk,c3h6,etooh,prooh,acetp,xooh,onitr,isooh,acetol,glyald,mek,eto2,open,alkooh,mekooh,tolooh,terpooh,ald,mco3,c2h5oh,eo,c2h6,c3h8,pro2,po2,aceto2,bigene,bigalk,eneo2,alko2,isopr,iso2,mvko2,mvkooh,hydrald,xo2,c10h16,terpo2,tol,cres,to2,xoh,onit,isopn,dms,nh3,meko2,p25,p10,bc1,bc2,oc1,oc2,dust_1,dust_2,dust_3,dust_4,dust_5,seas_1,seas_2,seas_3,seas_4
 
 # KPP mechanism from RACM-MTN _ E Browne et al.,2014 
-package   r2smh_kpp         chem_opt==113                  -          chem:so2,sulf,no2,no,o3,hno3,h2o2,ald,hcho,op1,op2,paa,ora1,ora2,nh3,n2o5,no3,pan,hc3,hc5,hc8,eth,co,ete,olt,oli,tol,xyl,aco3,hono,hno4,ket,gly,mgly,onit,csl,iso,co2,ch4,hket,api,lim,dien,macr,acd,ace,act,bald,ben,dcb1,dcb2,dcb3,eoh,epx,eteg,ishpa,ishpb,ishpd,ihnd,ihnb,inheb,inhed,inpd,inpb,icn,r4n,r4no,mahp,mct,mek,moh,mpan,mvk,per1,per2,phen,ppn,rco3,roh,uald,xyo,glyc,isopnd,isopnb,uhc,hac,macrn,mvkn,propnn,vrp,iepoxa,iepoxb,iepoxd,iap,dhmob,moba,ethln,isnp,pyac,hpald,imonit,honit,monit,donit,aonit,tonit,utonit,ho,ho2,so4aj,so4ai,nh4aj,nh4ai,no3aj,no3ai,naaj,naai,claj,clai,orgaro1j,orgaro1i,orgaro2j,orgaro2i,orgalk1j,orgalk1i,orgole1j,orgole1i,orgba1j,orgba1i,orgba2j,orgba2i,orgba3j,orgba3i,orgba4j,orgba4i,orgpaj,orgpai,ecj,eci,p25j,p25i,antha,seas,soila,nu0,ac0,corn
+package   r2smh_kpp         chem_opt==113                  -          chem:so2,sulf,no2,no,o3,hno3,h2o2,ald,hcho,op1,op2,paa,ora1,ora2,nh3,n2o5,no3,pan,hc3,hc5,hc8,eth,co,ete,olt,oli,tol,xyl,aco3,hono,hno4,ket,gly,mgly,onit,csl,iso,co2,ch4,hket,api,lim,dien,macr,acd,ace,act,bald,ben,dcb1,dcb2,dcb3,eoh,epx,eteg,ishpa,ishpb,ishpd,ihnd,ihnb,inheb,inhed,inpd,inpb,icn,r4n,r4no,nh4co3,mahp,mct,mek,moh,mpan,mvk,per1,per2,phen,ppn,rco3,roh,uald,xyo,glyc,isopnd,isopnb,uhc,hac,macrn,mvkn,propnn,vrp,iepoxa,iepoxb,iepoxd,iap,dhmob,moba,ethln,isnp,pyac,hpald,imonit,honit,monit,donit,aonit,tonit,utonit,tonin,utonin,tonih,ho,ho2,so4aj,so4ai,nh4aj,nh4ai,no3aj,no3ai,naaj,naai,claj,clai,orgaro1j,orgaro1i,orgaro2j,orgaro2i,orgalk1j,orgalk1i,orgole1j,orgole1i,orgba1j,orgba1i,orgba2j,orgba2i,orgba3j,orgba3i,orgba4j,orgba4i,orgpaj,orgpai,ecj,eci,p25j,p25i,antha,seas,soila,nu0,ac0,corn
 
 
 
@@ -3259,10 +3267,10 @@ package   wesely        gas_drydep_opt==1            -             -
 #
 # diagnostic packages, first for deposition velocities (original package for Mozart)
 #
-package   depvel1  diagnostic_chem==1                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_nh3,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_ch3ooh,dvel_hcho,dvel_ch3oh,dvel_eo2,dvel_ald,dvel_ch3cooh,dvel_acet,dvel_mgly,dvel_paa,dvel_pooh,dvel_pan,dvel_mpan,dvel_mco3,dvel_mvkooh,dvel_c2h5oh,dvel_etooh,dvel_prooh,dvel_acetp,dvel_onit,dvel_onitr,dvel_isooh,dvel_acetol,dvel_glyald,dvel_hydrald,dvel_alkooh,dvel_mekooh,dvel_tolooh,dvel_xooh,dvel_so2,dvel_so4,dvel_terpooh,dvel_ison,dvel_ethln,dvel_isopnd,dvel_isopnb,dvel_tonit,dvel_imonit,dvel_utonit,dvel_macrn,dvel_mvkn,dvel_mahp,dvel_vrp,dvel_iap,dvel_isnp,dvel_monit,dvel_propnn,dvel_donit,dvel_aonit,dvel_onit,dvel_ishpa,dvel_ishpb,dvel_ishpd,dvel_honit,dvel_iepoxa,dvel_iepoxb,dvel_iepoxd,dvel_inpb,dvel_icn,dvel_inpd
+package   depvel1  diagnostic_chem==1                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_nh3,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_ch3ooh,dvel_hcho,dvel_ch3oh,dvel_eo2,dvel_ald,dvel_ch3cooh,dvel_acet,dvel_mgly,dvel_paa,dvel_pooh,dvel_pan,dvel_mpan,dvel_mco3,dvel_mvkooh,dvel_c2h5oh,dvel_etooh,dvel_prooh,dvel_acetp,dvel_onit,dvel_onitr,dvel_isooh,dvel_acetol,dvel_glyald,dvel_hydrald,dvel_alkooh,dvel_mekooh,dvel_tolooh,dvel_xooh,dvel_so2,dvel_so4,dvel_terpooh,dvel_ison,dvel_ethln,dvel_isopnd,dvel_isopnb,dvel_tonit,dvel_tonih,dvel_tonin,dvel_utonin,dvel_imonit,dvel_utonit,dvel_macrn,dvel_mvkn,dvel_mahp,dvel_vrp,dvel_iap,dvel_isnp,dvel_monit,dvel_propnn,dvel_donit,dvel_aonit,dvel_onit,dvel_ishpa,dvel_ishpb,dvel_ishpd,dvel_honit,dvel_iepoxa,dvel_iepoxb,dvel_iepoxd,dvel_inpb,dvel_icn,dvel_inpd
 #Azimeh
 package   depvelracm2  diagnostic_chem==2                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_pan,dvel_ald,dvel_mgly,dvel_act,dvel_dcb1,dvel_hc3,dvel_hc5,dvel_hc8,dvel_csl,dvel_mahp,dvel_tol,dvel_aco3,dvel_xyl,dvel_hket,dvel_eoh,dvel_moh,dvel_ethln,dvel_glyc,dvel_ison,dvel_mpan,dvel_onit
-package   depvelracm2ecb  diagnostic_chem==3                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_pan,dvel_ald,dvel_mgly,dvel_act,dvel_dcb1,dvel_hc3,dvel_hc5,dvel_hc8,dvel_csl,dvel_mahp,dvel_tol,dvel_pmn,dvel_aco3,dvel_xyl,dvel_isopnd,dvel_hket,dvel_monit,dvel_eoh,dvel_moh,dvel_ethln,dvel_glyci,dvel_ihnd,dvel_ihnb,dvel_inheb,dvel_inhed,dvel_r4n,dvel_r4no,dvel_inpd,dvel_inpb,dvel_icn,dvel_isopnb,dvel_tonit,dvel_imonit,dvel_utonit,dvel_macrn,dvel_mvkn,dvel_isnp,dvel_propnn,dvel_donit,dvel_aonit,dvel_onit,dvel_ishpa,dvel_ishpb,dvel_ishpd,dvel_honit,dvel_iepoxa,dvel_iepoxb,dvel_iepoxd,dvel_mpan
+package   depvelracm2ecb  diagnostic_chem==3                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_pan,dvel_ald,dvel_mgly,dvel_act,dvel_dcb1,dvel_hc3,dvel_hc5,dvel_hc8,dvel_csl,dvel_mahp,dvel_tol,dvel_pmn,dvel_aco3,dvel_xyl,dvel_isopnd,dvel_hket,dvel_monit,dvel_eoh,dvel_moh,dvel_ethln,dvel_glyci,dvel_ihnd,dvel_ihnb,dvel_inheb,dvel_inhed,dvel_r4n,dvel_r4no,dvel_nh4co3,dvel_inpd,dvel_inpb,dvel_icn,dvel_isopnb,dvel_tonit,dvel_utonin,dvel_tonin,dvel_tonih,dvel_imonit,dvel_utonit,dvel_macrn,dvel_mvkn,dvel_isnp,dvel_propnn,dvel_donit,dvel_aonit,dvel_onit,dvel_ishpa,dvel_ishpb,dvel_ishpd,dvel_honit,dvel_iepoxa,dvel_iepoxb,dvel_iepoxd,dvel_mpan
 
 
 #Azimeh
