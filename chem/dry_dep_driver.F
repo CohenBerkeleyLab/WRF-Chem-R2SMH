@@ -327,6 +327,9 @@ CONTAINS
                   dvel(its:ite,1,j,p_dvel_mpan) = m2cm*ddvel(its:ite,j,p_mpan)
                   dvel(its:ite,1,j,p_dvel_donit)=m2cm*ddvel(its:ite,j,p_donit)
                   dvel(its:ite,1,j,p_dvel_utonit) =m2cm*ddvel(its:ite,j,p_utonit)
+                  dvel(its:ite,1,j,p_dvel_tonin) =m2cm*ddvel(its:ite,j,p_tonin)
+                  dvel(its:ite,1,j,p_dvel_utonin) =m2cm*ddvel(its:ite,j,p_utonin)
+                  dvel(its:ite,1,j,p_dvel_tonih) =m2cm*ddvel(its:ite,j,p_tonih)
 
                   dvel(its:ite,1,j,p_dvel_inpb) = m2cm*ddvel(its:ite,j,p_inpb)
                   dvel(its:ite,1,j,p_dvel_inpd) = m2cm*ddvel(its:ite,j,p_inpd)
@@ -335,6 +338,7 @@ CONTAINS
                   dvel(its:ite,1,j,p_dvel_icn)= m2cm*ddvel(its:ite,j,p_icn)
                   dvel(its:ite,1,j,p_dvel_r4n) = m2cm*ddvel(its:ite,j,p_r4n)
                   dvel(its:ite,1,j,p_dvel_r4no) = m2cm*ddvel(its:ite,j,p_r4no)
+                  dvel(its:ite,1,j,p_dvel_nh4co3) = m2cm*ddvel(its:ite,j,p_nh4co3)
                   dvel(its:ite,1,j,p_dvel_inhed)=m2cm*ddvel(its:ite,j,p_inhed)
                   dvel(its:ite,1,j,p_dvel_inheb)=m2cm*ddvel(its:ite,j,p_inheb)
 

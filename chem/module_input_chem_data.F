@@ -434,7 +434,7 @@ END SUBROUTINE setup_gasprofile_map_radm_racm
 SUBROUTINE setup_gasprofile_map_racm2_mth
 
   iref(:)    = 7 !default value
-  iref(1:115) = (/12,19,2,2,1,3,&
+  iref(1:119) = (/12,19,2,2,1,3,&
                   4,18,8,5,5,32,&
                   6,6,6,30,30,10,&
                  26,13,11,6,6,14,&
@@ -450,12 +450,12 @@ SUBROUTINE setup_gasprofile_map_racm2_mth
                  22,32,32,32,32,&
                  32,32,32,32,32,&
                  32,32,32,32,32,&
-                 32,32,32,32,32,32,&
-                 32,32,32,32,28,&
+                 32,32,32,32,32,32,32,32,&
+                 32,32,32,32,32,28,&
                  32,32,32,32,32,&
-                 32,32,32,32,32,32,32,32,29 /)
+                 32,32,32,32,32,32,32,32,32,29 /)
 fracref(:)    = 1. !default value
-  fracref(1:115) = (/1.,1.,.75,.25,1.,1., &
+  fracref(1:119) = (/1.,1.,.75,.25,1.,1., &
                     1.,1.,1.,1.,.5,.5,&
                     6.25E-4,7.5E-4,6.25E-5,.1,.9,1.,&
                     1.,1.,1.,8.E-3,1.,1.,&
@@ -471,14 +471,14 @@ fracref(:)    = 1. !default value
                     1.,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
                     1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
                     1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
-                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
-                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
+                    1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.,&
                     1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
                     1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,1.0E-4,&
-                    1.0E-4,1.0E-4,1./)
+                    1.0E-4,1.0E-4,1.0E-4,1./)
 
 ggnam(:) = 'JUNK' !default value
-  ggnam(1:115) = (/ 'SO2   ','SULF  ','NO2   ','NO    ','O3    ','HNO3  ',    &
+  ggnam(1:119) = (/ 'SO2   ','SULF  ','NO2   ','NO    ','O3    ','HNO3  ',    &
                    'H2O2  ','ALD   ','HCHO  ','OP1   ','OP2   ','PAA   ',    &
                    'ORA1  ','ORA2  ','NH3   ','N2O5  ','NO3   ','PAN   ',    &
                    'HC3   ','HC5   ','HC8   ','ETH   ','CO    ','ETE   ',    &
@@ -494,11 +494,11 @@ ggnam(:) = 'JUNK' !default value
                    'HAC   ','MACRN ','MVKN  ','PROPNN','VRP   ',    &
                    'IEPOXA ', 'IEPOXB ', 'IEPOXD ','IAP   ','DHMOB ',    &
                    'MOBA  ','ETHLN ','ISNP  ','PYAC  ','HPALD ',    &
-                   'IMONIT','MONIT ','DONIT ','AONIT ','NAONIT','TONIT ', &
-                   'UTONIT','MBO   ','MBON  ','HONIT ','HO ', &
+                   'IMONIT','MONIT ','DONIT ','AONIT ','NAONIT','TONIT ','TONIN', &
+                   'TONIH','UTONIN','UTONIT','MBO   ','MBON  ','HONIT ','HO ', &
                    'ICN', 'ISNOOA', 'ISNOOB','INPD','INPB',&
                    'ISHPB','ISHPD','IHND','IHNB','INHED','INHEB', &
-                   'R4N','R4NO', 'HO2 '/)
+                   'R4N','R4NO','NH4CO3', 'HO2 '/)
 
 END SUBROUTINE setup_gasprofile_map_racm2_mth
 !!!!!!Azimeh

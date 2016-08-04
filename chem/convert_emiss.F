@@ -1754,7 +1754,7 @@ PROGRAM convert_emissions
 
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*0.889 !* 0.5 !Azimeh: scale from 2011 to 2013+reduce no emissions from NEI 2011 50% following the other run and comparison with obs
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*0.889 !Azimeh: scale from 2011 to 2013+reduce no emissions from NEI 2011 50% following the other run and comparison with obs
 
 !AQMII
 !Azimeh: for NEI 2011 & 2005 e_no2 bayad hazf beshe: vali bekhatere if nemikhonadesh
@@ -2268,7 +2268,7 @@ PROGRAM convert_emissions
 
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*0.889 !* 0.5 !Azimeh: scale from 2011 to 2013+reduce no emissions from NEI 2011 50% following the other run and comparison with obs
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*0.889  !Azimeh: scale from 2011 to 2013+reduce no emissions from NEI 2011 50% following the other run and comparison with obs
 
 !     IF (inew_nei .eq. 1) THEN
 !#ifdef DM_PARALLEL
