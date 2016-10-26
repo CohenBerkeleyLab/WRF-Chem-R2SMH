@@ -71,63 +71,28 @@
 
  CHARACTER (LEN=250) :: message
 
-! Variables used for debugging purposes only
- LOGICAL :: landsucc, seasucc 
- INTEGER :: temp_cold, klnb_in, temp_and_klnb, total_gridcells
 !-----------------------------------------------------------------
 
  dA = dx*dy/1E6
+
  total_flashrate( ips:ipe,jps:jpe ) = 0.
 
-! Initial state debugging messages - JLL
- write(message, *) 'ltng_cpmpr92z: max total flashrate before loop = ', maxval(total_flashrate(ips:ipe,jps:jpe))
- call wrf_debug(1, message)
- write(message, *) 'ltng_cpmpr92z: kps, kpe = ', kps, kpe
- call wrf_debug(1, message)
-
- landsucc = .FALSE.
- seasucc = .FALSE.
- temp_cold = 0
- klnb_in = 0
- temp_and_klnb = 0
- total_gridcells = (ipe-ips+1)*(jpe-jps+1)
- 
 ! Compute AGL heights in km
  jloop: DO j=jps,jpe
     iloop: DO i=ips,ipe
-        IF ( t(i,kLNB(i,j),j) .lt. 273.15 ) temp_cold = temp_cold + 1
-        IF (kLNB(i,j) .ge. kps .and. kLNB(i,j) .le. kpe) klnb_in = klnb_in + 1
-
         IF ( t(i,kLNB(i,j),j) .lt. 273.15 .and. &
             kLNB(i,j) .ge. kps .and. kLNB(i,j) .le. kpe ) THEN              ! Cloud top must freeze
-
-            temp_and_klnb = temp_and_klnb + 1
-
             zkm = ( z(i,kLNB(i,j),j) - ht(i,j) )/1E3 + cldtop_adjustment    ! Compute AGL height in km
             IF ( zkm .gt. 0. ) THEN                                         ! Must be above ground
               IF ( xland(i,j) .lt. 1.5 ) THEN
                 total_flashrate(i,j) = 3.44E-5 * (zkm**4.9) /60.            ! Continental equation
-                landsucc = .TRUE.
               ELSE
                 total_flashrate(i,j) = 6.57E-6 * (zkm**4.9) /60.            ! Marine equation (Michalon 99)
-                seasucc = .TRUE.
               ENDIF
             ENDIF
         ENDIF
     ENDDO iloop
  ENDDO jloop
-
- IF (landsucc) call wrf_debug(1, 'ltng_cpmpr92z: land success at least once')
- IF (seasucc) call wrf_debug(1, 'ltng_cpmpr92z: sea success at least once')
-
- write(message, *) 'ltng_cpmpr92z: grid cells cold enough: ', temp_cold, ' of ', total_gridcells
- call wrf_debug(1, message)
- write(message, *) 'ltng_cpmpr92z: grid cells kLNB in kps,kpe: ', klnb_in, ' of ', total_gridcells
- call wrf_debug(1, message)
- write(message, *) 'ltng_cpmpr92z: grid cells cold and kLNB: ', temp_and_klnb, ' of ', total_gridcells
- call wrf_debug(1, message)
- write(message, *) 'ltng_cpmpr92z: max total flashrate after loop = ', maxval(total_flashrate)
- call wrf_debug(1, message)
 
 ! Scale by areal ratio
  total_flashrate(ips:ipe,jps:jpe) = total_flashrate(ips:ipe,jps:jpe) * dA/baseArea
