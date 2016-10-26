@@ -145,9 +145,9 @@ DRIVERS : $(OBJS)
 
 include ../configure.wrf
 
-convert_emiss : convert_emiss.o
+convert_emiss : module_emiss_scale.o convert_emiss.o 
 	$(RANLIB) ../main/$(LIBWRFLIB)
-	$(FC) -o convert_emiss.exe $(LDFLAGS) convert_emiss.o ../main/$(LIBWRFLIB) $(LIB)
+	$(FC) -o convert_emiss.exe $(LDFLAGS) module_emiss_scale.o convert_emiss.o ../main/$(LIBWRFLIB) $(LIB)
 
 clean:
 	@ echo 'use the clean script'
