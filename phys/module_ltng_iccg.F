@@ -194,7 +194,7 @@
 ! Inputs
  INTEGER, DIMENSION( ims:ime,          jms:jme ), INTENT(IN   ) :: kLNB
  REAL,                                            INTENT(IN   ) :: cldtop_adjustment
- REAL,    DIMENSION( ims:ims, kms:kme, jms:jme ), INTENT(IN   ) :: t, z
+ REAL,    DIMENSION( ims:ime, kms:kme, jms:jme ), INTENT(IN   ) :: t, z
 
 ! Order dependent args for domain, mem, and tile dims
  INTEGER, INTENT(IN   )    ::       ids,ide, jds,jde, kds,kde
@@ -219,20 +219,62 @@
  REAL, PARAMETER :: coef_C = 7.493
  REAL, PARAMETER :: coef_D = -36.54
  REAL, PARAMETER :: coef_E = 63.09
+ CHARACTER (LEN=80) :: message
 !-----------------------------------------------------------------
 
  ic_flashrate(ips:ipe,jps:jpe) = 0.
  cg_flashrate(ips:ipe,jps:jpe) = 0.
 
+ write(message,'(A,I4,I4)') 'iccg_pr93: (ims,ime) = ', ims, ime
+ CALL wrf_debug(1, message)
+ write(message,'(A,I4,I4)') 'iccg_pr93: (jms,jme) = ', jms, jme
+ CALL wrf_debug(1, message)
+ write(message,'(A,I4,I4)') 'iccg_pr93: (kms,kme) = ', kms, kme
+ CALL wrf_debug(1, message)
+ 
+ write(message,'(A,I4,I4)') 'iccg_pr93: (ips,ipe) = ', ips, ipe
+ CALL wrf_debug(1, message)
+ write(message,'(A,I4,I4)') 'iccg_pr93: (jps,jpe) = ', jps, jpe
+ CALL wrf_debug(1, message)
+ write(message,'(A,I4,I4)') 'iccg_pr93: (kps,kpe) = ', kps, kpe
+ CALL wrf_debug(1, message)
+ 
+ write(message,*) 'iccg_pr93: max total_flashrate in =',maxval(total_flashrate(ips:ipe,jps:jpe))
+ call wrf_debug(1, message)
+
+ write(message,*) 'iccg_pr93: max t = ', maxval(t(ips:ipe,:,jps:jpe))
+ call wrf_debug(1, message)
+ write(message,*) 'iccg_pr93: min t = ', minval(t(ips:ipe,:,jps:jpe))
+ call wrf_debug(1, message)
+
+ write(message,*) 'iccg_pr93: shape(t) = ', shape(t)
+ call wrf_debug(1, message)
+ write(message,*) 'iccg_pr93: shape(t(ip,:,jp)) = ', shape(t(ips:ipe,:,jps:jpe))
+ call wrf_debug(1, message)
+
  jloop: DO j=jps,jpe
     iloop: DO i=ips,ipe
     IF ( total_flashrate(i,j) .gt. 0.) THEN
+        write(message,*) 'iccg_pr93: flashrate > 0 at (i,j)', i, j
+        call wrf_debug(1, message)
 
         ! Look for freezing level
         kfreeze = kLNB(i,j)
         DO WHILE ( t(i,kfreeze,j) .lt. 273.15 )
+            write(message,*) 'iccg_pr93: k = ', kfreeze
+            call wrf_debug(1,message)
+            write(message,*) 'iccg_pr93: t(k) = ', t(i,kfreeze,j)
+            call wrf_debug(1,message)
             kfreeze = kfreeze - 1
         ENDDO
+
+        call wrf_debug(1,'From iccg_pr93:')
+        write(message,*) ' kLNB(i,j) and kfreeze=', kLNB(i,j), kfreeze
+        call wrf_debug(1,message)
+        write(message,*) ' z(i,kLNB(i,j),j) and z(i,kfreeze,j)=',z(i,kLNB(i,j),j),z(i,kfreeze,j)
+        call wrf_debug(1,message)
+        write(message,*) ' cldtop_adj = ', cldtop_adjustment
+        call wrf_debug(1,message)
 
         depth = ( z(i,kLNB(i,j),j) - z(i,kfreeze,j) ) * 1E-3 + cldtop_adjustment
         IF (depth .le. 0.) CONTINUE
@@ -240,7 +282,12 @@
 
         ratio = (((coef_A*depth+coef_B )*depth+coef_C)*depth+coef_D)*depth+coef_E
         cgfrac = 1./(ratio+1.)
-
+        write(message,*) 'iccg_pr93: depth = ', depth
+        call wrf_debug(1,message)
+        write(message,*) 'iccg_pr93: ratio = ', ratio
+        call wrf_debug(1,message)
+        write(message,*) 'iccg_pr93: cgfrac = ', cgfrac, ' at (i,j) ', i, j
+        call wrf_debug(1,message)
         cg_flashrate(i,j) = total_flashrate(i,j) * cgfrac
         ic_flashrate(i,j) = total_flashrate(i,j) - cg_flashrate(i,j)
     ENDIF
