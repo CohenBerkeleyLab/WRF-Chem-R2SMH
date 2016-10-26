@@ -97,13 +97,22 @@
 
 !-----------------------------------------------------------------
 
- IF ( lightning_option .eq. 0 .or. lnox_opt .eq. 0) RETURN
+ IF ( lightning_option .eq. 0 .or. lnox_opt .eq. 0) THEN
+    CALL wrf_debug( 100, ' lightning_nox_driver: returning, lopts = 0')
+    RETURN
+ ENDIF
 
- IF ( itimestep * dt .lt. lightning_start_seconds ) RETURN
+ IF ( itimestep * dt .lt. lightning_start_seconds ) THEN
+    CALL wrf_debug( 100, ' lightning_nox_driver: returning, itime*dt < start')
+    RETURN
+ ENDIF
 
 ! IF ( MOD((itimestep * dt - lightning_start_seconds), lightning_dt ) .ne. 0 ) RETURN
 
- IF ( N_IC .eq. 0. .and. N_CG .eq. 0. ) RETURN
+ IF ( N_IC .eq. 0. .and. N_CG .eq. 0. ) THEN
+    CALL wrf_debug( 100, ' lightning_nox_driver: returning, n_ic and n_cg = 0')
+    RETURN
+ ENDIF
 !-----------------------------------------------------------------
 
  CALL wrf_debug( 100, ' lightning_nox_driver: converting flash rate to emission')
@@ -163,6 +172,7 @@
      lnox_total(its:ite,kts:kte,jts:jte) = lnox_total(its:ite,kts:kte,jts:jte) + &
                                                lnox_total_tend(its:ite,kts:kte,jts:jte) * lightning_dt
      IF ( .not.lnox_passive ) THEN
+       call wrf_debug( 100, 'Adding Ott lightning NOx to C_NO array' )
        c_no(its:ite,kts:kte,jts:jte) = c_no(its:ite,kts:kte,jts:jte) + &
                                                lnox_total_tend(its:ite,kts:kte,jts:jte) * lightning_dt
      ENDIF
@@ -176,6 +186,7 @@
      lnox_ic(its:ite,kts:kte,jts:jte) = lnox_ic(its:ite,kts:kte,jts:jte) + lnox_ic_tend(its:ite,kts:kte,jts:jte) * lightning_dt
      lnox_cg(its:ite,kts:kte,jts:jte) = lnox_cg(its:ite,kts:kte,jts:jte) + lnox_cg_tend(its:ite,kts:kte,jts:jte) * lightning_dt
      IF ( .not.lnox_passive ) THEN
+       call wrf_debug( 100, 'Adding de Caria lightning NOx to C_NO array' )
        c_no(its:ite,kts:kte,jts:jte) = c_no(its:ite,kts:kte,jts:jte) + &
                                         ( lnox_ic_tend(its:ite,kts:kte,jts:jte) + &
                                           lnox_cg_tend(its:ite,kts:kte,jts:jte) ) * lightning_dt

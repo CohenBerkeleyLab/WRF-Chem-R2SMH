@@ -280,14 +280,26 @@
 
  REAL, PARAMETER            :: reflthreshold = 20. ! reflectivity threshold for CRM schemes
  REAL, DIMENSION( kms:kme ) :: cellcount
-
+ REAL                       :: dbtime
 !-----------------------------------------------------------------
 
- IF ( lightning_option .eq. 0 ) RETURN
+ IF ( lightning_option .eq. 0 ) THEN
+    CALL wrf_debug ( 1, 'LIGHTNING_DRIVER: lightning_option == 0, returning' )
+    RETURN
+ ENDIF
 
- IF ( itimestep * dt .lt. lightning_start_seconds ) RETURN
+ IF ( itimestep * dt .lt. lightning_start_seconds ) THEN
+    CALL wrf_debug ( 1, 'LIGHTNING_DRIVER: spinning up, returning' )
+    RETURN
+ ENDIF
 
- IF ( MOD((itimestep * dt - lightning_start_seconds), lightning_dt ) .ne. 0 ) RETURN
+ IF ( MOD((itimestep * dt - lightning_start_seconds), lightning_dt ) .ne. 0 ) THEN
+    CALL wrf_debug ( 1, 'LIGHTNING_DRIVER: not lightning timestep, returning' )
+    dbtime = MOD((itimestep * dt - lightning_start_seconds), lightning_dt)
+    WRITE(message,*) 'LIGHTNING_DRIVER: mod(itime * dt - lss, l_dt) = ', dbtime
+    CALL wrf_debug ( 1, message )
+    RETURN
+ ENDIF
 
 !-----------------------------------------------------------------
 ! This driver performs several steps in order to produce lightning
@@ -302,7 +314,7 @@
 
  IF ( lightning_option .eq. ltng_crm_PR92w .or. &
       lightning_option .eq. ltng_crm_PR92z ) THEN
-   CALL wrf_debug ( 100, ' lightning_driver: determining cloud extents for CRM' )
+   CALL wrf_debug ( 1, ' lightning_driver: determining cloud extents for CRM' )
    CALL countCells( &
           ! Inputs
             refl, reflthreshold, cellcount_method,     &
@@ -313,17 +325,17 @@
           ! Outputs
             cellcount )
    WRITE(message, * ) ' lightning_driver: Max cell count = ', maxval(cellcount)
-   CALL wrf_debug ( 100, message )
+   CALL wrf_debug ( 1, message )
  ENDIF
 
 !-----------------------------------------------------------------
 
- CALL wrf_debug ( 100, ' lightning_driver: calculating flash rate' )
+ CALL wrf_debug ( 1, ' lightning_driver: calculating flash rate' )
  flashrate_select: SELECT CASE(lightning_option)
 
     ! CRM lightning options
     CASE( ltng_crm_PR92w )
-        CALL wrf_debug ( 100, ' lightning_driver: calling Price and Rind 1992 (w_max, CRM)' )
+        CALL wrf_debug ( 1, ' lightning_driver: calling P+R 1992 (w_max, CRM)' )
 
         CALL ltng_crmpr92w ( &
                   ! Frequently used prognostics
@@ -340,7 +352,7 @@
                     total_flashrate                       &
                   )
     CASE( ltng_crm_PR92z )
-        CALL wrf_debug ( 100, ' lightning_driver: calling Price and Rind 1992 (z_top, CRM)' )
+        CALL wrf_debug ( 1, ' lightning_driver: calling P+R 1992 (z_top, CRM)' )
         CALL ltng_crmpr92z ( &
                   ! Frequently used prognostics
                     dx, dy, xland, ht, z, t_phy,          &
@@ -360,7 +372,7 @@
 
     ! CPM lightning options
     CASE( ltng_cpm_PR92z )
-        CALL wrf_debug ( 100, ' lightning_driver: calling Price and Rind 1992 (z_top, CPM)' )
+        CALL wrf_debug ( 1, ' lightning_driver: calling P+R 1992 (z_top, CPM)' )
 
         CALL ltng_cpmpr92z ( &
                   ! Frequently used prognostics
@@ -385,12 +397,13 @@
  END SELECT flashrate_select
 
 !-----------------------------------------------------------------
-
- CALL wrf_debug ( 100, ' lightning_driver: partitioning IC:CG')
+ WRITE( message, * ) 'ltng_dr: max total_flashrate =',MAXVAL(total_flashrate(its:ite, jts:jte))
+ CALL wrf_debug ( 1, message )
+ CALL wrf_debug ( 1, ' lightning_driver: partitioning IC:CG')
  iccg_select: SELECT CASE(iccg_method)
     ! Flash rate option defaults
     CASE( 0 ) iccg_select
-        CALL wrf_debug( 100, ' lightning_driver: using option-default IC:CG method' )
+        CALL wrf_debug( 1, ' lightning_driver: using option-default IC:CG method' )
         iccg_method_default: SELECT CASE(lightning_option)
 
             CASE( ltng_crm_PR92w, ltng_crm_PR92z, ltng_cpm_PR92z ) iccg_method_default
@@ -408,7 +421,7 @@
                           )
 
             CASE DEFAULT iccg_method_default
-                CALL wrf_debug ( 100, ' lightning_driver: no method-default IC:CG implemented, using user-prescribed constant')
+                CALL wrf_debug ( 1, ' lightning_driver: no method-default IC:CG implemented, using user-prescribed constant')
                 CALL iccg_user_prescribed( &
                             iccg_prescribed_num,                  &
                             iccg_prescribed_den,                  &
@@ -427,7 +440,7 @@
     ! Used-prescribed constant
     CASE( 1 ) iccg_select
         WRITE(message, * ) ' lightning_driver: using user-prescribed IC:CG ratio = ', iccg_prescribed_num, iccg_prescribed_den
-        CALL wrf_debug ( 100, message )
+        CALL wrf_debug ( 1, message )
         CALL iccg_user_prescribed( &
                     iccg_prescribed_num,                  &
                     iccg_prescribed_den,                  &
@@ -443,7 +456,7 @@
 
     ! Boccippio et al, 2001
     CASE( 2 ) iccg_select
-        CALL wrf_debug ( 100, ' lightning_driver: using Boccippio 2001 IC:CG climatology')
+        CALL wrf_debug ( 1, ' lightning_driver: using Boccippio 2001 IC:CG climatology')
         CALL iccg_boccippio( &
                     xlat, xlon,                                &
                     iccg_prescribed_num, iccg_prescribed_den,  &
@@ -461,7 +474,7 @@
     CASE( 3 ) iccg_select
         iccg_pr93_select: SELECT CASE(lightning_option)
         CASE( ltng_crm_PR92w, ltng_crm_PR92z ) iccg_pr93_select
-            CALL wrf_debug ( 100, ' lightning_driver: using Price and Rind 1993 IC:CG ratio (CRM)')
+            CALL wrf_debug ( 1, ' lightning_driver: using Price and Rind 1993 IC:CG ratio (CRM)')
             CALL iccg_crm_pr93( &
                     refl, reflthreshold, t_phy, z,             &
                   ! Order dependent args for domain, mem, and tile dims
@@ -475,7 +488,25 @@
                 )
 
         CASE DEFAULT iccg_pr93_select
-            CALL wrf_debug ( 100, ' lightning_driver: using Price and Rind 1993 IC:CG ratio (CPM)')
+            CALL wrf_debug ( 1, ' lightning_driver: using Price and Rind 1993 IC:CG ratio (CPM)')
+            
+            write(message,*) ' lightning_driver: shape(t_phy(:,:,:)) = ', shape(t_phy)
+            CALL wrf_debug(1, message)
+            write(message,'(A,I4,I4)') ' lightning_driver: (ims,ime) = ', ims, ime
+            CALL wrf_debug(1, message)
+            write(message,'(A,I4,I4)') ' lightning_driver: (jms,jme) = ', jms, jme
+            CALL wrf_debug(1, message)
+            write(message,'(A,I4,I4)') ' lightning_driver: (kms,kme) = ', kms, kme
+            CALL wrf_debug(1, message)
+
+            write(message, *) ' lightning_driver: maxval t_phys = ', maxval(t_phy(its:ite,:,jts:jte))
+            CALL wrf_debug ( 1, message )
+            write(message, *) ' lightning_driver: minval t_phys = ', minval(t_phy(its:ite,:,jts:jte))
+            CALL wrf_debug ( 1, message )
+            write(message, *) ' lightning_driver: shape(t_phys(it,:,jt)) = '
+            CALL wrf_debug ( 1, message )
+            write(message, *) shape(t_phy(its:ite,:,jts:jte))
+            CALL wrf_debug ( 1, message )
             CALL iccg_pr93( &
                     ktop_deep, cldtop_adjustment, t_phy, z,    &
                   ! Order dependent args for domain, mem, and tile dims
@@ -490,7 +521,7 @@
         END SELECT iccg_pr93_select
 
     CASE( 4 ) iccg_select
-        CALL wrf_debug ( 100, ' lightning_driver: using input IC:CG ratio from iccg_in_(num|den)' )
+        CALL wrf_debug ( 1, ' lightning_driver: using input IC:CG ratio from iccg_in_(num|den)' )
         CALL iccg_input( &
                     iccg_prescribed_num, iccg_prescribed_den,  &
                     iccg_in_num, iccg_in_den, current_time,    &
@@ -513,7 +544,13 @@
 
 !-----------------------------------------------------------------
 
- CALL wrf_debug( 200, ' lightning_driver: converting flash rates to flash counts')
+ CALL wrf_debug( 1, ' lightning_driver: converting flash rates to flash counts')
+ WRITE(message,*) ' lightning_driver: flashrate_factor = ', flashrate_factor
+ CALL wrf_debug( 1, message )
+ WRITE(message,*) ' lightning_driver: maxval ic_fr = ', MAXVAL(ic_flashrate(its:ite,jts:jts))
+ CALL wrf_debug( 1, message )
+ WRITE(message,*) ' lightning_driver: maxval cg_fr = ', MAXVAL(cg_flashrate(its:ite,jts:jte))
+ CALL wrf_debug( 1, message )
 
  ic_flashrate(its:ite,jts:jte) = ic_flashrate(its:ite,jts:jte) * flashrate_factor
  cg_flashrate(its:ite,jts:jte) = cg_flashrate(its:ite,jts:jte) * flashrate_factor
@@ -523,7 +560,7 @@
 
 !-----------------------------------------------------------------
 
- CALL wrf_debug ( 100, ' lightning_driver: returning from')
+ CALL wrf_debug ( 1, ' lightning_driver: returning from')
 
  END SUBROUTINE lightning_driver
 
