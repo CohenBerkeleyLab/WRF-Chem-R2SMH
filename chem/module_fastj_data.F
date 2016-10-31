@@ -24,12 +24,12 @@
         USE module_data_mosaic_other, only : kmaxd
 !jdf
        integer, parameter :: double = 8        !compiler dependent value real*8
-       integer,parameter :: jppj=37        !Number of photolytic reactions supplied
+       integer,parameter :: jppj=39        !Number of photolytic reactions supplied
 !jdf
 
         INTEGER  NB, NC !values set in fastj_driver, don't confuse
                         !this nc with the one in module_fastj_mie
-        INTEGER, PARAMETER :: NS=38, NW=15, NP=21, NH=7, MX=3
+        INTEGER, PARAMETER :: NS=39, NW=15, NP=21, NH=7, MX=3
 
 !titls variables
         CHARACTER*55 TITLE0(3)
@@ -257,7 +257,7 @@
           0.2362E+00,   0.9937E-01,   0.0000E+00,   &
           0.0000E+00   & !updated to Fast-JX 6.5 data
          /
-        data (TITLEJ(1,JTMP), JTMP=4,38)   &
+        data (TITLEJ(1,JTMP), JTMP=4,39)   &
          /   &
         'H2O2   ',  'HCHO_a ',  'HCHO_b ',  'MeOOH  ',   &
         'NO2    ',  'NO3_X  ',  'NO3_L  ',  'N2O5   ',   &
@@ -267,9 +267,9 @@
         'GLY_C  ',  'MGLY   ',  'PAA    ',  'iPrNO3 ',   &
         'PAN_A  ',  'PAN_B  ',  'BALD   ',  'GLYC   ',   &
         'ONIT1  ',  'ONITOH3',  'HPALD  ',  'NOA    ',   &
-        'IBUTALD',  'ONITOH1',  'ClNO2  '    &
+        'IBUTALD',  'ONITOH1',  'ClNO2  ',  'MPN    '    &
          /
-        data (TITLEJ(2,JTMP), JTMP=4,38)   &
+        data (TITLEJ(2,JTMP), JTMP=4,39)   &
          /   &
         'H2O2   ',  'HCHO_a ',  'HCHO_b ',  'MeOOH  ',   &
         'NO2    ',  'NO3_X  ',  'NO3_L  ',  'N2O5   ',   &
@@ -279,9 +279,9 @@
         'GLY_C  ',  'MGLY   ',  'PAA    ',  'iPrNO3 ',   &
         'PAN_A  ',  'PAN_B  ',  'BALD   ' , 'GLYC   ',   &
         'ONIT1  ',  'ONITOH3',  'HPALD  ',  'NOA    ',   &
-        'IBUTALD',  'ONITOH1',  'ClNO2  '    &
+        'IBUTALD',  'ONITOH1',  'ClNO2  ',  'MPN    '    &
          /
-        data (TQQ(1,JTMP), JTMP= 4,38)   &  
+        data (TQQ(1,JTMP), JTMP= 4,39)   &  
          /   &                              
          200.,   223.,   223.,   297.,   &
          220.,   297.,   297.,   225.,   &
@@ -291,9 +291,9 @@
          297.,   297.,   297.,   240.,   &
          250.,   250.,   297.,   296.,   &
          298.,   297.,   297.,   297.,   &
-         297.,   297.,   297.            &
+         297.,   297.,   297.,   297.    &
          /
-        data (TQQ(2,JTMP), JTMP= 4,38)   & 
+        data (TQQ(2,JTMP), JTMP= 4,39)   & 
          /   &                             
          300.,   293.,   293.,   298.,   &
          300.,   298.,   298.,   300.,   &
@@ -303,7 +303,7 @@
          298.,   298.,   298.,   298.,   &
          298.,   298.,   298.,   296.,   &
          298.,   298.,   298.,   298.,   &
-         298.,   298.,   298.            &
+         298.,   298.,   298.,   298.    &
          /
         data (QQQ(IW,1, 1), IW=1, 7)   &
          /   &
@@ -480,6 +480,11 @@
          1.529E-19,    1.346E-19,     1.204E-19,     1.035E-19, &
          6.193E-20,    9.498E-21,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs ClNO2 at 297
          /
+        data (QQQ(IW,1,36), IW=1, 7)   &
+        /    &
+         2.601E-20,    1.103E-20,    5.239E-21,     2.793E-21, &
+         2.250E-22,    0.000E+00,    0.000E+00 & ! Laughner: Values taken from jv_spec.dat for GEOS-Chem 9.02b
+        /
         data (QQQ(IW,2, 1), IW=1, 7)   &
          /   &
          9.300E-21,     5.735E-21,     3.803E-21,     2.583E-21,    &
@@ -655,6 +660,11 @@
          1.529E-19,    1.346E-19,     1.204E-19,     1.035E-19, &
          6.193E-20,    9.498E-21,     0.000E+00 & ! Updated to Fast-JX 6.5 gen xs ClNO2 at 298
          / 
+        data (QQQ(IW,2,36), IW=1, 7)   &
+        /    &
+         2.601E-20,    1.103E-20,    5.239E-21,     2.793E-21, &
+         2.250E-22,    0.000E+00,    0.000E+00 & ! Laughner: Values taken from jv_spec.dat for GEOS-Chem 9.02b
+        /
        data TITLE0(2)   &
          /   &
        '          ============================================='   &

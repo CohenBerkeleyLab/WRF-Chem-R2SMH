@@ -874,6 +874,8 @@ state    real  ph_ibutald    ikj     misc        1         -      r        "PHOT
 state    real  ph_onitoh1    ikj     misc        1         -      r        "PHOTRph_onitoh1"       "onitoh1 photolysis rate" "min{-1}"
 state    real  ph_mvk        ikj     misc        1         -      r        "PHOTR_mvk"             "mvk photolysis rate" "min{-1}"
 state    real  ph_clno2      ikj     misc        1         -      r        "PHOTRph_clno2"         "clno2 photolysis rate" "min{-1}"
+# Josh
+state    real  ph_mpn      ikj     misc        1         -      rh        "PHOTR_mpn"         "MPN (methyl peroxynitrate) photolysis rate" "min{-1}"
 #Azimeh
 # mozart photolysis rates
 state    real  ph_n2o          ikj     misc        1         -      -        "PHOTR_N2O"            "n2o photolysis rate" "min{-1}"
@@ -1905,6 +1907,8 @@ state   real   ishpd        ikjftb   chem        1         -   i0{12}rhusdf=(bdy
 state   real   mahp        ikjftb   chem        1         -   i0{12}rusdf=(bdy_interp:dt)        "mahp"              "MAHP concentration"      "ppm"
 state   real   mpan        ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt)        "mpan"              "MPAN concentration"      "ppm"
 state   real   nald        ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt)        "nald"              "NALD concentration"      "ppm"
+#Josh methyl peroxynitrate
+state   real   mpn        ikjftb   chem        1         -   i0{12}rhusdf=(bdy_interp:dt)        "mpn"              "Methyl peroxynitrate concentration"      "ppm"
 #cms-- note: ison is probably quite soluble 
 #Additional MOSAIC aerosol variables inside the chem array...
 
@@ -3151,7 +3155,7 @@ package   mozart_kpp        chem_opt==111                  -          chem:o3,o1
 package   mozcart_kpp       chem_opt==112                  -          chem:o3,o1d_cb4,o,no,no2,no3,n2o5,hno3,hno4,so2,ho,ho2,h2o2,sulf,co,hcho,ch3ooh,ch3o2,ch4,h2,eo2,ch3cooh,c2h4,n2o,ch3oh,aco3,acet,mgly,paa,gly,c3h6ooh,pan,mpan,macr,mvk,c3h6,etooh,prooh,acetp,xooh,onitr,isooh,acetol,glyald,mek,eto2,open,alkooh,mekooh,tolooh,terpooh,ald,mco3,c2h5oh,eo,c2h6,c3h8,pro2,po2,aceto2,bigene,bigalk,eneo2,alko2,isopr,iso2,mvko2,mvkooh,hydrald,xo2,c10h16,terpo2,tol,cres,to2,xoh,onit,isopn,dms,nh3,meko2,p25,p10,bc1,bc2,oc1,oc2,dust_1,dust_2,dust_3,dust_4,dust_5,seas_1,seas_2,seas_3,seas_4
 
 # KPP mechanism from RACM-MTN _ E Browne et al.,2014 
-package   r2smh_kpp         chem_opt==113                  -          chem:so2,sulf,no2,no,o3,hno3,h2o2,ald,hcho,op1,op2,paa,ora1,ora2,nh3,n2o5,no3,pan,hc3,hc5,hc8,eth,co,ete,olt,oli,tol,xyl,aco3,hono,hno4,ket,gly,mgly,onit,csl,iso,co2,ch4,hket,api,lim,dien,macr,acd,ace,act,bald,ben,dcb1,dcb2,dcb3,eoh,epx,eteg,ishpa,ishpb,ishpd,ihnd,ihnb,inheb,inhed,inpd,inpb,icn,r4n,r4no,nh4co3,mahp,mct,mek,moh,mpan,mvk,per1,per2,phen,ppn,rco3,roh,uald,xyo,glyc,isopnd,isopnb,uhc,hac,macrn,mvkn,propnn,vrp,iepoxa,iepoxb,iepoxd,iap,dhmob,moba,ethln,isnp,pyac,hpald,imonit,honit,monit,donit,aonit,tonit,utonit,tonin,utonin,tonih,ho,ho2,so4aj,so4ai,nh4aj,nh4ai,no3aj,no3ai,naaj,naai,claj,clai,orgaro1j,orgaro1i,orgaro2j,orgaro2i,orgalk1j,orgalk1i,orgole1j,orgole1i,orgba1j,orgba1i,orgba2j,orgba2i,orgba3j,orgba3i,orgba4j,orgba4i,orgpaj,orgpai,ecj,eci,p25j,p25i,antha,seas,soila,nu0,ac0,corn
+package   r2smh_kpp         chem_opt==113                  -          chem:so2,sulf,no2,no,o3,hno3,h2o2,ald,hcho,op1,op2,paa,ora1,ora2,nh3,n2o5,no3,pan,hc3,hc5,hc8,eth,co,ete,olt,oli,tol,xyl,aco3,hono,hno4,ket,gly,mgly,onit,csl,iso,co2,ch4,hket,api,lim,dien,macr,acd,ace,act,bald,ben,dcb1,dcb2,dcb3,eoh,epx,eteg,ishpa,ishpb,ishpd,ihnd,ihnb,inheb,inhed,inpd,inpb,icn,r4n,r4no,nh4co3,mahp,mct,mek,moh,mpan,mvk,per1,per2,phen,ppn,rco3,roh,uald,xyo,glyc,isopnd,isopnb,uhc,hac,macrn,mvkn,propnn,vrp,iepoxa,iepoxb,iepoxd,iap,dhmob,moba,ethln,isnp,pyac,hpald,imonit,honit,monit,donit,aonit,tonit,utonit,tonin,utonin,tonih,ho,ho2,so4aj,so4ai,nh4aj,nh4ai,no3aj,no3ai,naaj,naai,claj,clai,orgaro1j,orgaro1i,orgaro2j,orgaro2i,orgalk1j,orgalk1i,orgole1j,orgole1i,orgba1j,orgba1i,orgba2j,orgba2i,orgba3j,orgba3i,orgba4j,orgba4i,orgpaj,orgpai,ecj,eci,p25j,p25i,antha,seas,soila,nu0,ac0,corn,mpn
 
 
 
