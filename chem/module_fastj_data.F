@@ -24,7 +24,7 @@
         USE module_data_mosaic_other, only : kmaxd
 !jdf
        integer, parameter :: double = 8        !compiler dependent value real*8
-       integer,parameter :: jppj=39        !Number of photolytic reactions supplied
+       integer,parameter :: jppj=38        !Number of photolytic reactions supplied
 !jdf
 
         INTEGER  NB, NC !values set in fastj_driver, don't confuse
@@ -125,7 +125,7 @@
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
            0.1000D+01,  0.1000D+01,  0.1000D+01,   &
-           0.1000D+01 &
+           0.1000D+01,  0.1000D+01  &
          /
        data jlabel   &
          /   &
@@ -141,7 +141,7 @@
           'PAN_B  ', 'BALD   ', 'GLYC   ',   &
           'ONIT1  ', 'ONITOH3', 'HPALD  ',   &
           'NOA    ', 'IBUTALD', 'ONITOH1',   &
-          'ClNO2  '  &
+          'ClNO2  ', 'MPN    '  &
          /         
 
 ! from rd_tjpl2
@@ -151,7 +151,7 @@
          /
        data NJVAL,NWWW,NW1,NW2   &
          /   &
-          38,    7,    1,    7   &  !
+          39,    7,    1,    7   &  !
          /
        data (WBIN(IW),IW=1,  8)   &
          /   &
