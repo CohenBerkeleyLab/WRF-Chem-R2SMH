@@ -1109,7 +1109,7 @@
               grid%ph_glyald,grid%ph_hyac,grid%ph_uald,grid%ph_hcochoc,grid%ph_bald,  &
               grid%ph_iprno3,grid%ph_pana,grid%ph_panb,grid%ph_glyc,grid%ph_onit1,    &
               grid%ph_onitoh3,grid%ph_hpald,grid%ph_noa,grid%ph_ibutald,grid%ph_onitoh1,&
-              grid%ph_clno2,config_flags%track_tuv_lev,                               &
+              grid%ph_clno2,grid%ph_mpn,config_flags%track_tuv_lev,                   &
               config_flags%track_rad_num,                                             &
               config_flags%track_tuv_num,                                             &
               grid%radfld,grid%adjcoe,grid%phrate,                                    &

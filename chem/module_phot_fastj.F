@@ -76,7 +76,8 @@
                ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,&
                ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
                ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
-               ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, &
+               ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,       &
+               ph_clno2, ph_mpn,                                       &
                tauaer1,tauaer2,tauaer3,tauaer4,              &
                gaer1,gaer2,gaer3,gaer4,                                &
                waer1,waer2,waer3,waer4,                                &
@@ -103,7 +104,7 @@
    integer, parameter :: single = 4        !compiler dependent value real*4
    integer, parameter :: double = 8        !compiler dependent value real*8
    integer,parameter :: ipar_fastj=1,jpar=1
-   integer,parameter :: jppj=37        !Number of photolytic reactions supplied
+   integer,parameter :: jppj=38        !Number of photolytic reactions supplied
    logical,parameter :: ldeg45=.false. !Logical flag for degraded CTM resolution
    integer,save :: lpar           !Number of levels in CTM
    integer,save :: jpnl           !Number of levels requiring chemistry
@@ -123,7 +124,7 @@
    data wavmid     &
        / 0.30e-4, 0.40e-4, 0.60e-4 ,0.999e-04 /
    integer nphoto_fastj
-   parameter (nphoto_fastj = 38)
+   parameter (nphoto_fastj = 39)
    integer   &
    lfastj_no2,   lfastj_o3a,   lfastj_o3b,    lfastj_h2o2,   &
    lfastj_hchoa, lfastj_hchob, lfastj_ch3ooh, lfastj_no3x,   &
@@ -133,7 +134,8 @@
    lfastj_glya,  lfastj_glyb,  lfastj_glyc,   lfastj_mgly,   &   
    lfastj_paa,   lfastj_iprno3, lfastj_pana,   lfastj_panb,   &
    lfastj_bald,  lfastj_glycald,   lfastj_onit1,  lfastj_onitoh3, &
-   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2
+   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2, &
+   lfastj_mpn
 
    parameter( lfastj_no2   = 1 )
    parameter( lfastj_o3a   = 2 )
@@ -172,6 +174,7 @@
    parameter( lfastj_ibutald = 35 )
    parameter( lfastj_onitoh1 = 36 )
    parameter( lfastj_clno2 = 37 )
+   parameter( lfastj_mpn = 38 )
 
 !jdf
    INTEGER,      INTENT(IN   ) :: id,julday,                    &
@@ -189,7 +192,8 @@
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob, &
            ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,        &
            ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,      &
-           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2
+           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, &
+           ph_mpn
    REAL, DIMENSION( ims:ime, kms:kme, jms:jme ),                    &
          INTENT(IN ) ::                                             &
            tauaer1,tauaer2,tauaer3,tauaer4,                         &
@@ -393,7 +397,7 @@
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob, &
            ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
            ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
-           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2  )
+           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2,ph_mpn  )
 ! put the aerosol optical properties into the wrf arrays (this is hard-
 ! coded to 4 spectral bins, nspint)
 !     do k=kts,kte
@@ -435,14 +439,14 @@
         ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,    &
         ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
         ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1, &
-        ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2   )
+        ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2,ph_mpn )
 
        USE module_data_cbmz
 
    implicit none
 !jdf
    integer nphoto_fastj
-   parameter (nphoto_fastj = 38)
+   parameter (nphoto_fastj = 39)
    integer   &
    lfastj_no2,   lfastj_o3a,   lfastj_o3b,    lfastj_h2o2,   &
    lfastj_hchoa, lfastj_hchob, lfastj_ch3ooh, lfastj_no3x,   &
@@ -452,7 +456,8 @@
    lfastj_glya,  lfastj_glyb,  lfastj_glyc,   lfastj_mgly,   &   
    lfastj_paa,   lfastj_iprno3, lfastj_pana,   lfastj_panb,   &
    lfastj_bald,  lfastj_glycald,   lfastj_onit1,  lfastj_onitoh3, &
-   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2
+   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2, &
+   lfastj_mpn
     
    parameter( lfastj_no2   = 1 )
    parameter( lfastj_o3a   = 2 )
@@ -491,6 +496,7 @@
    parameter( lfastj_ibutald = 35 )
    parameter( lfastj_onitoh1 = 36 )
    parameter( lfastj_clno2 = 37 )
+   parameter( lfastj_mpn = 38 )
 
 !jdf
    INTEGER,      INTENT(IN   ) :: iflag,                        &
@@ -505,7 +511,8 @@
            ph_hcochest,ph_ch3o2h,ph_ch3coo2h,ph_ch3ono2,ph_hcochob,&
            ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
            ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
-           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2
+           ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, &
+           ph_mpn
 
    REAL, DIMENSION( kte,nphoto_fastj ), INTENT(INOUT) :: valuej
 
@@ -561,6 +568,7 @@
           ph_ibutald(iclm,kt,jclm)    = valuej(kt,lfastj_ibutald)  * ft
           ph_onitoh1(iclm,kt,jclm)    = valuej(kt,lfastj_onitoh1)  * ft
           ph_clno2(iclm,kt,jclm)      = valuej(kt,lfastj_clno2)  * ft
+          ph_mpn(iclm,kt,jclm)      = valuej(kt,lfastj_mpn)  * ft
 
        end do
        return        !finished peg-> wrf mapping
@@ -609,6 +617,7 @@
           valuej(kt,lfastj_ibutald) = ph_ibutald(iclm,kt,jclm)  / ft
           valuej(kt,lfastj_onitoh1) = ph_onitoh1(iclm,kt,jclm)  / ft
           valuej(kt,lfastj_clno2) = ph_clno2(iclm,kt,jclm)  / ft
+          valuej(kt,lfastj_mpn) = ph_mpn(iclm,kt,jclm)  / ft
        end do
 
     return       !finished wrf->peg mapping
@@ -682,7 +691,7 @@
    integer, parameter :: single = 4        !compiler dependent value real*4
    integer, parameter :: double = 8        !compiler dependent value real*8
    integer,parameter :: ipar_fastj=1,jpar=1
-   integer,parameter :: jppj=37        !Number of photolytic reactions supplied
+   integer,parameter :: jppj=38       !Number of photolytic reactions supplied
    logical,parameter :: ldeg45=.false. !Logical flag for degraded CTM resolution
    integer lpar           !Number of levels in CTM
    integer jpnl           !Number of levels requiring chemistry
@@ -695,7 +704,7 @@
    integer month_fastj        !  Number of month (1-12)
    integer iday_fastj         !  Day of year
    integer nphoto_fastj
-   parameter (nphoto_fastj = 38)
+   parameter (nphoto_fastj = 39)
    integer   &
    lfastj_no2,   lfastj_o3a,   lfastj_o3b,    lfastj_h2o2,   &
    lfastj_hchoa, lfastj_hchob, lfastj_ch3ooh, lfastj_no3x,   &
@@ -705,7 +714,8 @@
    lfastj_glya,  lfastj_glyb,  lfastj_glyc,   lfastj_mgly,   &   
    lfastj_paa,   lfastj_iprno3, lfastj_pana,   lfastj_panb,   &
    lfastj_bald,  lfastj_glycald, lfastj_onit1,  lfastj_onitoh3, &
-   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, lfastj_clno2
+   lfastj_hpald, lfastj_noa,  lfastj_ibutald, lfastj_onitoh1, &
+   lfastj_clno2, lfastj_mpn
 
    parameter( lfastj_no2   = 1 )
    parameter( lfastj_o3a   = 2 )
@@ -744,6 +754,7 @@
    parameter( lfastj_ibutald = 35 )
    parameter( lfastj_onitoh1 = 36 )
    parameter( lfastj_clno2 = 37 )
+   parameter( lfastj_mpn = 38 )
 
    
    integer nspint           ! Num of spectral intervals across solar 
@@ -934,6 +945,7 @@
              valuej(k, lfastj_ibutald) = jvalue(k,lfastj_ibutald)
              valuej(k, lfastj_onitoh1) = jvalue(k,lfastj_onitoh1)
              valuej(k, lfastj_clno2) = jvalue(k,lfastj_clno2)
+             valuej(k, lfastj_mpn) = jvalue(k,lfastj_mpn)
          end do
 ! diagnostic output and zeroed value if negative photolysis rates returned
          do k = 1, lpar
