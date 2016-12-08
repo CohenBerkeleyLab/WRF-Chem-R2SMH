@@ -17,7 +17,7 @@
                ph_glyald,ph_hyac,ph_uald,ph_hcochoc,ph_bald,             &
                ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,               &
                ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, & 
-               nref0, nw0, tuv_jmax0,                                    &
+               ph_mpn,nref0, nw0, tuv_jmax0,                             &
                ph_radfld, ph_adjcoe, ph_prate,                           &
                wc, zref,                                                 &
                tauaer1,tauaer2,tauaer3,tauaer4,                          &
@@ -72,7 +72,7 @@
            ph_terpooh,ph_mvk,ph_glyald,ph_hyac,ph_uald,ph_hcochoc,     &
            ph_bald,ph_iprno3,ph_pana,ph_ald,                           &  
                ph_panb,ph_glyc,ph_onit1,ph_onitoh3,ph_hpald,ph_noa,    &
-               ph_ibutald,ph_onitoh1,ph_clno2
+               ph_ibutald,ph_onitoh1,ph_clno2,ph_mpn
 
    INTEGER,      INTENT(IN   ) :: nref0, nw0, tuv_jmax0 
    real, dimension( ims:ime, nref0, jms:jme, nw0 ),                    &
@@ -168,7 +168,7 @@
                ph_n2o5,ph_ald,ph_uald,ph_macr,ph_mvk,ph_hcochoc,       &
                ph_bald,ph_iprno3,ph_pana,ph_panb,ph_glyc,ph_onit1,     &
                ph_onitoh3,ph_hpald,ph_noa,ph_ibutald,ph_onitoh1,ph_clno2, &
-               tauaer1,tauaer2,tauaer3,tauaer4,                        &
+               ph_mpn,tauaer1,tauaer2,tauaer3,tauaer4,                 &
                gaer1,gaer2,gaer3,gaer4,                                &
                waer1,waer2,waer3,waer4,                                &
                bscoef1,bscoef2,bscoef3,bscoef4,                        &

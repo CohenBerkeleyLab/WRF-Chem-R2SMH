@@ -663,8 +663,11 @@ tile_lon_loop : &
                ddvel(i,j,p_isnp) = ddvel(i,j,p_mahp) !assume oragnic peroxide from Ito et al 2007 w/ mw of mahp
                ddvel(i,j,p_pyac) = 0. !ignore for now
                ddvel(i,j,p_hpald) = 0. !ignore for now
+               ddvel(i,j,p_utonit) = ddvel(i,j,p_tonit)
                ddvel(i,j,p_imonit) = ddvel(i,j,p_tonit) !assume like tonit for now
-               ddvel(i,j,p_utonit) = ddvel(i,j,p_tonit) 
+               ddvel(i,j,p_utonin) = ddvel(i,j,p_tonit)
+               ddvel(i,j,p_tonin) = ddvel(i,j,p_tonit)
+               ddvel(i,j,p_tonih) = ddvel(i,j,p_hno3)
                ddvel(i,j,p_honit) = ddvel(i,j,p_hno3)
                ddvel(i,j,p_donit) = ddvel(i,j,p_monit) !assume wrf racm onit
                ddvel(i,j,p_aonit) = ddvel(i,j,p_monit) !assume onit
@@ -678,10 +681,12 @@ tile_lon_loop : &
                ddvel(i,j,p_icn) = ddvel(i,j,p_isopnd)
                ddvel(i,j,p_r4n) = ddvel(i,j,p_isopnd)
                ddvel(i,j,p_r4no) = ddvel(i,j,p_isopnd)
+               ddvel(i,j,p_nh4co3) = ddvel(i,j,p_isopnd)
                ddvel(i,j,p_ihnd) = ddvel(i,j,p_isopnd)
                ddvel(i,j,p_ihnb) = ddvel(i,j,p_isopnd)
                ddvel(i,j,p_inhed) = ddvel(i,j,p_iepoxa)
                ddvel(i,j,p_inheb) = ddvel(i,j,p_iepoxa)
+             
             enddo
          enddo
       endif
@@ -2729,7 +2734,7 @@ is_cbm4_kpp : &
          f0(p_monit) = 0.
          dvj(p_monit) = 0.092
                                       !Azimeh: test dry dep Nguyen et al., 2015
-         hstar(p_isopnd) =2.0E+6      ! 1.7E+4 !use Ito et al 2007
+         hstar(p_isopnd)=2.0E+6      ! 1.7E+4 !use Ito et al 2007
          dhr(p_isopnd)  = 9200.  ! hydroxy alkyl nitrates from biogenics
          f0(p_isopnd)   = 1.   !      ! use onit
          dvj(p_isopnd)  = 0.0825   !1/sqrt(147)

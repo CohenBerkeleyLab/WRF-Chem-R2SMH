@@ -28,6 +28,10 @@ tools/fseeko_test
 # Ignore any further changes to the test subdirectories
 test/**
 
+# Some backup files
+Registry/Registry.backup
+configure.wrf.backup
+
 #
 # Many files are generated from the registry or KPP during compilation.
 # First ignore patterns. Can't just ignore all .f90 files because some
@@ -57,6 +61,11 @@ chem/KPP/mechanisms/**/*_mex_Jac_SP.f90
 chem/*.f90
 # As are the module files from KPP
 chem/module_kpp_*
+# The registry_kpp file is an executable generated from registry_kpp.c and should not be tracked
+chem/KPP/util/wkc/registry_kpp
+# The chem Makefile is also generated to include KPP files
+# chem/Makefile_org is used as a basis
+chem/Makefile
 
 # Only .f90 files in dyn_em are auto generated
 dyn_em/*.f90

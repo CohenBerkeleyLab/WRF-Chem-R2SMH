@@ -25,6 +25,7 @@ PROGRAM convert_emissions
    USE module_configure, ONLY : grid_config_rec_type, model_config_rec, &
         initial_config, get_config_as_buffer, set_config_as_buffer
    USE module_io_domain
+   USE module_emiss_scale
 
 #ifdef DM_PARALLEL
    USE module_dm
@@ -127,6 +128,7 @@ PROGRAM convert_emissions
    INTEGER :: interval_seconds , real_data_init_type
    INTEGER :: int_sec
    INTEGER :: time_loop_max , time_loop
+   INTEGER :: nei_base_yr = 2011
 
    REAL :: cen_lat, cen_lon, moad_cen_lat, truelat1, truelat2, gmt, stand_lon, dum1
    INTEGER :: map_proj, julyr, julday, iswater, isice, isurban, isoilwater
@@ -1726,7 +1728,7 @@ PROGRAM convert_emissions
      write(message, FMT='(A,5I10)') ' dims:',size(dumc0,1),size(dumc0,2),size(dumc0,3)
      call wrf_message( TRIM( message ) )
     write(*,*) dumc0(ids:ide-1,1,7)
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*so2_scale(start_year, nei_base_yr) !Josh: scale NEI from base to current year
     write(*,*) grid%emis_ant(ips:ipe-1,1,7,p_e_so2)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
@@ -1736,8 +1738,8 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
-!Azimeh: additional for RACM2
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*nox_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013+reduce no emissions from NEI 2011 50% following the other run and comparison with obs
+
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1746,7 +1748,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ald)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  ) 
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ald)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  ) *voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1755,7 +1757,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hcho)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hcho)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1764,7 +1766,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ora2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ora2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1773,7 +1775,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_nh3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_nh3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*nh3_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1782,7 +1784,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1791,7 +1793,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc5)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc5)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1800,7 +1802,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc8)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc8)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1809,7 +1811,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eth)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eth)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1818,7 +1820,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_co)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_co)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*co_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1827,7 +1829,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ol2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ol2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1836,7 +1838,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_olt)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_olt)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1845,7 +1847,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_oli)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_oli)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1854,7 +1856,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_tol)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_tol)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1863,9 +1865,9 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_xyl)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
 !Azimeh:addition for RACM2 for NEI emissions
 !**********
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_xyl)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1874,7 +1876,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ace)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ace)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1883,7 +1885,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_phen)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_phen)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1892,7 +1894,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_macr)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_macr)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1901,7 +1903,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_moh)=dumc0(ips:ipe ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_moh)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1910,7 +1912,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_gly)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_gly)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -1919,7 +1921,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ben)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ben)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2037,7 +2039,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013 !Josh: this follows pm2.5?
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2046,7 +2048,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013 !Josh: this follows pm2.5?
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2064,7 +2066,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so4j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so4j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013 !Josh: this follows pm2.5?
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2073,7 +2075,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2082,7 +2084,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013 !Josh: this follows pm2.5?
 
 !     IF (inew_nei .eq. 1) THEN
 !!! naai and naaj for aqmeii
@@ -2114,7 +2116,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgi)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgi)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013 !Josh: follows pm2.5?
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2123,7 +2125,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013 !Josh: follows pm2.5?
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2132,7 +2134,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eci)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eci)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Josh: follows pm2.5? !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2141,7 +2143,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ecj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ecj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Josh: follows pm2.5? !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2150,7 +2152,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm_10)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  ) 
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm_10)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  ) *pm10_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
    write(message,FMT='(A)') ' PAST READ EMISSIONS 1'
    CALL  wrf_message ( message )
 
@@ -2347,7 +2349,7 @@ PROGRAM convert_emissions
 #else
         read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*so2_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 !
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
@@ -2358,7 +2360,7 @@ PROGRAM convert_emissions
 
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*nox_scale(start_year, nei_base_yr)  !Azimeh: scale from 2011 to 2013+reduce no emissions from NEI 2011 50% following the other run and comparison with obs
 
 !     IF (inew_nei .eq. 1) THEN
 !#ifdef DM_PARALLEL
@@ -2381,7 +2383,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ald)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ald)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2390,7 +2392,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hcho)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hcho)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2399,7 +2401,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ora2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ora2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2408,7 +2410,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_nh3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_nh3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*nh3_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2417,7 +2419,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc3)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2426,7 +2428,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc5)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc5)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2435,7 +2437,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc8)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_hc8)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2444,7 +2446,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eth)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eth)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2453,7 +2455,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_co)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_co)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*co_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2462,7 +2464,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ol2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ol2)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2471,7 +2473,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_olt)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_olt)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2480,7 +2482,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_oli)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_oli)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2489,7 +2491,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_tol)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_tol)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2498,7 +2500,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_xyl)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_xyl)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 !Azimeh :addition for RACM2 for NEI emissions
 !**********
 #ifdef DM_PARALLEL
@@ -2509,7 +2511,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_ace)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ace)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2518,7 +2520,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_phen)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_phen)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2527,7 +2529,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_macr)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_macr)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
            read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2536,7 +2538,7 @@ PROGRAM convert_emissions
 #else
      read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-     grid%emis_ant(ips:ipe,kps:grid%kemit,jps:jpe,p_e_moh)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+     grid%emis_ant(ips:ipe,kps:grid%kemit,jps:jpe,p_e_moh)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
            read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2545,7 +2547,7 @@ PROGRAM convert_emissions
 #else
        read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_gly)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_gly)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2554,7 +2556,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_ben)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_ben)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
            read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2563,7 +2565,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_act)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_act)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
        IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2572,7 +2574,7 @@ PROGRAM convert_emissions
 #else
        read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_mgly)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_mgly)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2581,7 +2583,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_mvk)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_mvk)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
        IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2590,7 +2592,7 @@ PROGRAM convert_emissions
 #else
        read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_dien)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_dien)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2599,7 +2601,7 @@ PROGRAM convert_emissions
 #else
        read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_mek)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_mek)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
       IF (wrf_dm_on_monitor()) THEN
           read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2608,7 +2610,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_xyo)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+      grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_xyo)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
        IF (wrf_dm_on_monitor()) THEN
            read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2617,7 +2619,7 @@ PROGRAM convert_emissions
 #else
        read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_acd)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_acd)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
        IF (wrf_dm_on_monitor()) THEN
            read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2626,7 +2628,7 @@ PROGRAM convert_emissions
 #else
        read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_bald)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+       grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_bald)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 !Azimeh: end addition for RACM2
 #ifdef DM_PARALLEL
        IF (wrf_dm_on_monitor()) THEN
@@ -2636,7 +2638,7 @@ PROGRAM convert_emissions
 #else
       read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ket)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ket)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2645,7 +2647,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_csl)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_csl)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2654,7 +2656,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_iso)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_iso)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
 !!!Azimeh: Add this treetment for e_ch4 used at NEI 2011 but not at NEI 2005
      IF (wrf_dm_on_monitor()) THEN
@@ -2664,7 +2666,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_ch4)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe,p_e_ch4)=dumc0(ips:ipe,kps:grid%kemit,jps:jpe  )*voc_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2673,7 +2675,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2682,7 +2684,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm25j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2691,7 +2693,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so4i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so4i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2700,7 +2702,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so4j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_so4j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2709,7 +2711,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3i)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2718,7 +2720,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_no3j)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr)
 !
 !  AQMEII
 !     IF (inew_nei .eq. 1) THEN
@@ -2751,7 +2753,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgi)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgi)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Josh: follows pm2.5? !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2760,7 +2762,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_orgj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Josh: follows pm2.5? !Azimeh: scale from 2011 to 2013
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
@@ -2769,7 +2771,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eci)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_eci)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Josh: follows pm2.5? !Azimeh: scale from 2011 to 2013
 !
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
@@ -2779,7 +2781,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ecj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_ecj)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm25_scale(start_year, nei_base_yr) !Josh: follows pm2.5? !Azimeh: scale from 2011 to 2013
 !
 #ifdef DM_PARALLEL
      IF (wrf_dm_on_monitor()) THEN
@@ -2789,7 +2791,7 @@ PROGRAM convert_emissions
 #else
          read(91)dumc0(ids:ide-1,kds:grid%kemit,jds:jde-1)
 #endif
-         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm_10)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )
+         grid%emis_ant(ips:ipe  ,kps:grid%kemit,jps:jpe  ,p_e_pm_10)=dumc0(ips:ipe  ,kps:grid%kemit,jps:jpe  )*pm10_scale(start_year, nei_base_yr) !Azimeh: scale from 2011 to 2013
 
      write(message,FMT='(A)') ' Past reading emissions '
      CALL  wrf_debug ( 100, message ) 

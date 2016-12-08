@@ -1092,8 +1092,8 @@ is_mozcart_species : &
                          ebio_oli(i,j)        = ebio_oli(i,j)       + gas_emis
                          e_bio(i,j,p_oli-1)   = e_bio(i,j,p_oli-1)  +gas_emis*convert2
                       ELSE IF ( p_in_chem .EQ. p_api) THEN
-                         ebio_api(i,j)        = ebio_api(i,j)       + gas_emis !* 2.0 !Azimeh
-                         e_bio(i,j,p_api-1)   = e_bio(i,j,p_api-1)  +gas_emis*convert2 !*2.0 !Azimeh
+                         ebio_api(i,j)        = ebio_api(i,j)       + gas_emis * 2.0 !Azimeh
+                         e_bio(i,j,p_api-1)   = e_bio(i,j,p_api-1)  +gas_emis*convert2 *2.0 !Azimeh
                       ELSE IF ( p_in_chem .EQ. p_lim) THEN
                          ebio_lim(i,j)        = ebio_lim(i,j)       + gas_emis
                          e_bio(i,j,p_lim-1)   = e_bio(i,j,p_lim-1)  + &
