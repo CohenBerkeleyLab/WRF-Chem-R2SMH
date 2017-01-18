@@ -857,6 +857,7 @@ state    real  ph_pan          ikj     misc        1         -      r         "P
 state    real  ph_acet         ikj     misc        1         -      -         "PHOTR_acetone"             "acetone photolysis rate" "min{-1}"
 state    real  ph_mglo         ikj     misc        1         -      -         "PHOTR_mglo"                "mglo photolysis rate" "min{-1}"
 state    real  ph_hno4_2       ikj     misc        1         -      -         "PHOTR_hno4_2"              "hno4_2 photolysis rate" "min{-1}"
+# Azimeh RACM_MNT E Browne et al., 2014
 state    real  ph_uald       ikj     misc        1         -      r        "PHOTRph_uald"           "uald   photolysis rate" "min{-1}"
 state    real  ph_hcochoc    ikj     misc        1         -      r        "PHOTRph_hcochoc"       "hcochoc photolysis rate" "min{-1}"
 state    real  ph_bald       ikj     misc        1         -      r        "PHOTRph_bald"          "bald   photolysis rate" "min{-1}"
@@ -1085,9 +1086,9 @@ state   real    lonihno3    ikj     misc        1         -       r     "LONIHNO
 state   real    lonmhno3    ikj     misc        1         -       r     "LONMHNO3"                "Radicals"   "ppm"
 state   real    lonmno3    ikj     misc        1         -       r 	 "LONMNO3"	          "Radicals"   "ppm"
 #Azimeh
-state    real    fno        ikj     misc        1         -      rh       "FNO"                "Radicals" "ppm"
-state    real    fiso        ikj     misc        1         -     rh       "FISO"                "Radicals" "ppm"
-state    real    fho2        ikj     misc        1         -     rh       "FHO2"                "Radicals" "ppm"
+state    real    fno        ikj     misc        1         -      r       "FNO"                "Radicals" "ppm"
+state    real    fiso        ikj     misc        1         -      r       "FISO"                "Radicals" "ppm"
+state    real    fho2        ikj     misc        1         -      r       "FHO2"                "Radicals" "ppm"
 state    real    lro2       ikj     misc        1         -      r       "LRO2"                "Radicals" "ppm"
 state    real    po3        ikj     misc        1         -      rh       "PO3"                  "Radicals" "ppm"
 state    real    po31        ikj     misc        1         -      r       "PO31"                  "Radicals" "ppm"
@@ -1349,7 +1350,7 @@ state   real   iap     ikjftb    chem       1         -   i0{12}rusdf=(bdy_inter
 state   real   dhmob   ikjftb    chem       1         -   i0{12}rusdf=(bdy_interp:dt)  "dhmob"     " mixing ratio"     "ppmv"
 state   real   moba    ikjftb    chem       1         -   i0{12}rusdf=(bdy_interp:dt)  "moba"      " mixing ratio"     "ppmv"
 state   real   ethln   ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "ethln"     " mixing ratio"     "ppmv"
-state   real   isnp    ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "isnp"      " mixing ratio"     "ppmv"
+state   real   isnp    ikjftb    chem       1         -   i0{12}rusdf=(bdy_interp:dt)  "isnp"      " mixing ratio"     "ppmv"
 state   real   pyac    ikjftb    chem       1         -   i0{12}rusdf=(bdy_interp:dt)  "pyac"      " mixing ratio"     "ppmv"
 state   real   hpald   ikjftb    chem       1         -   i0{12}rusdf=(bdy_interp:dt)  "hpald"     " mixing ratio"     "ppmv"
 state   real   imonit  ikjftb    chem       1         -   i0{12}rhusdf=(bdy_interp:dt)  "imonit"    " mixing ratio"     "ppmv"
@@ -3247,8 +3248,6 @@ package   mozem           emiss_opt==7                   -             emis_ant:
 package   mozcem          emiss_opt==8                   -             emis_ant:e_co,e_no,e_no2,e_bigalk,e_bigene,e_c2h4,e_c2h5oh,e_c2h6,e_c3h6,e_c3h8,e_ch2o,e_ch3cho,e_ch3coch3,e_ch3oh,e_mek,e_so2,e_toluene,e_nh3,e_isop,e_c10h16,e_pm_10,e_pm_25,e_bc,e_oc,e_sulf
 package   cammam          emiss_opt==9                   -             emis_ant:e_iso,e_so2,e_no,e_co,e_eth,e_hc3,e_hc5,e_hc8,e_xyl,e_ol2,e_olt,e_oli,e_tol,e_csl,e_hcho,e_ald,e_ket,e_ora2,e_nh3,e_ecj,e_orgj,e_so4i,e_so4j,e_soag_bigene,e_soag_isoprene,e_soag_terpene,e_soag_toluene,e_dust_a1,e_dust_a3,e_ncl_a1,e_ncl_a2,e_ncl_a3,e_orgj_num,e_ecj_num,e_so4j_num,e_so4i_num
 package   mozmem           emiss_opt==10                   -             emis_ant:e_co,e_no,e_no2,e_bigalk,e_bigene,e_c2h4,e_c2h5oh,e_c2h6,e_c3h6,e_c3h8,e_ch2o,e_ch3cho,e_ch3coch3,e_ch3oh,e_mek,e_so2,e_toluene,e_nh3,e_isop,e_c10h16,e_pm25i,e_pm25j,e_eci,e_ecj,e_orgi,e_orgj,e_so4i,e_so4j,e_no3i,e_no3j,e_co_a,e_orgj_a,e_co_bb,e_orgj_bb,e_voca,e_vocbb
-#Azimeh
-package   eracm2sorg       emiss_opt==11                -               emis_ant:e_iso,e_so2,e_no,e_ch4,e_co,e_eth,e_hc3,e_hc5,e_hc8,e_xyl,e_ol2,e_olt,e_oli,e_tol,e_csl,e_hcho,e_ald,e_ket,e_ora2,e_nh3,e_ace,e_phen,e_macr,e_moh,e_gly,e_ben,e_act,e_mgly,e_mvk,e_dien,e_mek,e_xyo,e_acd,e_bald,e_pm25i,e_pm25j,e_pm_10,e_eci,e_ecj,e_orgi,e_orgj,e_so4i,e_so4j,e_no3i,e_no3j,e_naaj,e_naai,e_orgi_a,e_orgj_a,e_orgi_bb,e_orgj_bb
 package   esaprcnov       emiss_opt==13                  -             emis_ant:e_so2,e_c2h6,e_c3h8,e_c2h2,e_alk3,e_alk4,e_alk5,e_ethene,e_c3h6,e_ole1,e_ole2,e_aro1,e_aro2,e_hcho,e_ccho,e_rcho,e_acet,e_mek,e_isoprene,e_terp,e_sesq,e_co,e_no,e_no2,e_phen,e_cres,e_meoh,e_gly,e_mgly,e_bacl,e_isoprod,e_methacro,e_mvk,e_prod2,e_ch4,e_bald,e_hcooh,e_cco_oh,e_rco_oh,e_nh3,e_pm25i,e_pm25j,e_eci,e_ecj,e_orgi,e_orgj,e_so4i,e_so4j,e_no3i,e_no3j,e_orgi_a,e_orgj_a,e_orgi_bb,e_orgj_bb
 # Anthropogenic CO2, CO and CH4 emissions:
 package   eco2            emiss_opt==16                  -             emis_ant:e_co2,e_co2tst,e_co
