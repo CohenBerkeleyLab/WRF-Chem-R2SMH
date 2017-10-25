@@ -6,9 +6,29 @@ files are not visible with "git status," you can also check the .gitignore
 file but there is a good chance that any changes to those files will be overwritten
 during compilation.
 
+The R2SMH KPP mechanism is included in all branches. To use it, compile WRF-Chem with
+the necessary flags for KPP (WRF_KPP, YACC, FLEX_LIB_DIR) and use chem_opt = 113.
+
 A greater level of output is available currently as a separate branch, 'chemDiag'.
 Switch to this and recompile to get more chemistry and meteorology in output files.
 Note that this will double the size of said files and increase run time as well.
 To check it out, run 'git checkout -b chemDiag origin/chemDiag'
 
-Josh Laughner 22 Jul 2016
+The branch conv_emiss_racm2-r2smh contains modifications to convert_emiss.F to produce
+anthropogenic emissions better suited for the R2SMH mechanism. This uses namelist option
+emiss_opt = 11 (under &chem). These changes may be merged into master in the future. This
+also contains an emissions scaling program that scales the anthropogenic emissions assuming
+2011 is the base year by multiplying by the ratio of total run year emissions to 2011
+emissions, using the annual average emissions from at:
+
+ https://www.epa.gov/air-emissions-inventories/air-pollutant-emissions-trends-data
+
+The code is in chem/module_emiss_scale.F
+
+The conv_emiss_racm2-r2smh currently contains different lightning NOx emissions profiles
+than the master branch. The standard midlatitude lightning NOx emission profiles use
+the polynomial fit profiles from Ott et al. 2010 (doi: :10.1029/2009JD011880, 
+Fig. 12b, dashed-X line), the modified profile is the bimodal one from the same figure 
+(solid-square line).
+
+Josh Laughner 24 Oct 2017
