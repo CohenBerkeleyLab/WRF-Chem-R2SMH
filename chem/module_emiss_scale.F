@@ -55,13 +55,26 @@ CONTAINS
 ! Public functions ---------------------------- !
 ! --------------------------------------------- !
 
-FUNCTION CO_SCALE( year, base_year_in )
+FUNCTION CO_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: co_scale
+
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        co_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
@@ -77,13 +90,26 @@ FUNCTION CO_SCALE( year, base_year_in )
 END FUNCTION
 
 
-FUNCTION NOX_SCALE( year, base_year_in )
+FUNCTION NOX_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: nox_scale
+    
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        nox_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
@@ -99,13 +125,26 @@ FUNCTION NOX_SCALE( year, base_year_in )
 END FUNCTION
 
 
-FUNCTION PM10_SCALE( year, base_year_in )
+FUNCTION PM10_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: pm10_scale
+
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        pm10_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
@@ -121,13 +160,26 @@ FUNCTION PM10_SCALE( year, base_year_in )
 END FUNCTION
 
 
-FUNCTION PM25_SCALE( year, base_year_in )
+FUNCTION PM25_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: pm25_scale
+    
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        pm25_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
@@ -143,13 +195,26 @@ FUNCTION PM25_SCALE( year, base_year_in )
 END FUNCTION
 
 
-FUNCTION SO2_SCALE( year, base_year_in )
+FUNCTION SO2_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: so2_scale
+
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        so2_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
@@ -164,13 +229,26 @@ FUNCTION SO2_SCALE( year, base_year_in )
 
 END FUNCTION
 
-FUNCTION VOC_SCALE( year, base_year_in )
+FUNCTION VOC_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: voc_scale
+    
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        voc_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
@@ -186,13 +264,26 @@ FUNCTION VOC_SCALE( year, base_year_in )
 END FUNCTION
 
 
-FUNCTION NH3_SCALE( year, base_year_in )
+FUNCTION NH3_SCALE( year, base_year_in, do_scale_in )
 
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
+    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
+    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: nh3_scale
+    
+    IF (.NOT. PRESENT(do_scale_in)) THEN
+        do_scale = .true.
+    ELSE
+        do_scale = do_scale_in
+    ENDIF
+
+    IF (.NOT. do_scale) THEN
+        nh3_scale = 1.0
+        RETURN
+    ENDIF
 
     IF(PRESENT(base_year_in)) THEN
         base_year = base_year_in
