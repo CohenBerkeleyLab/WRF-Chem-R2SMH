@@ -14,6 +14,10 @@ MODULE MODULE_EMISS_SCALE
 ! process, converts .F to .f90 files.
 !
 ! TODO: add error if year out of range.
+
+USE module_wrf_error
+USE module_configure, ONLY : grid_config_rec_type
+
 IMPLICIT NONE
 
 PRIVATE YEAR_INDEX, a, def_base_yr, years, e_co, e_nox, e_pm10, e_pm25
@@ -55,23 +59,16 @@ CONTAINS
 ! Public functions ---------------------------- !
 ! --------------------------------------------- !
 
-FUNCTION CO_SCALE( year, base_year_in, do_scale_in )
+FUNCTION CO_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: co_scale
 
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
-
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         co_scale = 1.0
         RETURN
     ENDIF
@@ -82,31 +79,24 @@ FUNCTION CO_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     co_scale = e_co(yind) / e_co(byind)
 
 END FUNCTION
 
 
-FUNCTION NOX_SCALE( year, base_year_in, do_scale_in )
+FUNCTION NOX_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: nox_scale
     
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
-
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         nox_scale = 1.0
         RETURN
     ENDIF
@@ -117,31 +107,24 @@ FUNCTION NOX_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     nox_scale = e_nox(yind) / e_nox(byind)
 
 END FUNCTION
 
 
-FUNCTION PM10_SCALE( year, base_year_in, do_scale_in )
+FUNCTION PM10_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: pm10_scale
 
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
-
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         pm10_scale = 1.0
         RETURN
     ENDIF
@@ -152,31 +135,24 @@ FUNCTION PM10_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     pm10_scale = e_pm10(yind) / e_pm10(byind)
 
 END FUNCTION
 
 
-FUNCTION PM25_SCALE( year, base_year_in, do_scale_in )
+FUNCTION PM25_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: pm25_scale
     
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
-
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         pm25_scale = 1.0
         RETURN
     ENDIF
@@ -187,31 +163,24 @@ FUNCTION PM25_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     pm25_scale = e_pm25(yind) / e_pm25(byind)
 
 END FUNCTION
 
 
-FUNCTION SO2_SCALE( year, base_year_in, do_scale_in )
+FUNCTION SO2_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: so2_scale
 
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
-
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         so2_scale = 1.0
         RETURN
     ENDIF
@@ -222,30 +191,23 @@ FUNCTION SO2_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     so2_scale = e_so2(yind) / e_so2(byind)
 
 END FUNCTION
 
-FUNCTION VOC_SCALE( year, base_year_in, do_scale_in )
+FUNCTION VOC_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: voc_scale
-    
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
 
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         voc_scale = 1.0
         RETURN
     ENDIF
@@ -256,31 +218,24 @@ FUNCTION VOC_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     voc_scale = e_voc(yind) / e_voc(byind)
 
 END FUNCTION
 
 
-FUNCTION NH3_SCALE( year, base_year_in, do_scale_in )
+FUNCTION NH3_SCALE(config_flags, year, base_year_in)
 
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER, INTENT(IN)           :: year
     INTEGER, INTENT(IN), OPTIONAL :: base_year_in
-    LOGICAL, INTENT(IN), OPTIONAL :: do_scale_in
     INTEGER                       :: base_year, yind, byind
-    LOGICAL                       :: do_scale
 ! Output value
     REAL*8                        :: nh3_scale
     
-    IF (.NOT. PRESENT(do_scale_in)) THEN
-        do_scale = .true.
-    ELSE
-        do_scale = do_scale_in
-    ENDIF
-
-    IF (.NOT. do_scale) THEN
+    IF (.NOT. config_flags%scale_nei_emis) THEN
         nh3_scale = 1.0
         RETURN
     ENDIF
@@ -291,8 +246,8 @@ FUNCTION NH3_SCALE( year, base_year_in, do_scale_in )
         base_year = def_base_yr
     ENDIF
 
-    yind = YEAR_INDEX(year)
-    byind = YEAR_INDEX(base_year)
+    yind = YEAR_INDEX(year, config_flags)
+    byind = YEAR_INDEX(base_year, config_flags)
 
     nh3_scale = e_nh3(yind) / e_nh3(byind)
 
@@ -301,9 +256,12 @@ END FUNCTION
 ! Private functions -------------------------- !
 ! -------------------------------------------- !
 
-FUNCTION YEAR_INDEX( year )
+FUNCTION YEAR_INDEX( year, config_flags )
     INTEGER, INTENT(IN)     :: year
+    TYPE (grid_config_rec_type), INTENT(IN)   :: config_flags
     INTEGER                 :: year_index, i
+
+    year_index = -1
 
     DO i=1,size(years)
         IF(year == years(i)) THEN
@@ -311,6 +269,22 @@ FUNCTION YEAR_INDEX( year )
             exit
         ENDIF
     ENDDO
+
+    IF( year_index .lt. 0 ) THEN
+        IF ( config_flags%scale_closest_year ) THEN
+            IF ( year .lt. years(1) ) THEN
+                year_index = 1
+            ELSE
+                year_index = ubound(years, 1)
+            ENDIF
+        ELSE
+            ! wrf_err_message is defined in module_wrf_error along with wrf_error_fatal()
+            write(wrf_err_message, FMT='(A,I4,A)')  &
+                'module emiss_scale: no scaling factor available for ', year, '. Set chemistry namelist opt scale_nei_emis to .false. to skip scaling emissions or scale_closest_year to .true. to use the closest available year'
+            CALL wrf_debug(0, wrf_err_message)
+            CALL WRF_ERROR_FATAL( wrf_err_message )
+        ENDIF
+    ENDIF
 
 END FUNCTION
 

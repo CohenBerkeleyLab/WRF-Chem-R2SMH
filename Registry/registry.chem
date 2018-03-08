@@ -2994,6 +2994,7 @@ rconfig   integer cam_mam_mode             namelist,chem        1              3
 rconfig   integer cam_mam_nspec            namelist,chem        1              74      irh     "cam_mam_nspec"                   ""    ""
 rconfig   logical CAM_MP_MAM_cpled         namelist,chem        1            .true.    irh     "CAM_MP_MAM_cpled"                   ""    ""
 rconfig   logical scale_nei_emis           namelist,chem        1            .true.    irh     "If true, scale 2011 NEI emissions to the model year by national total emissions"                   ""    ""
+rconfig   logical scale_closest_year       namelist,chem        1            .false.    irh     "If true, use the closest year possible to scale 2011 NEI emissions. If false, convert_emiss will error if the requested year scaling factor is undefined."    ""    ""
 # Lightning
 rconfig   integer     lightning_opt       namelist,chem        max_domains        0       rh      "lightning_opt"     ""      ""
 rconfig   integer     lightning_time_step namelist,chem        max_domains        0       rh     "lightning_time_step"  ""      ""
