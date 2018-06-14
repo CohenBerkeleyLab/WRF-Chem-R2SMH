@@ -255,6 +255,7 @@
  USE module_ltng_cpmCAPE       ! lightning_option == 3,  ltng_cpm_CAPE
 
  USE module_ltng_cpmPrec       ! lightning_option == 4, ltng_cpm_Prec
+
 ! IC:CG methods
  USE module_ltng_iccg
 
@@ -402,7 +403,7 @@
 !       CALL ...
     CASE( ltng_cpm_CAPE )
         CALL wrf_debug (100,' lightning driver: calling Choi et al 2005 (CAPE)')
-        write(*,*)'qindan zhu lnox_scale_opt 2',LnoxScale(1,1),lnox_scale_opt
+     
         CALL ltng_cpmCAPE ( &
                  ! Frequently used prognostics
                    dx, dy, xland, ht, z, t_phy,      &
@@ -422,7 +423,7 @@
                  ! Frequently used prognostics
                    dx, dy, xland, ht, z, t_phy,      &
                    PRATEC,     &
-                 ! Order dependent args for domain, mem, and tile dims
+                ! Order dependent args for domain, mem, and tile dims
                    ids, ide, jds, jde, kds, kde,     &
                    ims, ime, jms, jme, kms, kme,     &
                    its, ite, jts, jte, kts, kte,     &
