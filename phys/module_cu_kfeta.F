@@ -1284,7 +1284,6 @@ updraft:    DO NK=K,KL-1
           ENDIF trigger2
         END DO usl
     CAPEQ(I,J)=REAL(ABE)
-    !write(*,"(A,F8.3)")'ABE',ABE
     call wrf_debug(100,'ABE calculated for updraft')
     
     IF(ISHALL.EQ.1)THEN
@@ -2053,7 +2052,6 @@ iter:     DO NCOUNT=1,10
           ENDIF
           DABE=AMAX1(ABE-ABEG,0.1*ABE)
           FABE=ABEG/ABE
-          !write(*,"(A,F8.3,F8.3,F8.3)")'DABE,FABE,STAB',DABE,FABE,STAB
           call wrf_debug(100,'DABE and FABE')
 
           IF(FABE.GT.1. .and. ISHALL.EQ.0)THEN
@@ -2232,24 +2230,6 @@ iter:     DO NCOUNT=1,10
 !      IF(ISTOP.EQ.1)THEN
          write(98,*)
 !        write(98,*)'At t(h), I, J =',float(NTSD)*72./3600.,I,J
-         !write(message,*)'P(LC), DTP, WKL, WKLCL =',p0(LC)/100.,       &
-          !           TLCL+DTLCL+dtrh-TENV,WKL,WKLCL
-        ! call wrf_message(message)
-         !write(message,*)'TLCL, DTLCL, DTRH, TENV =',TLCL,DTLCL,       &
-                     ! DTRH,TENV   
-         !call wrf_message(message)
-         !WRITE(message,1025)KLCL,ZLCL,DTLCL,LTOP,P0(LTOP),IFLAG,       &
-         !TMIX-T00,PMIX,QMIX,ABE
-         !call wrf_debug(100,message)
-         !WRITE(message,1030)P0(LET)/100.,P0(LTOP)/100.,VMFLCL,PLCL/100.,  &
-         !WLCL,CLDHGT(LC)
-         !call wrf_message(message)
-         !WRITE(message,1035)PEF,PEFCBH,LC,LET,WKL,VWS 
-         !call wrf_message(message)
-         !write(message,*)'PRECIP EFFICIENCY =',PEFF 
-        ! call wrf_message(message)
-     ! WRITE(message,1080)LFS,LDB,LDT,TIMEC,TADVEC,NSTEP,NCOUNT,FABE,AINC
-       !  call wrf_message(message)
 !      ENDIF
 !!!!! HERE !!!!!!!
          !  WRITE(message,1070)'  P  ','   DP ',' DT K/D ',' DR K/D ','   OMG  ',        &

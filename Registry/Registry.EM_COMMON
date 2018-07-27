@@ -1097,7 +1097,6 @@ state    real  RAINSH           ij      misc        1         -      rhdu    "RA
 state    real  RAINNC           ij      misc        1         -      rhdu    "RAINNC"                "ACCUMULATED TOTAL GRID SCALE PRECIPITATION"              "mm"      
 state  integer I_RAINC          ij      misc        1         -      rd=(interp_fcni)u=(copy_fcni)     "I_RAINC"            "BUCKET FOR RAINC"                    ""
 state  integer I_RAINNC         ij      misc        1         -      rd=(interp_fcni)u=(copy_fcni)     "I_RAINNC"           "BUCKET FOR RAINNC"                   ""
-
 # cape  qindan zhu
 state    real  CAPEQ            ij      misc        1         -      rh       "CAPEQ"                 "CONVECTIVE AVAILABLE POTENTIAL ENERGY"                   "J/kg"
 state    real  PRATEC           ij      misc        1         -      rh       "PRATEC"                "PRECIP RATE FROM CUMULUS SCHEME"                         "mm s-1"
@@ -2423,6 +2422,7 @@ package ltng_crm_PR92z      lightning_option==2            -       state:ic_flas
 package	ltng_cpm_PR92z      lightning_option==11           -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package ltng_cpm_CAPE       lightning_option==3            -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
 package ltng_cpm_Prec       lightning_option==4            -       state:ic_flashcount,ic_flashrate,cg_flashcount,cg_flashrate
+
 # only need to specify these once; not for every io_form* variable
 package   io_intio    io_form_restart==1                     -             -
 package   io_netcdf   io_form_restart==2                     -             -

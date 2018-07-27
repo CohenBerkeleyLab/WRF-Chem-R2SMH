@@ -152,6 +152,7 @@ MODULES = \
 	module_lightning_driver.o \
 	module_ltng_cpmpr92z.o \
 	module_ltng_crmpr92.o \
+    module_ltng_cpmCAPE.o\
 	module_ltng_iccg.o \
 	module_ltng_cpmCAPE.o\
     module_ltng_cpmPrec.o\

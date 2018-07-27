@@ -269,6 +269,8 @@ module_cu_kf.o:  ../frame/module_wrf_error.o
 
 module_cu_kfeta.o: ../frame/module_wrf_error.o
 
+module_cu_g3.o:
+
 module_cu_gd.o:
 
 module_cu_nsas.o:
