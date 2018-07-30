@@ -964,6 +964,7 @@ BENCH_START(cu_driver_tim)
      &             ,J_START=grid%j_start,J_END=min(grid%j_end, jde-1)     &
      &             ,KTS=k_start, KTE=min(k_end,kde-1)                     &
      &             ,NUM_TILES=grid%num_tiles                              &
+     &             ,CAPEQ=grid%CAPEQ                                      &
                  ! Moisture tendency arguments
      &             ,RQVCUTEN=grid%rqvcuten , RQCCUTEN=grid%rqccuten       &
      &             ,RQSCUTEN=grid%rqscuten , RQICUTEN=grid%rqicuten       &
