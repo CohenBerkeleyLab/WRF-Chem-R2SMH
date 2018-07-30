@@ -1478,7 +1478,8 @@ package ltng_none           lightning_option==0            -       -
 package ltng_crm_PR92w      lightning_option==1            -       -
 package ltng_crm_PR92z      lightning_option==2            -       -
 package ltng_cpm_PR92z      lightning_option==11           -       -
-
+package ltng_cpm_CAPE       lightning_option==3            -       -
+package ltng_cpm_Prec       lightning_option==4            -       -
 #WRF Hydro
 package   no_wrfhydro    wrf_hydro==0                -            -
 package   wrfhydro       wrf_hydro==1                -            state:SOLDRAIN, SFCHEADRT, INFXSRT

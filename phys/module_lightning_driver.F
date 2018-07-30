@@ -121,6 +121,24 @@
 
         WRITE(message, * ) ' lightning_init: CPM lightning option selected: ', lightning_option
         CALL wrf_debug ( 100 , message )
+    
+    ! Qindan 06/14/2018, add lightning parameterization based on CAPExPrecipRate, adjusted from Romps et al, 2015
+    CASE (ltng_cpm_CAPE)
+       IF ( cu_physics .ne. KFETASCHEME  ) THEN
+         CALL wrf_error_fatal( ' lightning_init: Selected lightning option requires kf_eta_cps convective parameterization' )
+       ENDIF
+
+       WRITE(message, * ) ' lightning_init: CPM lightning option selected: ', lightning_option
+       CALL wrf_debug ( 100 , message )
+
+    ! Qindan 07/26/2018, add lightning parameterization based on preciprate
+    CASE (ltng_cpm_Prec)
+        IF ( cu_physics .ne. GDSCHEME .and. cu_physics .ne. G3SCHEME  ) THEN
+          CALL wrf_error_fatal( ' lightning_init: Selected lightning option requires GD or G3 convective parameterization' )
+        ENDIF
+
+        WRITE(message, * ) ' lightning_init: CPM lightning option selected: ', lightning_option
+        CALL wrf_debug ( 100 , message )
 
     ! Non-existing options
     CASE DEFAULT
@@ -196,6 +214,7 @@
                             ktop_deep,                            &
                             refl,                                 &
                             current_time,                         &
+                            CAPEQ,PRATEC,                         & !for ltng_cpm_CAPE Qindan
                           ! Mandatory namelist inputs
                             lightning_option,                     &
                             lightning_dt,                         &
@@ -231,7 +250,10 @@
  USE module_ltng_crmpr92       ! lightning_option == 1,   ltng_crm_PR92w
                                ! lightning_option == 2,   ltng_crm_PR92z
  USE module_ltng_cpmpr92z      ! lightning_option == 11,  ltng_cpm_PR92z
+ 
+ USE module_ltng_cpmCAPE       ! lightning_option == 3,  ltng_cpm_CAPE
 
+ USE module_ltng_cpmPrec       ! lightning_option == 4, ltng_cpm_Prec
 ! IC:CG methods
  USE module_ltng_iccg
 
@@ -249,6 +271,7 @@
 
 ! Scheme specific prognostics
  INTEGER, DIMENSION( ims:ime,          jms:jme ),           INTENT(IN   ) :: ktop_deep     ! model LNB from cu_physics
+ REAL,    DIMENSION( ims:ime,          jms:jme ),           INTENT(IN)    :: CAPEQ,PRATEC
  REAL,    DIMENSION( ims:ime, kms:kme, jms:jme ),           INTENT(IN   ) :: refl          ! reflectivity from mp_physics
  TYPE(WRFU_Time),                                           INTENT(IN   ) :: current_time  ! For use of IC:CG input
 
@@ -376,6 +399,36 @@
 
 !   CASE ( another_cpm_option)
 !       CALL ...
+    CASE( ltng_cpm_CAPE )
+        CALL wrf_debug (100,' lightning driver: calling Choi et al 2005 (CAPE)')
+        
+        CALL ltng_cpmCAPE ( &
+                 ! Frequently used prognostics
+                   dx, dy, xland, ht, z, t_phy,      &
+                   CAPEQ,PRATEC,     &
+                 ! Order dependent args for domain, mem, and tile dims
+                   ids, ide, jds, jde, kds, kde,     &
+                   ims, ime, jms, jme, kms, kme,     &
+                   its, ite, jts, jte, kts, kte,     &
+                 ! Mandatory output for all quantitative schemes
+                   total_flashrate                   &
+                  )
+
+    CASE( ltng_cpm_Prec )
+        CALL wrf_debug (100,' lightning driver: calling Choi et al 2005 (CAPE)')
+
+        CALL ltng_cpmPrec ( &
+                 ! Frequently used prognostics
+                   dx, dy, xland, ht, z, t_phy,      &
+                   PRATEC,     &
+                 ! Order dependent args for domain, mem, and tile dims
+                   ids, ide, jds, jde, kds, kde,     &
+                   ims, ime, jms, jme, kms, kme,     &
+                   its, ite, jts, jte, kts, kte,     &
+                 ! Mandatory output for all quantitative schemes
+                   total_flashrate                   &
+                  )
+
 
     ! Invalid lightning options
     CASE DEFAULT

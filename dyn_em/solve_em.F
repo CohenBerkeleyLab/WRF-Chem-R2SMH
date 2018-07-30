@@ -3573,8 +3573,9 @@ BENCH_START(moist_phys_end_tim)
             grid%t_phy, p_phy, rho, u_phy, v_phy, grid%w_2,    &
             grid%z, moist,                                     &
           ! Scheme specific prognostics
-            grid%ktop_deep, grid%refl_10cm,                    &
+            grid%ktop_deep, grid%refl_10cm,                    &                           
             domain_get_current_time( grid ),                   &
+            grid%CAPEQ, grid%PRATEC,                           &
           ! Flashrate namelist inputs
             config_flags%lightning_option,                     &
             config_flags%lightning_dt,                         &

@@ -73,6 +73,8 @@ CONTAINS
                      ,f_qv,f_qc,f_qr                                  &
                      ,f_qi,f_qs,f_qg                                  &
                      ,CFU1,CFD1,DFU1,EFU1,DFD1,EFD1,f_flux            &
+                 ! Optional output argument for KF scheme
+                     ,CAPEQ                                           &
                  ! Optional trigger function activation variable
                      ,kfeta_trigger                                   &
 #if ( WRF_DFI_RADAR == 1 )
@@ -354,6 +356,8 @@ CONTAINS
 
    REAL, DIMENSION( ims:ime , jms:jme ),INTENT(INOUT),OPTIONAL :: &
         PRATEC,MAVAIL,PBLH,PSFC,TSK,TPERT2D,UST,HFX,QFX
+   REAL, DIMENSION( ims:ime , jms:jme ),INTENT(  OUT),OPTIONAL :: &
+        CAPEQ
    REAL, DIMENSION( ims:ime , jms:jme ) :: tmppratec
                                                     
    INTEGER, DIMENSION( ims:ime , jms:jme ),                      &
@@ -691,7 +695,7 @@ CONTAINS
                ,RAINCV=raincv, PRATEC=tmppratec, NCA=nca        &
                ,DZ8W=dz8w                                       &
                ,PCPS=p, PI=pi ,W0AVG=W0AVG                      &
-               ,CUTOP=HTOP,CUBOT=HBOT                           &
+               ,CUTOP=HTOP,CUBOT=HBOT,CAPEQ=CAPEQ               &
                ,XLV0=XLV0 ,XLV1=XLV1 ,XLS0=XLS0 ,XLS1=XLS1      &
                ,CP=CP ,R=R_d ,G=G ,EP1=EP_1 ,EP2=EP_2           &
                ,SVP1=SVP1 ,SVP2=SVP2 ,SVP3=SVP3 ,SVPT0=SVPT0    &

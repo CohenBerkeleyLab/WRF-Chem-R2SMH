@@ -32,7 +32,7 @@ CONTAINS
              ,W0AVG,XLV0,XLV1,XLS0,XLS1,CP,R,G,EP1           &
              ,EP2,SVP1,SVP2,SVP3,SVPT0                       &
              ,STEPCU,CU_ACT_FLAG,warm_rain,CUTOP,CUBOT       &
-             ,QV                                             &
+             ,QV,CAPEQ                                      &
             ! optionals
              ,F_QV    ,F_QC    ,F_QR    ,F_QI    ,F_QS       &
              ,RTHCUTEN,RQVCUTEN,RQCCUTEN,RQRCUTEN            &
@@ -82,14 +82,15 @@ CONTAINS
           INTENT(INOUT) ::                           RAINCV
 
    REAL,    DIMENSION( ims:ime , jms:jme ),                  &
-          INTENT(INOUT) ::                           PRATEC
+          INTENT(INOUT) ::                           PRATEC,CAPEQ
 
    REAL,    DIMENSION( ims:ime , jms:jme ),                  &
             INTENT(INOUT) ::                            NCA
 
    REAL, DIMENSION( ims:ime , jms:jme ),                     &
           INTENT(OUT) ::                              CUBOT, &
-                                                      CUTOP    
+                                                      CUTOP
+                                                          
 
    LOGICAL, DIMENSION( ims:ime , jms:jme ),                  &
           INTENT(INOUT) :: CU_ACT_FLAG
@@ -211,7 +212,7 @@ CONTAINS
       ENDDO
    ENDDO
    lastdt = dt
-
+  
 ! New trigger function
      IF (trigger.eq.2) THEN         
 !
@@ -325,7 +326,7 @@ CONTAINS
             Z0(K) = Z0(K-1) + .5 * (DZ8W(i,K,j) + DZ8W(i,K-1,j))
           ENDDO
         DO K = kts+1,kte-1
-	  ttop = t(i,k,j) + ((t(i,k,j) - t(i,k+1,j)) / (z0(k) - z0(k+1))) * (z0(k)-z0(k-1))
+          ttop = t(i,k,j) + ((t(i,k,j) - t(i,k+1,j)) / (z0(k) - z0(k+1))) * (z0(k)-z0(k-1))
           avev_t(i,k,j)=(T(i,k-1,j) + T(i,k,j) + ttop)/3.
 !         avev_t(i,k,j)=(T(i,k-1,j)+T(i,k,j) + T(i,k+1,j))/3.
           avev_q(i,k,j)=(rqvften(i,k-1,j)+rqvften(i,k,j) + rqvften(i,k+1,j))/3.
@@ -364,15 +365,12 @@ CONTAINS
         CU_ACT_FLAG(i,j) = .true.
      ENDDO
      ENDDO
-
+     
      DO J = jts,jte
        DO I=its,ite
-          
-
          IF ( NCA(I,J) .ge. 0.5*DT ) then
             CU_ACT_FLAG(i,j) = .false.
          ELSE
-
             DO k=kts,kte
                DQDT(k)=0.
                DQIDT(k)=0.
@@ -385,6 +383,9 @@ CONTAINS
             CUTOP(I,J)=KTS
             CUBOT(I,J)=KTE+1
             PRATEC(I,J)=0.
+            CAPEQ(I,J)=0.
+            !write(*,"(F8.3,F8.3,F8.3)") CAPEQ(I,J),PRATEC(I,J),RAINCV(I,J)
+            !call wrf_debug ( 200 , 'Step 4')
 !
 ! assign vars from 3D to 1D
 
@@ -415,7 +416,7 @@ CONTAINS
                  DQDT,DQIDT,DQCDT,DQRDT,DQSDT,DTDT, &
                  RAINCV,PRATEC,NCA,                 &
                  flag_QI,flag_QS,warm_rain,         &
-                 CUTOP,CUBOT,CUDT,                  &
+                 CUTOP,CUBOT,CUDT,CAPEQ,            &
                  ids,ide, jds,jde, kds,kde,         &
                  ims,ime, jms,jme, kms,kme,         &
                  its,ite, jts,jte, kts,kte)
@@ -477,7 +478,7 @@ CONTAINS
                       DQDT,DQIDT,DQCDT,DQRDT,DQSDT,DTDT,   &
                       RAINCV,PRATEC,NCA,                   &
                       F_QI,F_QS,warm_rain,                 &
-                      CUTOP,CUBOT,CUDT,                    &
+                      CUTOP,CUBOT,CUDT,CAPEQ,              &
                       ids,ide, jds,jde, kds,kde,           &
                       ims,ime, jms,jme, kms,kme,           &
                       its,ite, jts,jte, kts,kte)
@@ -536,8 +537,10 @@ CONTAINS
 
       REAL, DIMENSION( ims:ime , jms:jme ),                &
             INTENT(OUT) ::                          CUBOT, &
-                                                    CUTOP
+                                                    CUTOP, &
+                                                    CAPEQ
       REAL,  INTENT(IN   ) :: CUDT
+     
 !
 !...DEFINE LOCAL VARIABLES...
 !
@@ -576,7 +579,7 @@ CONTAINS
                  CPORQ,PLCL,ES,DLP,TENV,QENV,TVEN,TVBAR,   &
                  ZLCL,WKL,WABS,TRPPT,WSIGNE,DTLCL,GDT,WLCL,&
                  TVAVG,QESE,WTW,RHOLCL,AU0,VMFLCL,UPOLD,   &
-                 UPNEW,ABE,WKLCL,TTEMP,FRC1,   &
+                 UPNEW,WKLCL,ABE,TTEMP,FRC1,   &
                  QNEWIC,RL,R1,QNWFRZ,EFFQ,BE,BOTERM,ENTERM,&
                  DZZ,UDLBE,REI,EE2,UD2,TTMP,F1,F2,         &
                  THTTMP,QTMP,TMPLIQ,TMPICE,TU95,TU10,EE1,  &
@@ -625,7 +628,7 @@ CONTAINS
 !      DATA RATE/0.01/  ! value used in NRCM
 !      DATA RATE/0.001/  ! effectively turn off autoconversion
 !-----------------------------------------------------------
-      IPRNT=.FALSE.
+      IPRNT=.TRUE.
       GDRY=-G/CP
       ROCP=R/CP
       NSHALL = 0
@@ -879,7 +882,7 @@ usl:   DO
 ! end for trigger function
 !
         dtrh = 0.
-	if (trigger  .eq. 3) then
+        if (trigger  .eq. 3) then
 !...for ETA model, give parcel an extra temperature perturbation based
 !...the threshold RH for condensation (U00)...
 ! as described in Narita and Ohmori (2007, 12th Mesoscale Conf.
@@ -1084,7 +1087,7 @@ updraft:    DO NK=K,KL-1
                 DILBE=((TVQU(NK)+TVQU(NK1))/(TV0(NK)+TV0(NK1))-1.)*DZZ
               ENDIF
               IF(DILBE.GT.0.)ABE=ABE+DILBE*G
-!
+              
 !...IF CLOUD PARCELS ARE VIRTUALLY COLDER THAN THE ENVIRONMENT, MINIMAL 
 !...ENTRAINMENT (0.5*REI) IS IMPOSED...
 !
@@ -1280,6 +1283,10 @@ updraft:    DO NK=K,KL-1
             ENDIF
           ENDIF trigger2
         END DO usl
+    CAPEQ(I,J)=REAL(ABE)
+    write(*,"(A,F8.3)")'ABE',ABE
+    call wrf_debug(100,'ABE calculated for updraft')
+    
     IF(ISHALL.EQ.1)THEN
       KSTART=MAX0(KPBL,KLCL)
       LET=KSTART
@@ -2024,7 +2031,16 @@ iter:     DO NCOUNT=1,10
             CALL ENVIRTHT(P0(NK1),TG(NK1),QG(NK1),THTEEG(NK1),ALIQ,BLIQ,CLIQ,DLIQ)
             THETEU(NK1)=THETEU(NK1)*DDILFRC(NK1)+THTEEG(NK1)*(1.-DDILFRC(NK1))
           ENDDO
-!     
+
+          WRITE(message,1025)KLCL,ZLCL,DTLCL,LTOP,P0(LTOP),IFLAG,       &
+           TMIX-T00,PMIX,QMIX,ABE
+           call wrf_debug(100,message) 
+           call wrf_debug(100,'ABE original')
+
+          WRITE(message,1025)KLCL,ZLCL,DTLCL,LTOP,P0(LTOP),IFLAG,       &
+           TMIX-T00,PMIX,QMIX,ABEG
+           call wrf_debug(100,message)
+           call wrf_debug(100,'ABEG original')
 !...ASSUME AT LEAST 90% OF CAPE (ABE) IS REMOVED BY CONVECTION DURING
 !...THE PERIOD TIMEC...
 !     
@@ -2037,6 +2053,9 @@ iter:     DO NCOUNT=1,10
           ENDIF
           DABE=AMAX1(ABE-ABEG,0.1*ABE)
           FABE=ABEG/ABE
+          write(*,"(A,F8.3,F8.3,F8.3)")'DABE,FABE,STAB',DABE,FABE,STAB
+          call wrf_debug(100,'DABE and FABE')
+
           IF(FABE.GT.1. .and. ISHALL.EQ.0)THEN
 !          WRITE(98,*)'UPDRAFT/DOWNDRAFT COUPLET INCREASES CAPE AT THIS
 !     *GRID POINT; NO CONVECTION ALLOWED!'
@@ -2221,7 +2240,7 @@ iter:     DO NCOUNT=1,10
          call wrf_message(message)
          WRITE(message,1025)KLCL,ZLCL,DTLCL,LTOP,P0(LTOP),IFLAG,       &
          TMIX-T00,PMIX,QMIX,ABE
-         call wrf_message(message)
+         call wrf_debug(100,message)
          WRITE(message,1030)P0(LET)/100.,P0(LTOP)/100.,VMFLCL,PLCL/100.,  &
          WLCL,CLDHGT(LC)
          call wrf_message(message)
@@ -2492,7 +2511,8 @@ iter:     DO NCOUNT=1,10
 !
       CUTOP(I,J)=REAL(LTOP)
       CUBOT(I,J)=REAL(LCL)
-!
+      call wrf_debug ( 200 , 'CAPEQ calculated')
+ !
 !-----------------------------------------------------------------------
    END SUBROUTINE  KF_eta_PARA
 !********************************************************************
