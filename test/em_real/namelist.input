@@ -152,6 +152,7 @@
  biomass_burn_opt                    = 0,        0,
  plumerisefire_frq                   = 30,       30,
  aer_ra_feedback                     = 0,        0,
+ lnox_scale_opt                      = 1,
  chem_conv_tr                        = 1,        1,
  diagnostic_chem                     = 3,        3,
 /

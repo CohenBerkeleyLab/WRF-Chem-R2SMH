@@ -106,7 +106,7 @@
 ! training reads (dryrun).
 !
 !</DESCRIPTION>
-
+    write(*,*)'write at the beginning',grid%itimestep
     WRITE(wrf_err_message,*)'input_wrf: begin, fid = ',fid
     CALL wrf_debug( 300 , wrf_err_message )
 
@@ -121,6 +121,7 @@
 
 ! If this was not a training read (dry run) check for erroneous values.
     CALL wrf_inquire_filename ( fid , fname , filestate , ierr )
+    write(*,*)'qindan zhu probably here', fid,fname,filestate,ierr
     IF ( ierr /= 0 ) THEN
       WRITE(wrf_err_message,*)'module_io_wrf: input_wrf: wrf_inquire_filename Status = ',ierr
       CALL wrf_error_fatal( wrf_err_message )
@@ -778,6 +779,7 @@
           CALL wrf_debug( 100, wrf_err_message )
        ENDIF
 
+
        ELSEIF ( switch .EQ. auxinput1_only ) THEN          ! assume just WPS in this branch
          IF ( ( ide-1                           .NE. ide_compare ) .OR. &
             ( config_flags%num_metgrid_levels .NE. kde_compare ) .OR. &
@@ -855,11 +857,11 @@
         CASE ( input_only, auxinput1_only, auxinput2_only,       &
                auxinput3_only, auxinput4_only, auxinput5_only,  &
                auxinput6_only, auxinput7_only, auxinput8_only,  &
-               auxinput9_only, auxinput10_only )
+               auxinput9_only, auxinput10_only, auxinput24_only )
 #ifdef WRF_CHEM
            IF( (config_flags%io_style_emissions .eq. 1) .and.                                &
               ((switch.eq.auxinput5_only) .or. (switch.eq.auxinput6_only) .or. &
-               (switch.eq.auxinput7_only) .or. (switch.eq.auxinput8_only)) ) then
+               (switch.eq.auxinput7_only) .or. (switch.eq.auxinput8_only) .or. (switch .eq. auxinput24_only)))then
                CALL wrf_message( "**WARNING** Time in input file not being checked **WARNING**" )
            ELSE
 #endif
@@ -926,7 +928,7 @@
          switch .EQ. restart_only    ) THEN
       newswitch = switch
       p => grid%head_statevars%next
-      DO WHILE ( ASSOCIATED( p ) ) 
+      DO WHILE ( ASSOCIATED( p ) )  
         IF ( p%ProcOrient .NE. 'X' .AND. p%ProcOrient .NE. 'Y' ) THEN   ! no I/O for xposed variables
           IF ( p%Ndim .EQ. 0 ) THEN
             IF ((p%Restart.AND.switch.EQ.restart_only).OR.on_stream( p%streams,newswitch)) THEN

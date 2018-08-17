@@ -760,7 +760,7 @@ module_ltng_cpmpr92z.o :
 
 module_ltng_crmpr92.o :
 
-module_ltng_cpmCAPE.o :
+module_ltng_cpmCAPE.o : ../frame/module_wrf_error.o ../frame/module_configure.o
 
 module_ltng_cpmPrec.o:
 

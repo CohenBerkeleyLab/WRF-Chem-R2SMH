@@ -286,6 +286,9 @@ state    real  ebu_dms      ikjf     ebu           1         Z        -      "eb
 state    real  ebu_oc       ikjf     ebu           1         Z        h      "ebu_oc"        "biomass burning emiss"  "ug/m2/s"        
 state    real  ebu_bc       ikjf     ebu           1         Z        -      "ebu_bc"        "biomass burning emiss"  "ug/m2/s"        
 state    real  ebu_sulf     ikjf     ebu           1         Z        -      "ebu_sulf"      "biomass burning emiss"  "mol km^-2 hr^-1"
+#
+# lightning scale factor qindan zhu
+state    real  LnoxScale    ij     misc           1         Z        i{24}rh    "LnoxScale"     "regional lightning nox scaling factor" ""
 #Azimeh
 #additional for RACM2
 state    real  ebu_acd      ikjf     ebu           1         Z        -      "ebu_acd"       "biomass burning emiss"  "mol km^-2 hr^-1"
@@ -3277,7 +3280,8 @@ package   depvel1  diagnostic_chem==1                -             dvel:dvel_o3,
 package   depvelracm2  diagnostic_chem==2                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_pan,dvel_ald,dvel_mgly,dvel_act,dvel_dcb1,dvel_hc3,dvel_hc5,dvel_hc8,dvel_csl,dvel_mahp,dvel_tol,dvel_aco3,dvel_xyl,dvel_hket,dvel_eoh,dvel_moh,dvel_ethln,dvel_glyc,dvel_ison,dvel_mpan,dvel_onit
 package   depvelracm2ecb  diagnostic_chem==3                -             dvel:dvel_o3,dvel_no,dvel_no2,dvel_hno3,dvel_hno4,dvel_h2o2,dvel_co,dvel_pan,dvel_ald,dvel_mgly,dvel_act,dvel_dcb1,dvel_hc3,dvel_hc5,dvel_hc8,dvel_csl,dvel_mahp,dvel_tol,dvel_pmn,dvel_aco3,dvel_xyl,dvel_isopnd,dvel_hket,dvel_monit,dvel_eoh,dvel_moh,dvel_ethln,dvel_glyci,dvel_ihnd,dvel_ihnb,dvel_inheb,dvel_inhed,dvel_r4n,dvel_r4no,dvel_nh4co3,dvel_inpd,dvel_inpb,dvel_icn,dvel_isopnb,dvel_tonit,dvel_utonin,dvel_tonin,dvel_tonih,dvel_imonit,dvel_utonit,dvel_macrn,dvel_mvkn,dvel_isnp,dvel_propnn,dvel_donit,dvel_aonit,dvel_onit,dvel_ishpa,dvel_ishpb,dvel_ishpd,dvel_honit,dvel_iepoxa,dvel_iepoxb,dvel_iepoxd,dvel_mpan
 
-
+#qindan zhu
+package   lightningscale     lnox_scale_opt==1            -             state:LnoxScale
 #Azimeh
 package   gunther1      bio_emiss_opt==1             -             -
 package   beis314       bio_emiss_opt==2             -             -
@@ -3365,6 +3369,7 @@ state   real    lnox_cg      ikjf    tracer        1         -     i8rhusdf=(bdy
 rconfig   real      N_IC            namelist,chem     max_domains        500.     rh     "N_IC"               "IC emission factor"                "moles/flash"
 rconfig   real      N_CG            namelist,chem     max_domains        500.     rh     "N_CG"               "CG emission factor"                "moles/flash"
 rconfig   integer   lnox_opt        namelist,chem     max_domains        0        rh     "lnox_opt"           "Method for vertical distribution"   ""
+rconfig   integer   lnox_scale_opt  namelist,chem     max_domains        0        rh     "lnox_scale_opt"     "adjust lnox in the SE US qindan zhu" ""
 rconfig   logical   lnox_passive    namelist,chem     max_domains        .false.  rh     "lnox_passive"       "true = tracer only (no emission)"   ""
 rconfig  real       ltng_temp_upper          namelist,physics   max_domains    -45.    -   "ltng_temp_upper"           "Upper isotherm for lightning modes"         "C"
 rconfig  real       ltng_temp_lower          namelist,physics   max_domains    -15.    -   "ltng_temp_lower"           "Lower isotherm for lightning modes"         "C"
