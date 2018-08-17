@@ -16,7 +16,7 @@
                           ! Frequently used prognostics
                             dx, dy, xland, ht, z, t,              &
                           ! Scheme specific prognostics
-                            CAPEQ,PRATEC,                      &
+                            CAPEQ,PRATEC,LnoxScale,lnox_scale_opt,  &
                           ! Order dependent args for domain, mem, and tile dims
                             ids, ide, jds, jde, kds, kde,         &
                             ims, ime, jms, jme, kms, kme,         &
@@ -31,7 +31,7 @@
 ! Model layer
  USE module_model_constants
  USE module_wrf_error
-
+ USE module_configure, ONLY : grid_config_rec_type
  IMPLICIT NONE
 !-----------------------------------------------------------------
 
@@ -41,7 +41,8 @@
  REAL,    DIMENSION( ims:ime, kms:kme, jms:jme ), INTENT(IN   ) :: z, t
 
 ! Scheme specific prognostics
- REAL, DIMENSION( ims:ime,          jms:jme ), INTENT(IN   ) :: CAPEQ,PRATEC     ! CAPE calculated from (?)
+ REAL, DIMENSION( ims:ime,          jms:jme ), INTENT(IN   ) :: CAPEQ,PRATEC,LnoxScale     ! CAPE calculated from (?)
+ INTEGER, INTENT(IN   )    ::       lnox_scale_opt
 
 ! Order dependent args for domain, mem, and tile dims
  INTEGER, INTENT(IN   )    ::       ids,ide, jds,jde, kds,kde
@@ -66,12 +67,17 @@
  dA = dx*dy/1E6
 
  total_flashrate( ips:ipe,jps:jpe ) = 0.
-
+ write(*,*)'qindan zhu lnox_scale_opt 3',LnoxScale(1,1),lnox_scale_opt
 ! Compute AGL heights in km
  jloop: DO j=jps,jpe
     iloop: DO i=ips,ipe
         IF (CAPEQ(i,j) .gt. 0 .and. PRATEC(i,j) .gt. 0) THEN
-            total_flashrate(i,j) = 2E-6 * (3600 * CAPEQ(i,j) * PRATEC(i,j))    
+            total_flashrate(i,j) = 1.8E-4 * CAPEQ(i,j) * PRATEC(i,j) 
+            IF(lnox_scale_opt == lightningscale)THEN
+                total_flashrate(i,j) = total_flashrate(i,j) * LnoxScale(i,j)
+                write(*,*)'qindan zhu lnox_scale_opt 4'
+                call  wrf_debug(100,'regional scaling factor is added to calculate lightning flashrate')
+            ENDIF    
         ENDIF
     ENDDO iloop
  ENDDO jloop

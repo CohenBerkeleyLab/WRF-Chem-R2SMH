@@ -214,8 +214,9 @@
                             ktop_deep,                            &
                             refl,                                 &
                             current_time,                         &
-                            CAPEQ,PRATEC,                         & !for ltng_cpm_CAPE Qindan
+                            CAPEQ,PRATEC,LnoxScale,               & !for ltng_cpm_CAPE Qindan
                           ! Mandatory namelist inputs
+                            lnox_scale_opt,                       &
                             lightning_option,                     &
                             lightning_dt,                         &
                             lightning_start_seconds,              &
@@ -271,12 +272,12 @@
 
 ! Scheme specific prognostics
  INTEGER, DIMENSION( ims:ime,          jms:jme ),           INTENT(IN   ) :: ktop_deep     ! model LNB from cu_physics
- REAL,    DIMENSION( ims:ime,          jms:jme ),           INTENT(IN)    :: CAPEQ,PRATEC
+ REAL,    DIMENSION( ims:ime,          jms:jme ),           INTENT(IN)    :: CAPEQ,PRATEC,LnoxScale
  REAL,    DIMENSION( ims:ime, kms:kme, jms:jme ),           INTENT(IN   ) :: refl          ! reflectivity from mp_physics
  TYPE(WRFU_Time),                                           INTENT(IN   ) :: current_time  ! For use of IC:CG input
-
+ 
 ! Mandatory namelist inputs
- INTEGER, INTENT(IN   )    ::       lightning_option
+ INTEGER, INTENT(IN   )    ::       lightning_option,lnox_scale_opt
  REAL,    INTENT(IN   )    ::       lightning_dt, lightning_start_seconds, flashrate_factor
 
 ! IC:CG namelist settings
@@ -401,11 +402,11 @@
 !       CALL ...
     CASE( ltng_cpm_CAPE )
         CALL wrf_debug (100,' lightning driver: calling Choi et al 2005 (CAPE)')
-        
+        write(*,*)'qindan zhu lnox_scale_opt 2',LnoxScale(1,1),lnox_scale_opt
         CALL ltng_cpmCAPE ( &
                  ! Frequently used prognostics
                    dx, dy, xland, ht, z, t_phy,      &
-                   CAPEQ,PRATEC,     &
+                   CAPEQ,PRATEC,LnoxScale,lnox_scale_opt,     &
                  ! Order dependent args for domain, mem, and tile dims
                    ids, ide, jds, jde, kds, kde,     &
                    ims, ime, jms, jme, kms, kme,     &

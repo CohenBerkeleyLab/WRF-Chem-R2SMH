@@ -53,7 +53,6 @@ SUBROUTINE med_before_solve_io ( grid , config_flags )
 
 
  CALL WRFU_ClockGet( grid%domain_clock, CurrTime=currTime, StartTime=startTime )
- 
  IF( WRFU_AlarmIsRinging( grid%alarms( HISTORY_ALARM ), rc=rc ) .AND. &
        (grid%dfi_write_dfi_history .OR. grid%dfi_stage == DFI_FST .OR. grid%dfi_opt == DFI_NODFI) ) THEN
      IF       ( ( config_flags%restart )                    .AND. &
@@ -99,8 +98,8 @@ SUBROUTINE med_before_solve_io ( grid , config_flags )
        CALL WRFU_AlarmRingerOff( grid%alarms( ialarm ), rc=rc )
      ENDIF
    ENDDO
-
    DO ialarm = first_auxinput, last_auxinput
+     write(*,"(A,I6,I6)")'ialarm and last_auxinput',ialarm,last_auxinput
      IF ( .FALSE.) THEN
        rc = 1  ! dummy statement
 #ifdef WRF_CHEM
@@ -149,7 +148,7 @@ SUBROUTINE med_before_solve_io ( grid , config_flags )
            CALL med_auxinput_in ( grid, ialarm, config_flags )
            CALL WRFU_AlarmRingerOff( grid%alarms( ialarm ), rc=rc )
          ENDIF
-       ENDIF
+       ENDIF   
 #endif
 #if ( EM_CORE == 1 )
      ELSE IF( ialarm .EQ. AUXINPUT11_ALARM ) THEN
@@ -157,6 +156,13 @@ SUBROUTINE med_before_solve_io ( grid , config_flags )
          CALL med_fddaobs_in ( grid , config_flags )
        ENDIF
 #endif
+     ELSE IF( ialarm .EQ. AUXINPUT24_ALARM) THEN
+       IF( config_flags%lnox_scale_opt .EQ. 1 ) THEN 
+           call wrf_debug(15,' CALL med_read_wrf_lightning_scale ')
+           CALL med_read_wrf_lightning_scale ( grid , config_flags )
+           call wrf_debug(15,' Back from CALL med_read_wrf_lightning_scale ') 
+       ENDIF
+ 
      ELSE IF( WRFU_AlarmIsRinging( grid%alarms( ialarm ), rc=rc ) ) THEN
        CALL med_auxinput_in ( grid, ialarm, config_flags )
        WRITE ( message , FMT='(A,i3,A,i3)' )  'Input data processed for aux input ' , &
@@ -2202,7 +2208,6 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
                                    time_step=stepTime )
 
       time = float(grid%itimestep) * grid%dt
-
 !---
 ! io_style_emissions option 0: no emissions read in...
 !---
@@ -2233,7 +2238,6 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
 
 !        write(message,FMT='(A,F10.1,A)') ' EMISSIONS UPDATE TIME ',time,TRIM(current_date_char(12:13))
 !        CALL wrf_message( TRIM(message) )
-
          IF ( tupdate .EQ. 0. .AND.  ihr .LT. 12 ) THEN 
             ihrdiff = ihr  
             CALL construct_filename1 ( inpname , 'wrfchemi_00z' , grid%id , 2 )
@@ -2261,7 +2265,7 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
             if( grid%auxinput5_oid .NE. 0 ) then
                CALL close_dataset ( grid%auxinput5_oid , config_flags , "DATASET=AUXINPUT5" )
             endif
-
+            
             CALL open_r_dataset ( grid%auxinput5_oid, TRIM(inpname) , grid , config_flags, &
                  "DATASET=AUXINPUT5", ierr )
             IF ( ierr .NE. 0 ) THEN
@@ -2280,7 +2284,7 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
 
             WRITE(message,'(A,A)')'mediation_integrate: med_read_wrf_chem_emissions: Read emissions for time ',TRIM(current_date_char)
             CALL wrf_message( TRIM(message) )
-
+            
             IF ( tupdate .EQ. 0. .AND. ihrdiff .GT. 0) THEN
                IF( ihrdiff .GT. 12) THEN
                  WRITE(message,'(A)')'mediation_integrate: med_read_wrf_chem_emissions: Error in emissions time, skipping all times in file '
@@ -2298,7 +2302,7 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
          ELSE
             CALL wrf_debug (100 , 'mediation_integrate: med_read_wrf_chem_emissions: Do not read emissions' )
          ENDIF
-
+      
 !---
 ! io_style_emissions option 2: use dated emission files whose length is
 !                             set via frames_per_auxinput5...
@@ -2308,7 +2312,7 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
          CALL wrf_message( TRIM(message) )
 !
 ! Code to read hourly emission files...
-!
+!      
          if( grid%auxinput5_oid == 0 ) then
             CALL construct_filename2a(inpname , grid%emi_inname, grid%id , 2, current_date_char)
             WRITE(message,*)'mediation_integrate: med_read_wrf_chem_emissions: Open file ',TRIM(inpname)
@@ -2347,7 +2351,7 @@ SUBROUTINE med_read_wrf_chem_emiss ( grid , config_flags )
 !   ENDIF
 
    CALL wrf_debug (100 , 'mediation_integrate: med_read_wrf_chem_emissions: exit' )
-
+   
 END SUBROUTINE med_read_wrf_chem_emiss
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -2416,7 +2420,73 @@ SUBROUTINE med_read_wrf_chem_bioemiss ( grid , config_flags )
    CALL wrf_debug (100 , 'mediation_integrate: med_read_wrf_chem_bioemissions: exit' )
 
 END SUBROUTINE med_read_wrf_chem_bioemiss
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! qindan zhu
+SUBROUTINE med_read_wrf_lightning_scale ( grid , config_flags )
+  ! Driver layer
+   USE module_domain	, ONLY : domain , domain_clock_get
+   USE module_io_domain
+   USE module_timing
+   USE module_configure	, ONLY : grid_config_rec_type
+  ! Model layer
+   USE module_bc_time_utilities
+#ifdef DM_PARALLEL
+   USE module_dm
+#endif
+   USE module_date_time
+   USE module_utility
+
+   IMPLICIT NONE
+
+  ! Arguments
+   TYPE(domain)                               :: grid
+
+   TYPE (grid_config_rec_type) , INTENT(IN)   :: config_flags
+
+  ! Local data
+   LOGICAL, EXTERNAL                      :: wrf_dm_on_monitor
+
+   INTEGER                                :: ierr, efid
+   REAL                                   :: time, tupdate
+   real, allocatable :: dumc0(:,:,:)
+   CHARACTER (LEN=256)                    :: message, current_date_char, date_string
+   CHARACTER (LEN=80)                     :: inpname
+
+#include <wrf_io_flags.h>
+   IF ( grid%itimestep .LT. 2 ) THEN
+      CALL domain_clock_get( grid, current_timestr=current_date_char )
+
+      CALL construct_filename1 ( inpname , 'wrflightningscale' , grid%id , 2 )
+      WRITE(message,*)'mediation_integrate: med_read_wrf_lightning_scale: Open file ',TRIM(inpname)
+      CALL wrf_message( TRIM(message) )
+     if( grid%auxinput24_oid .NE. 0 ) then
+       CALL close_dataset ( grid%auxinput24_oid , config_flags , "DATASET=AUXINPUT24" )
+     endif
+
+      CALL open_r_dataset ( grid%auxinput24_oid, TRIM(inpname) , grid , config_flags, &
+                              "DATASET=AUXINPUT24", ierr )
+        IF ( ierr .NE. 0 ) THEN
+           WRITE( message , * ) 'med_read_wrf_lightning_scale: error opening ', TRIM( inpname )
+           CALL wrf_error_fatal( TRIM( message ) )
+        ENDIF
+       
+        WRITE(message,*)'mediation_integrate: med_read_wrf_lightning_scale: Read lightining scale factor at time ',&
+         TRIM(current_date_char)
+         CALL wrf_message( TRIM(message) )
+
+         CALL wrf_debug (100 , 'mediation_integrate: calling input_auxinput24' )
+         CALL input_auxinput24 ( grid%auxinput24_oid, grid , config_flags , ierr )
+
+         CALL close_dataset ( grid%auxinput24_oid , config_flags , "DATASET=AUXINPUT24" )
+  ENDIF
+   CALL wrf_debug (100 , 'mediation_integrate: med_read_wrf_lightning_scale: exit' )
+
+END SUBROUTINE med_read_wrf_lightning_scale
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 SUBROUTINE med_read_wrf_chem_emissopt4 ( grid , config_flags )
   ! Driver layer
    USE module_domain	, ONLY : domain , domain_clock_get

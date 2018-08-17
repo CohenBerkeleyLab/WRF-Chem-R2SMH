@@ -3564,8 +3564,8 @@ BENCH_START(moist_phys_end_tim)
 
 !-----------------------------------------------------------
 !  Lightning flash rate diagnostic production
-!-----------------------------------------------------------
-  IF ( config_flags%lightning_option /= 0 ) THEN
+!----------------------------------------------------------- 
+ IF ( config_flags%lightning_option /= 0 ) THEN
     CALL lightning_driver ( &
           ! Frequently used prognostics
             grid%itimestep, grid%dt, grid%dx, grid%dy,         &
@@ -3575,8 +3575,9 @@ BENCH_START(moist_phys_end_tim)
           ! Scheme specific prognostics
             grid%ktop_deep, grid%refl_10cm,                    &                           
             domain_get_current_time( grid ),                   &
-            grid%CAPEQ, grid%PRATEC,                           &
+            grid%CAPEQ, grid%PRATEC,grid%LNOXSCALE,            &
           ! Flashrate namelist inputs
+            config_flags%lnox_scale_opt,                       &
             config_flags%lightning_option,                     &
             config_flags%lightning_dt,                         &
             config_flags%lightning_start_seconds,              &
