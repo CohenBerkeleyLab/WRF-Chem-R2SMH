@@ -67,7 +67,6 @@
  dA = dx*dy/1E6
 
  total_flashrate( ips:ipe,jps:jpe ) = 0.
- write(*,*)'qindan zhu lnox_scale_opt 3',LnoxScale(1,1),lnox_scale_opt
 ! Compute AGL heights in km
  jloop: DO j=jps,jpe
     iloop: DO i=ips,ipe

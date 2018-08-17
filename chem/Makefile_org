@@ -121,7 +121,8 @@ MODULES =                                 \
         module_sorgam_cloudchem.o         \
         module_cam_mam_gas_wetdep_driver.o \
         module_cam_mam_mo_sethet.o         \
-        module_phot_fastj.o
+        module_phot_fastj.o                \
+        module_emiss_scale.o
 
 OBJS    =                           \
         chemics_init.o              \
@@ -145,9 +146,13 @@ DRIVERS : $(OBJS)
 
 include ../configure.wrf
 
-convert_emiss : module_emiss_scale.o convert_emiss.o 
+convert_emiss : module_emiss_scale.o convert_emiss.o test_emiss_scale
 	$(RANLIB) ../main/$(LIBWRFLIB)
 	$(FC) -o convert_emiss.exe $(LDFLAGS) module_emiss_scale.o convert_emiss.o ../main/$(LIBWRFLIB) $(LIB)
+
+test_emiss_scale : module_emiss_scale.o test_emiss_scale.o
+	$(RANLIB) ../main/$(LIBWRFLIB)
+	$(FC) -o test_emiss_scale.exe $(LDFLAGS) module_emiss_scale.o test_emiss_scale.o ../main/$(LIBWRFLIB) $(LIB)
 
 clean:
 	@ echo 'use the clean script'
